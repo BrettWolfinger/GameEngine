@@ -9,7 +9,6 @@ public:
     PongGame();
 
 protected:
-    void onInit()           override;
     void onUpdate(float dt) override;
     void onRender()         override;
 
@@ -18,6 +17,17 @@ private:
 
     void resetBall();
     void resetGame();
+
+    // onUpdate sub-steps
+    void updateModeSelect();
+    void updateWinScreen(float dt);
+    void updatePaddles(float dt);
+    void updateBall(float dt);
+
+    // onRender sub-steps
+    void renderModeSelect();
+    void renderWinScreen();
+    void renderPlaying();
 
     // AI helpers
     void updateAI(float dt);
