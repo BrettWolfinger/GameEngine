@@ -25,9 +25,9 @@ void Application::run() {
         accum           += frameTime;
 
         m_window->pollEvents();
-        Input::update();
 
         while (accum >= fixedDt) {
+            Input::update();
             onUpdate(static_cast<float>(fixedDt));
             accum -= fixedDt;
         }
