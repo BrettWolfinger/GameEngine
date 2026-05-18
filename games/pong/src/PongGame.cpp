@@ -2,6 +2,7 @@
 #include <engine/core/Input.h>
 #include <GLFW/glfw3.h>
 #include <algorithm>
+#include <cmath>
 #include <cstdlib>
 
 // 7-segment digit renderer using drawRect
@@ -38,6 +39,7 @@ static constexpr float PADDLE_SPEED = 400.f;
 static constexpr float BALL_SIZE    = 12.f;
 static constexpr float BALL_SPEED   = 300.f;
 static constexpr float MAX_SPEED    = 650.f;
+static constexpr int   WIN_SCORE    = 7;
 
 PongGame::PongGame() : Engine::Application("Pong", W, H) {}
 
@@ -54,10 +56,30 @@ void PongGame::resetBall() {
     m_countdown = 3.f;
 }
 
+void PongGame::resetGame() {
+    m_scoreLeft  = 0;
+    m_scoreRight = 0;
+    m_winner     = 0;
+    m_winFlash   = 0.f;
+    m_paused     = false;
+    m_state      = GameState::Playing;
+    m_left  = { 20.f,                   H/2.f - PADDLE_H/2.f, PADDLE_W, PADDLE_H, PADDLE_SPEED };
+    m_right = { W - 20.f - PADDLE_W,    H/2.f - PADDLE_H/2.f, PADDLE_W, PADDLE_H, PADDLE_SPEED };
+    resetBall();
+}
+
 void PongGame::onUpdate(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q) ||
         Engine::Input::isKeyPressed(GLFW_KEY_ESCAPE))
         quit();
+
+    // --- Win screen: wait for R (restart) or Q/Escape (already handled above) ---
+    if (m_state == GameState::WinScreen) {
+        m_winFlash += dt;
+        if (Engine::Input::isKeyPressed(GLFW_KEY_R))
+            resetGame();
+        return;
+    }
 
     if (Engine::Input::isKeyPressed(GLFW_KEY_P))
         m_paused = !m_paused;
@@ -113,19 +135,78 @@ void PongGame::onUpdate(float dt) {
     // Scoring
     if (m_ball.x + m_ball.size < 0.f) {
         ++m_scoreRight;
-        resetBall();
+        if (m_scoreRight >= WIN_SCORE) {
+            m_winner = 2;
+            m_state  = GameState::WinScreen;
+        } else {
+            resetBall();
+        }
     } else if (m_ball.x > W) {
         ++m_scoreLeft;
-        resetBall();
+        if (m_scoreLeft >= WIN_SCORE) {
+            m_winner = 1;
+            m_state  = GameState::WinScreen;
+        } else {
+            resetBall();
+        }
     }
-
 }
 
 void PongGame::onRender() {
     m_renderer.beginScene(W, H);
 
-    const glm::vec4 white  { 1.f, 1.f, 1.f, 1.f };
+    const glm::vec4 white  { 1.f,  1.f,  1.f,  1.f };
     const glm::vec4 gray   { 0.4f, 0.4f, 0.4f, 1.f };
+    const glm::vec4 gold   { 1.f,  0.85f, 0.1f, 1.f };
+    const glm::vec4 dim    { 0.08f, 0.08f, 0.08f, 1.f };
+
+    if (m_state == GameState::WinScreen) {
+        // Dark background
+        m_renderer.drawRect(0.f, 0.f, W, H, dim);
+
+        // Final scores at their normal positions, dimmed
+        drawNumber(m_renderer, m_scoreLeft,  W * 0.25f, 30.f, 10.f, gray);
+        drawNumber(m_renderer, m_scoreRight, W * 0.75f, 30.f, 10.f, gray);
+
+        // Large winner digit (1 or 2) centered, drawn in gold
+        // Surrounding bracket lines — two vertical bars flanking the digit
+        float digitScale = 28.f;           // digit bounding box: ~84 wide x 140 tall
+        float digitCX    = W * 0.5f;
+        float digitY     = H * 0.5f - 90.f;
+        float barW       = 8.f;
+        float barH       = digitScale * 5.f + 8.f; // full digit height + padding
+        float bracketGap = digitScale * 3.f * 0.5f + 20.f; // half digit width + margin
+        m_renderer.drawRect(digitCX - bracketGap - barW, digitY - 4.f, barW, barH, gold);
+        m_renderer.drawRect(digitCX + bracketGap,        digitY - 4.f, barW, barH, gold);
+        drawNumber(m_renderer, m_winner, digitCX, digitY, digitScale, gold);
+
+        // "PLAYER" label above — represented as a row of small horizontal segments
+        // Two small blocks side-by-side to suggest "P" and a number label
+        float labelY = digitY - 24.f;
+        float blockW = 12.f, blockH = 6.f, blockGap = 6.f;
+        float labelX = digitCX - (3.f * blockW + 2.f * blockGap) * 0.5f;
+        for (int i = 0; i < 3; ++i)
+            m_renderer.drawRect(labelX + i * (blockW + blockGap), labelY, blockW, blockH, gold);
+
+        // Blinking "press key" prompt: two small bracket-like markers that pulse
+        // Flash period = 1 second; visible for first 0.6s of each cycle
+        bool flashVisible = std::fmod(m_winFlash, 1.0f) < 0.6f;
+        if (flashVisible) {
+            float promptY = digitY + barH + 20.f;
+            float promptW = 60.f, promptH = 8.f;
+            // Left prompt bar
+            m_renderer.drawRect(digitCX - promptW - 10.f, promptY, promptW, promptH, white);
+            // Right prompt bar
+            m_renderer.drawRect(digitCX + 10.f,           promptY, promptW, promptH, white);
+            // Small vertical end-caps to form bracket shapes
+            m_renderer.drawRect(digitCX - promptW - 10.f, promptY,             8.f, promptH * 3.f, white);
+            m_renderer.drawRect(digitCX + promptW + 2.f,  promptY,             8.f, promptH * 3.f, white);
+        }
+
+        return;
+    }
+
+    // --- Normal play rendering ---
 
     // Dashed center line
     for (int y = 0; y < H; y += 30)
