@@ -144,13 +144,18 @@ void PongGame::updateAI(float dt) {
 // onUpdate
 // ---------------------------------------------------------------------------
 void PongGame::onUpdate(float dt) {
-    // Quit is always active
-    if (Engine::Input::isKeyPressed(GLFW_KEY_Q) ||
-        Engine::Input::isKeyPressed(GLFW_KEY_ESCAPE))
+    // Q always quits; Escape returns to mode select from anywhere except mode select itself
+    if (Engine::Input::isKeyPressed(GLFW_KEY_Q))
         quit();
+    if (Engine::Input::isKeyPressed(GLFW_KEY_ESCAPE) && m_state != GameState::ModeSelect) {
+        resetGame();
+        return;
+    }
 
     // --- Mode select screen ---
     if (m_state == GameState::ModeSelect) {
+        if (Engine::Input::isKeyPressed(GLFW_KEY_ESCAPE))
+            quit();
         // Enter = single-player
         if (Engine::Input::isKeyPressed(GLFW_KEY_ENTER) ||
             Engine::Input::isKeyPressed(GLFW_KEY_KP_ENTER)) {
