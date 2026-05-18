@@ -4,12 +4,15 @@ add_library(engine STATIC
     core/Input.cpp
     renderer/Shader.cpp
     renderer/Renderer2D.cpp
+    audio/AudioManager.cpp
 )
 
 # Expose src/ so consumers use #include <engine/...>
 target_include_directories(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 target_compile_definitions(engine PUBLIC GLFW_INCLUDE_NONE)
+
+target_include_directories(engine PRIVATE ${miniaudio_SOURCE_DIR})
 
 target_link_libraries(engine PUBLIC glad_gl glfw glm::glm)
 
@@ -18,6 +21,8 @@ if(APPLE)
         "-framework OpenGL"
         "-framework Cocoa"
         "-framework IOKit"
+        "-framework CoreAudio"
+        "-framework AudioToolbox"
     )
 elseif(WIN32)
     target_link_libraries(engine PUBLIC opengl32)

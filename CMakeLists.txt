@@ -30,6 +30,16 @@ FetchContent_Declare(glad
 FetchContent_MakeAvailable(glad)
 glad_add_library(glad_gl REPRODUCIBLE LOADER API gl:core=4.1)
 
+# miniaudio (single-header, no CMakeLists — use Populate pattern)
+FetchContent_Declare(miniaudio
+    GIT_REPOSITORY https://github.com/mackron/miniaudio.git
+    GIT_TAG        0.11.21
+)
+FetchContent_GetProperties(miniaudio)
+if(NOT miniaudio_POPULATED)
+    FetchContent_Populate(miniaudio)
+endif()
+
 # GLM
 FetchContent_Declare(glm
     GIT_REPOSITORY https://github.com/g-truc/glm.git
