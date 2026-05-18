@@ -54,6 +54,15 @@ void PongGame::resetBall() {
 }
 
 void PongGame::onUpdate(float dt) {
+    if (Engine::Input::isKeyPressed(GLFW_KEY_Q) ||
+        Engine::Input::isKeyPressed(GLFW_KEY_ESCAPE))
+        quit();
+
+    if (Engine::Input::isKeyPressed(GLFW_KEY_P))
+        m_paused = !m_paused;
+
+    if (m_paused) return;
+
     // --- Input ---
     if (Engine::Input::isKeyDown(GLFW_KEY_W))
         m_left.y -= m_left.speed * dt;
@@ -104,8 +113,6 @@ void PongGame::onUpdate(float dt) {
         resetBall();
     }
 
-    if (Engine::Input::isKeyPressed(GLFW_KEY_ESCAPE))
-        quit();
 }
 
 void PongGame::onRender() {
