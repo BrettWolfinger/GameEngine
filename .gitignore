@@ -58,6 +58,14 @@ compile_commands.json
 *.bak
 *.swp
 
+# macOS
+.DS_Store
+
+# Editor directories
+.vscode/
+.idea/
+*.user
+
 # vcpkg
 vcpkg_installed/
 
