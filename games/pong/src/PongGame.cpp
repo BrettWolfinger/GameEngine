@@ -51,6 +51,7 @@ void PongGame::resetBall() {
     float vx = (rand() % 2 == 0) ?  BALL_SPEED : -BALL_SPEED;
     float vy = (rand() % 2 == 0) ?  200.f      : -200.f;
     m_ball = { W/2.f - BALL_SIZE/2.f, H/2.f - BALL_SIZE/2.f, vx, vy, BALL_SIZE };
+    m_countdown = 3.f;
 }
 
 void PongGame::onUpdate(float dt) {
@@ -63,7 +64,7 @@ void PongGame::onUpdate(float dt) {
 
     if (m_paused) return;
 
-    // --- Input ---
+    // --- Input (always active, even during countdown) ---
     if (Engine::Input::isKeyDown(GLFW_KEY_W))
         m_left.y -= m_left.speed * dt;
     if (Engine::Input::isKeyDown(GLFW_KEY_S))
@@ -75,6 +76,11 @@ void PongGame::onUpdate(float dt) {
 
     m_left.y  = std::clamp(m_left.y,  0.f, H - m_left.height);
     m_right.y = std::clamp(m_right.y, 0.f, H - m_right.height);
+
+    if (m_countdown > 0.f) {
+        m_countdown -= dt;
+        return;
+    }
 
     // --- Ball movement ---
     m_ball.x += m_ball.vx * dt;
@@ -132,4 +138,9 @@ void PongGame::onRender() {
     // Scores — 7-segment digits, scale=10 → 30×50px per digit
     drawNumber(m_renderer, m_scoreLeft,  W * 0.25f, 30.f, 10.f, white);
     drawNumber(m_renderer, m_scoreRight, W * 0.75f, 30.f, 10.f, white);
+
+    if (m_countdown > 0.f) {
+        int count = static_cast<int>(m_countdown) + 1;
+        drawNumber(m_renderer, count, W * 0.5f, H * 0.5f - 25.f, 14.f, white);
+    }
 }
