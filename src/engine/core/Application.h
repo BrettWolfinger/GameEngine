@@ -1,13 +1,14 @@
 #pragma once
 #include <memory>
 #include "Window.h"
+#include "../audio/AudioManager.h"
 
 namespace Engine {
 
 class Application {
 public:
     Application(const char* title, int width, int height);
-    virtual ~Application() = default;
+    virtual ~Application() { AudioManager::shutdown(); }
 
     void run();
     void quit() { m_running = false; }
