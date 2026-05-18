@@ -23,4 +23,5 @@ private:
     int    m_scoreLeft  = 0;
     int    m_scoreRight = 0;
     bool   m_paused     = false;
+    float  m_countdown  = 0.f;
 };
