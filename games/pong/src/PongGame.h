@@ -22,4 +22,5 @@ private:
     Ball   m_ball{};
     int    m_scoreLeft  = 0;
     int    m_scoreRight = 0;
+    bool   m_paused     = false;
 };
