@@ -19,4 +19,6 @@ if(APPLE)
         "-framework Cocoa"
         "-framework IOKit"
     )
+elseif(WIN32)
+    target_link_libraries(engine PUBLIC opengl32)
 endif()
