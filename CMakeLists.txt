@@ -49,3 +49,4 @@ FetchContent_MakeAvailable(glm)
 
 add_subdirectory(src/engine)
 add_subdirectory(games/pong)
+add_subdirectory(games/breakout)
