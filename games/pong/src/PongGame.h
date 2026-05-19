@@ -33,6 +33,10 @@ private:
     void updateAI(float dt);
     void newAITargetOffset();
 
+#ifdef ENABLE_DEV_KEYS
+    void updateDevKeys();
+#endif
+
     Engine::Renderer2D m_renderer;
     Paddle m_left{};
     Paddle m_right{};

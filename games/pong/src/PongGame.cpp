@@ -92,9 +92,31 @@ void PongGame::updateAI(float dt) {
 // ---------------------------------------------------------------------------
 // onUpdate — thin dispatcher
 // ---------------------------------------------------------------------------
+#ifdef ENABLE_DEV_KEYS
+void PongGame::updateDevKeys() {
+    // F1: mode select  F2: start 2P game  F3: P1 wins  F4: P2 wins  F5: set scores to WIN_SCORE-1
+    if (Engine::Input::isKeyPressed(GLFW_KEY_F1)) { resetGame(); return; }
+    if (Engine::Input::isKeyPressed(GLFW_KEY_F2)) {
+        m_singlePlayer = false;
+        m_left  = { 20.f,                H/2.f - PADDLE_H/2.f, PADDLE_W, PADDLE_H, PADDLE_SPEED };
+        m_right = { W - 20.f - PADDLE_W, H/2.f - PADDLE_H/2.f, PADDLE_W, PADDLE_H, PADDLE_SPEED };
+        m_state = GameState::Playing;
+        resetBall();
+        return;
+    }
+    if (Engine::Input::isKeyPressed(GLFW_KEY_F3)) { m_winner = 1; m_winFlash = 0.f; m_state = GameState::WinScreen; return; }
+    if (Engine::Input::isKeyPressed(GLFW_KEY_F4)) { m_winner = 2; m_winFlash = 0.f; m_state = GameState::WinScreen; return; }
+    if (Engine::Input::isKeyPressed(GLFW_KEY_F5)) { m_scoreLeft = WIN_SCORE - 1; m_scoreRight = WIN_SCORE - 1; }
+}
+#endif
+
 void PongGame::onUpdate(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q))
         quit();
+
+#ifdef ENABLE_DEV_KEYS
+    updateDevKeys();
+#endif
     if (Engine::Input::isKeyPressed(GLFW_KEY_ESCAPE) && m_state != GameState::ModeSelect) {
         resetGame();
         return;

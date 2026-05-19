@@ -29,6 +29,10 @@ private:
     void updateGameOver();
     void updateWinScreen();
 
+#ifdef ENABLE_DEV_KEYS
+    void updateDevKeys();
+#endif
+
     void renderTitleScreen();
     void renderPlaying();
     void renderGameOver();
