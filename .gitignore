@@ -61,6 +61,12 @@ compile_commands.json
 # macOS
 .DS_Store
 
+# Runtime-generated data
+saves/
+
+# Claude Code memory
+.claude/
+
 # Editor directories
 .vscode/
 .idea/

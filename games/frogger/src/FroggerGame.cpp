@@ -59,7 +59,7 @@ void FroggerGame::ensurePlaceholderAsset(const std::string& path) {
 FroggerGame::FroggerGame()
     : Engine::Application("Frogger", 800, 600)
 {
-    const std::string assetPath = "assets/frogger_test.png";
+    const std::string assetPath = "games/frogger/assets/frogger_test.png";
     ensurePlaceholderAsset(assetPath);
 
     auto texture = std::make_shared<Engine::Texture>(assetPath);
