@@ -141,9 +141,9 @@ void BreakoutGame::updateTitleScreen() {
 
 void BreakoutGame::updatePlaying(float dt) {
     // Paddle movement
-    if (Engine::Input::isKeyDown(GLFW_KEY_LEFT))
+    if (Engine::Input::isKeyDown(GLFW_KEY_LEFT)  || Engine::Input::isKeyDown(GLFW_KEY_A))
         m_paddle.x -= PADDLE_SPEED * dt;
-    if (Engine::Input::isKeyDown(GLFW_KEY_RIGHT))
+    if (Engine::Input::isKeyDown(GLFW_KEY_RIGHT) || Engine::Input::isKeyDown(GLFW_KEY_D))
         m_paddle.x += PADDLE_SPEED * dt;
     m_paddle.x = std::clamp(m_paddle.x, 0.f, W - m_paddle.w);
 
