@@ -4,6 +4,7 @@
 #include <engine/core/Input.h>
 #include <GLFW/glfw3.h>
 #include <algorithm>
+#include <glm/gtc/constants.hpp>
 
 static constexpr int COLS     = 13;
 static constexpr int ROWS     = 14;
@@ -68,6 +69,11 @@ void FroggerGame::onUpdate(float dt) {
             m_frog.row = std::clamp(m_frog.row + dr, 0, ROWS - 1);
             m_frog.hopping  = true;
             m_frog.hopTimer = HOP_DURATION;
+            // Sprite faces up by default; rotate to match movement direction
+            if      (dr < 0) m_frog.angle = glm::radians(180.f);  // up
+            else if (dr > 0) m_frog.angle = 0.f;                  // down
+            else if (dc > 0) m_frog.angle = glm::radians(-90.f);  // right
+            else             m_frog.angle = glm::radians(90.f);   // left
             m_animator->setClip("hop");
         }
     }
@@ -84,5 +90,6 @@ void FroggerGame::onRender() {
     const Engine::UVRect uvs = m_animator->currentFrameUVs();
     m_renderer.drawTexturedRect(x, y, TILE, TILE,
                                 m_sheet->texture(),
-                                uvs.u0, uvs.v0, uvs.u1, uvs.v1);
+                                uvs.u0, uvs.v0, uvs.u1, uvs.v1,
+                                m_frog.angle);
 }

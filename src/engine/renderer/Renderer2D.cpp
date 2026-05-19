@@ -133,8 +133,13 @@ void Renderer2D::drawRect(float x, float y, float w, float h, const glm::vec4& c
 
 void Renderer2D::drawTexturedRect(float x, float y, float w, float h,
                                    const Texture& tex,
-                                   float u0, float v0, float u1, float v1) {
-    glm::mat4 model = glm::translate(glm::mat4(1.f), glm::vec3(x, y, 0.f));
+                                   float u0, float v0, float u1, float v1,
+                                   float angle) {
+    // Translate to sprite center, rotate, translate back, then scale
+    glm::mat4 model = glm::translate(glm::mat4(1.f), glm::vec3(x + w * 0.5f, y + h * 0.5f, 0.f));
+    if (angle != 0.f)
+        model = glm::rotate(model, angle, glm::vec3(0.f, 0.f, 1.f));
+    model = glm::translate(model, glm::vec3(-w * 0.5f, -h * 0.5f, 0.f));
     model = glm::scale(model, glm::vec3(w, h, 1.f));
 
     tex.bind(0);
