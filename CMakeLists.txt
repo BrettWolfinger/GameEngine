@@ -41,6 +41,16 @@ if(NOT miniaudio_POPULATED)
     FetchContent_Populate(miniaudio)
 endif()
 
+# stb (single-header, no CMakeLists — use Populate pattern)
+FetchContent_Declare(stb_image
+    GIT_REPOSITORY https://github.com/nothings/stb.git
+    GIT_TAG        master
+)
+FetchContent_GetProperties(stb_image)
+if(NOT stb_image_POPULATED)
+    FetchContent_Populate(stb_image)
+endif()
+
 # GLM
 FetchContent_Declare(glm
     GIT_REPOSITORY https://github.com/g-truc/glm.git
@@ -51,3 +61,4 @@ FetchContent_MakeAvailable(glm)
 add_subdirectory(src/engine)
 add_subdirectory(games/pong)
 add_subdirectory(games/breakout)
+add_subdirectory(games/frogger)

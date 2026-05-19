@@ -34,6 +34,9 @@ void Shader::setMat4(const char* name, const glm::mat4& v) const {
 void Shader::setVec4(const char* name, const glm::vec4& v) const {
     glUniform4fv(glGetUniformLocation(m_program, name), 1, glm::value_ptr(v));
 }
+void Shader::setInt(const char* name, int v) const {
+    glUniform1i(glGetUniformLocation(m_program, name), v);
+}
 
 GLuint Shader::compile(GLenum type, const char* src) {
     GLuint shader = glCreateShader(type);
