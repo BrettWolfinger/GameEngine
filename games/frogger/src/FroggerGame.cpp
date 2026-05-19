@@ -1,80 +1,35 @@
 #include "FroggerGame.h"
-
-// stb_image_write — compiled once here (engine only compiles stb_image, not stb_image_write)
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
-
 #include <engine/renderer/Texture.h>
 #include <engine/renderer/SpriteSheet.h>
 
-#include <filesystem>
-#include <vector>
+static constexpr int COLS     = 13;
+static constexpr int ROWS     = 14;
+static constexpr int TILE_SRC = 16;        // sprite sheet cell size (px)
+static constexpr int SCALE    = 3;
+static constexpr int TILE     = TILE_SRC * SCALE; // 48px on screen
+static constexpr int W        = COLS * TILE;      // 624
+static constexpr int H        = ROWS * TILE;      // 672
 
-static constexpr int FRAME_W    = 32;
-static constexpr int FRAME_H    = 32;
-static constexpr int FRAME_COUNT = 4;
-static constexpr int SHEET_W    = FRAME_W * FRAME_COUNT; // 128
-static constexpr int SHEET_H    = FRAME_H;               // 32
-
-// ---------------------------------------------------------------------------
-// Placeholder asset generation
-// ---------------------------------------------------------------------------
-
-void FroggerGame::ensurePlaceholderAsset(const std::string& path) {
-    if (std::filesystem::exists(path)) return;
-
-    // Create parent directory if needed
-    std::filesystem::create_directories(std::filesystem::path(path).parent_path());
-
-    // 4 frames: red, green, blue, yellow  (RGBA8)
-    struct RGBA { unsigned char r, g, b, a; };
-    const RGBA palette[FRAME_COUNT] = {
-        { 220,  50,  50, 255 }, // red
-        {  50, 200,  50, 255 }, // green
-        {  50, 100, 220, 255 }, // blue
-        { 220, 200,  50, 255 }, // yellow
-    };
-
-    std::vector<RGBA> pixels(static_cast<size_t>(SHEET_W) * SHEET_H);
-    for (int f = 0; f < FRAME_COUNT; ++f) {
-        for (int py = 0; py < FRAME_H; ++py) {
-            for (int px = 0; px < FRAME_W; ++px) {
-                const int idx = py * SHEET_W + f * FRAME_W + px;
-                pixels[idx] = palette[f];
-            }
-        }
-    }
-
-    stbi_write_png(path.c_str(),
-                   SHEET_W, SHEET_H,
-                   4 /* channels */,
-                   pixels.data(),
-                   SHEET_W * static_cast<int>(sizeof(RGBA)));
-}
-
-// ---------------------------------------------------------------------------
-// FroggerGame
-// ---------------------------------------------------------------------------
+// Sprite sheet layout: 8 cols x 16 rows of 16x16px cells
+static constexpr int SHEET_COLS = 8;
+static constexpr int SHEET_ROWS = 16;
 
 FroggerGame::FroggerGame()
-    : Engine::Application("Frogger", 800, 600)
+    : Engine::Application("Frogger", W, H)
 {
-    const std::string assetPath = "games/frogger/assets/frogger_test.png";
-    ensurePlaceholderAsset(assetPath);
-
-    auto texture = std::make_shared<Engine::Texture>(assetPath);
-    m_sheet      = std::make_shared<Engine::SpriteSheet>(texture, FRAME_COUNT, 1);
+    auto texture = std::make_shared<Engine::Texture>("games/frogger/assets/frogger_sprite_sheet.png");
+    m_sheet      = std::make_shared<Engine::SpriteSheet>(texture, SHEET_COLS, SHEET_ROWS);
 
     m_animator.emplace(m_sheet);
 
-    Engine::AnimClip walkClip;
-    for (int i = 0; i < m_sheet->frameCount(); ++i)
-        walkClip.frames.push_back(i);
-    walkClip.frameDuration = 0.2f; // 5 fps — clearly visible color changes
-    walkClip.mode          = Engine::PlayMode::Loop;
+    // Frog hop animation — first 4 frames of the sheet (top row)
+    Engine::AnimClip hopClip;
+    hopClip.frames        = { 0, 1, 2, 3 };
+    hopClip.frameDuration = 0.1f;
+    hopClip.mode          = Engine::PlayMode::Loop;
 
-    m_animator->addClip("walk", std::move(walkClip));
-    m_animator->setClip("walk");
+    m_animator->addClip("hop", std::move(hopClip));
+    m_animator->setClip("hop");
 }
 
 void FroggerGame::onUpdate(float dt) {
@@ -82,20 +37,14 @@ void FroggerGame::onUpdate(float dt) {
 }
 
 void FroggerGame::onRender() {
-    auto& win = getWindow();
-    const int w = win.getWidth();
-    const int h = win.getHeight();
+    m_renderer.beginScene(W, H);
 
-    m_renderer.beginScene(w, h);
-
-    // Draw a 128x128 sprite centered in the window
-    const float spriteW = 128.f;
-    const float spriteH = 128.f;
-    const float x = (w - spriteW) * 0.5f;
-    const float y = (h - spriteH) * 0.5f;
+    // Draw the frog centered in the window at 1 tile (48x48px)
+    const float x = (W - TILE) * 0.5f;
+    const float y = (H - TILE) * 0.5f;
 
     const Engine::UVRect uvs = m_animator->currentFrameUVs();
-    m_renderer.drawTexturedRect(x, y, spriteW, spriteH,
+    m_renderer.drawTexturedRect(x, y, TILE, TILE,
                                 m_sheet->texture(),
                                 uvs.u0, uvs.v0, uvs.u1, uvs.v1);
 }
