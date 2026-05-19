@@ -120,10 +120,13 @@ void PongGame::updateModeSelect() {
 
     bool startGame = false;
     if (Engine::Input::isKeyPressed(GLFW_KEY_ENTER) ||
-        Engine::Input::isKeyPressed(GLFW_KEY_KP_ENTER)) {
+        Engine::Input::isKeyPressed(GLFW_KEY_KP_ENTER) || // numpad Enter
+
+        Engine::Input::isKeyPressed(GLFW_KEY_1)) {
         m_singlePlayer = true;
         startGame = true;
-    } else if (Engine::Input::isKeyPressed(GLFW_KEY_SPACE)) {
+    } else if (Engine::Input::isKeyPressed(GLFW_KEY_SPACE) ||
+               Engine::Input::isKeyPressed(GLFW_KEY_2)) {
         m_singlePlayer = false;
         startGame = true;
     }
@@ -236,9 +239,10 @@ void PongGame::renderModeSelect() {
 
     m_renderer.drawRect(W * 0.5f - 2.f, cy - 20.f, 4.f, s * 5.f + 40.f, gray);
 
+    float hs    = 5.f;
     float hintY = cy + s * 5.f + 16.f;
-    m_renderer.drawRect(W * 0.25f - 36.f, hintY, 72.f, 8.f, gray);  // SPACE
-    m_renderer.drawRect(W * 0.75f - 36.f, hintY, 72.f, 8.f, white); // ENTER
+    Engine::SegmentFont::drawStringCentered(m_renderer, "SPACE", W * 0.25f, hintY, hs, gray);
+    Engine::SegmentFont::drawStringCentered(m_renderer, "ENTER", W * 0.75f, hintY, hs, gray);
 }
 
 void PongGame::renderWinScreen() {

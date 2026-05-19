@@ -21,7 +21,7 @@ static const int s_alpha[26]  = {
     117, // K  a+c+e+f+g     (approximate)
      56, // L  d+e+f
      55, // M  a+b+c+e+f     (approximate — missing crossbars)
-    116, // N  c+e+f+g        (lowercase n)
+     55, // N  a+b+c+e+f     (top + four verticals, no bottom or middle)
      63, // O  a+b+c+d+e+f   (same as 0)
     115, // P  a+b+e+f+g
     103, // Q  a+b+c+f+g     (approximate)
