@@ -24,6 +24,7 @@ public:
     void update(float dt);
 
     UVRect currentFrameUVs() const;
+    const SpriteSheet& sheet() const { return *m_sheet; }
 
 private:
     std::shared_ptr<SpriteSheet>              m_sheet;

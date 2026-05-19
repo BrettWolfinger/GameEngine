@@ -1,104 +1,29 @@
 #include "FroggerGame.h"
+#include "FroggerConfig.h"
 #include <engine/renderer/Texture.h>
-#include <engine/renderer/SpriteSheet.h>
 #include <engine/core/Input.h>
 #include <GLFW/glfw3.h>
-#include <algorithm>
-#include <glm/gtc/constants.hpp>
-
-static constexpr int COLS     = 13;
-static constexpr int ROWS     = 14;
-static constexpr int TILE_SRC = 16;        // sprite sheet cell size (px)
-static constexpr int SCALE    = 3;
-static constexpr int TILE     = TILE_SRC * SCALE; // 48px on screen
-static constexpr int W        = COLS * TILE;      // 624
-static constexpr int H        = ROWS * TILE;      // 672
-
-// Sprite sheet layout: 8 cols x 16 rows of 16x16px cells
-static constexpr int SHEET_COLS = 8;
-static constexpr int SHEET_ROWS = 16;
-
-// Scene zone layout (rows, top=0)
-static constexpr int HOME_ROW        = 0;
-static constexpr int RIVER_FIRST_ROW = 1;
-static constexpr int RIVER_LAST_ROW  = 5;
-static constexpr int MEDIAN_ROW      = 6;
-static constexpr int ROAD_FIRST_ROW  = 7;
-static constexpr int ROAD_LAST_ROW   = 11;
-// Rows 12-13 = safe starting area
-
-// Home goal slot positions (col indices, 5 evenly-ish spaced across 13 cols)
-static constexpr int HOME_SLOTS[]  = { 1, 3, 6, 9, 11 };
-static constexpr int HOME_SLOT_COUNT = 5;
-
-// Hop animation: 4 frames x 0.1s each
-static constexpr int   HOP_FRAMES   = 4;
-static constexpr float HOP_FRAME_DT = 0.1f;
-static constexpr float HOP_DURATION = HOP_FRAMES * HOP_FRAME_DT;
 
 FroggerGame::FroggerGame()
     : Engine::Application("Frogger", W, H)
 {
     auto texture = std::make_shared<Engine::Texture>("games/frogger/assets/frogger_sprite_sheet.png");
     m_sheet      = std::make_shared<Engine::SpriteSheet>(texture, SHEET_COLS, SHEET_ROWS);
-
-    m_animator.emplace(m_sheet);
-
-    Engine::AnimClip idleClip;
-    idleClip.frames        = { 0 };
-    idleClip.frameDuration = 1.f;
-    idleClip.mode          = Engine::PlayMode::Loop;
-
-    Engine::AnimClip hopClip;
-    hopClip.frames        = { 0, 1, 2, 3 };
-    hopClip.frameDuration = HOP_FRAME_DT;
-    hopClip.mode          = Engine::PlayMode::Loop;
-
-    m_animator->addClip("idle", std::move(idleClip));
-    m_animator->addClip("hop",  std::move(hopClip));
-    m_animator->setClip("idle");
+    m_frog.emplace(m_sheet);
 }
 
 void FroggerGame::onUpdate(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q))
         quit();
 
-    // Finish hop before accepting new input
-    if (m_frog.hopping) {
-        m_frog.hopTimer -= dt;
-        if (m_frog.hopTimer <= 0.f) {
-            m_frog.hopping = false;
-            m_animator->setClip("idle");
-        }
-    } else {
-        int dc = 0, dr = 0;
-        if (Engine::Input::isKeyPressed(GLFW_KEY_UP)    || Engine::Input::isKeyPressed(GLFW_KEY_W)) dr = -1;
-        if (Engine::Input::isKeyPressed(GLFW_KEY_DOWN)  || Engine::Input::isKeyPressed(GLFW_KEY_S)) dr =  1;
-        if (Engine::Input::isKeyPressed(GLFW_KEY_LEFT)  || Engine::Input::isKeyPressed(GLFW_KEY_A)) dc = -1;
-        if (Engine::Input::isKeyPressed(GLFW_KEY_RIGHT) || Engine::Input::isKeyPressed(GLFW_KEY_D)) dc =  1;
-
-        if (dc != 0 || dr != 0) {
-            m_frog.col = std::clamp(m_frog.col + dc, 0, COLS - 1);
-            m_frog.row = std::clamp(m_frog.row + dr, 0, ROWS - 1);
-            m_frog.hopping  = true;
-            m_frog.hopTimer = HOP_DURATION;
-            // Sprite faces up by default; rotate to match movement direction
-            if      (dr < 0) m_frog.angle = glm::radians(180.f);  // up
-            else if (dr > 0) m_frog.angle = 0.f;                  // down
-            else if (dc > 0) m_frog.angle = glm::radians(-90.f);  // right
-            else             m_frog.angle = glm::radians(90.f);   // left
-            m_animator->setClip("hop");
-        }
-    }
-
-    m_animator->update(dt);
+    m_frog->update(dt);
 }
 
 void FroggerGame::renderBackground() {
-    const glm::vec4 grass  { 0.10f, 0.35f, 0.10f, 1.f };
-    const glm::vec4 river  { 0.05f, 0.15f, 0.45f, 1.f };
-    const glm::vec4 road   { 0.18f, 0.18f, 0.18f, 1.f };
-    const glm::vec4 goal   { 0.03f, 0.10f, 0.03f, 1.f }; // dark slots in home row
+    const glm::vec4 grass { 0.10f, 0.35f, 0.10f, 1.f };
+    const glm::vec4 river { 0.05f, 0.15f, 0.45f, 1.f };
+    const glm::vec4 road  { 0.18f, 0.18f, 0.18f, 1.f };
+    const glm::vec4 goal  { 0.03f, 0.10f, 0.03f, 1.f };
 
     for (int row = 0; row < ROWS; ++row) {
         const float ry = static_cast<float>(row * TILE);
@@ -109,7 +34,6 @@ void FroggerGame::renderBackground() {
         m_renderer.drawRect(0.f, ry, static_cast<float>(W), static_cast<float>(TILE), color);
     }
 
-    // Goal slots in the home row
     for (int i = 0; i < HOME_SLOT_COUNT; ++i)
         m_renderer.drawRect(static_cast<float>(HOME_SLOTS[i] * TILE), 0.f,
                             static_cast<float>(TILE), static_cast<float>(TILE), goal);
@@ -118,13 +42,5 @@ void FroggerGame::renderBackground() {
 void FroggerGame::onRender() {
     m_renderer.beginScene(W, H);
     renderBackground();
-
-    const float x = static_cast<float>(m_frog.col * TILE);
-    const float y = static_cast<float>(m_frog.row * TILE);
-
-    const Engine::UVRect uvs = m_animator->currentFrameUVs();
-    m_renderer.drawTexturedRect(x, y, TILE, TILE,
-                                m_sheet->texture(),
-                                uvs.u0, uvs.v0, uvs.u1, uvs.v1,
-                                m_frog.angle);
+    m_frog->render(m_renderer);
 }
