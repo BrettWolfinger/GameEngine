@@ -2,6 +2,7 @@ add_library(engine STATIC
     core/Application.cpp
     core/Window.cpp
     core/Input.cpp
+    core/SaveData.cpp
     renderer/Shader.cpp
     renderer/Renderer2D.cpp
     renderer/SegmentFont.cpp
