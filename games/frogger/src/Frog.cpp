@@ -23,6 +23,15 @@ Frog::Frog(std::shared_ptr<Engine::SpriteSheet> sheet)
     m_animator.setClip("idle");
 }
 
+void Frog::reset() {
+    m_col      = 6;
+    m_row      = 13;
+    m_angle    = 3.14159265f;
+    m_hopping  = false;
+    m_hopTimer = 0.f;
+    m_animator.setClip("idle");
+}
+
 void Frog::update(float dt) {
     if (m_hopping) {
         m_hopTimer -= dt;

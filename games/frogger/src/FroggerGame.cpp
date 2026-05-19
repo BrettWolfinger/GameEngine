@@ -10,6 +10,16 @@ FroggerGame::FroggerGame()
     auto texture = std::make_shared<Engine::Texture>("games/frogger/assets/frogger_sprite_sheet.png");
     m_sheet      = std::make_shared<Engine::SpriteSheet>(texture, SHEET_COLS, SHEET_ROWS);
     m_frog.emplace(m_sheet);
+
+    for (const auto& lane : LANE_CONFIGS) {
+        for (int i = 0; i < lane.count; ++i) {
+            float startX = static_cast<float>(i) * lane.spacing;
+            // Left-moving lanes start off the right edge so vehicles enter naturally
+            if (lane.direction < 0)
+                startX = W - startX;
+            m_vehicles.emplace_back(startX, lane.row, lane.type, lane.speed, lane.direction);
+        }
+    }
 }
 
 void FroggerGame::onUpdate(float dt) {
@@ -17,6 +27,20 @@ void FroggerGame::onUpdate(float dt) {
         quit();
 
     m_frog->update(dt);
+
+    for (auto& v : m_vehicles)
+        v.update(dt);
+
+    // Collision: frog tile vs vehicle rect
+    const float fx = static_cast<float>(m_frog->col() * TILE);
+    const float fy = static_cast<float>(m_frog->row() * TILE);
+    for (const auto& v : m_vehicles) {
+        if (v.row() != m_frog->row()) continue;
+        const float vx = v.x();
+        const float vw = static_cast<float>(v.tileWidth() * TILE);
+        if (fx < vx + vw && fx + TILE > vx)
+            m_frog->reset();
+    }
 }
 
 void FroggerGame::renderBackground() {
@@ -42,5 +66,9 @@ void FroggerGame::renderBackground() {
 void FroggerGame::onRender() {
     m_renderer.beginScene(W, H);
     renderBackground();
+
+    for (auto& v : m_vehicles)
+        v.render(m_renderer, *m_sheet);
+
     m_frog->render(m_renderer);
 }

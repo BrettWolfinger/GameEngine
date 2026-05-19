@@ -9,6 +9,7 @@ public:
 
     void update(float dt);
     void render(Engine::Renderer2D& renderer) const;
+    void reset();
 
     int col() const { return m_col; }
     int row() const { return m_row; }

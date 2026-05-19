@@ -45,6 +45,7 @@ void main() {
         u_uvRegion.y + v_uv.y * (u_uvRegion.w - u_uvRegion.y)
     );
     fragColor = texture(u_tex, uv);
+    if (fragColor.a < 0.1) discard;
 }
 )";
 
