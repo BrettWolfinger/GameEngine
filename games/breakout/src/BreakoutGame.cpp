@@ -32,7 +32,10 @@ static constexpr int   BRICKS_PER_SPEED_STEP = 5;
 static constexpr float SPEED_MULTIPLIER      = 1.08f;
 
 // ---------------------------------------------------------------------------
-BreakoutGame::BreakoutGame() : Engine::Application("Breakout", W, H) {}
+BreakoutGame::BreakoutGame() : Engine::Application("Breakout", W, H) {
+    m_saveData  = Engine::SaveData::load("breakout");
+    m_highScore = m_saveData.getInt("high_score", 0);
+}
 
 // ---------------------------------------------------------------------------
 void BreakoutGame::initBricks() {
@@ -79,6 +82,7 @@ void BreakoutGame::resetGame() {
     m_lives           = 3;
     m_bricksDestroyed = 0;
     m_ceilingHit      = false;
+    // m_highScore intentionally not reset — persists across sessions
     m_paddle          = { W * 0.5f - PADDLE_W * 0.5f, PADDLE_Y, PADDLE_W, PADDLE_H };
     initBricks();
     resetBall();
@@ -181,6 +185,11 @@ void BreakoutGame::updatePlaying(float dt) {
         --m_lives;
         Engine::AudioManager::playTone(120.f, 0.3f);
         if (m_lives <= 0) {
+            if (m_score > m_highScore) {
+                m_highScore = m_score;
+                m_saveData.setInt("high_score", m_highScore);
+                m_saveData.save();
+            }
             m_state = GameState::GameOver;
         } else {
             resetBall();
@@ -279,8 +288,14 @@ void BreakoutGame::updatePlaying(float dt) {
         for (const auto& brick : m_bricks) {
             if (brick.alive) { anyAlive = true; break; }
         }
-        if (!anyAlive)
+        if (!anyAlive) {
+            if (m_score > m_highScore) {
+                m_highScore = m_score;
+                m_saveData.setInt("high_score", m_highScore);
+                m_saveData.save();
+            }
             m_state = GameState::WinScreen;
+        }
     }
 }
 
@@ -337,9 +352,11 @@ void BreakoutGame::renderPlaying() {
     m_renderer.drawRect(m_paddle.x, m_paddle.y, m_paddle.w, m_paddle.h, white);
     m_renderer.drawRect(m_ball.x,   m_ball.y,   m_ball.size, m_ball.size, white);
 
+    const glm::vec4 gold { 1.f, 0.85f, 0.1f, 1.f };
     float hudScale = 8.f;
-    Engine::SegmentFont::drawStringCentered(m_renderer, m_score,  W * 0.25f, 10.f, hudScale, white);
-    Engine::SegmentFont::drawStringCentered(m_renderer, m_lives,  W * 0.75f, 10.f, hudScale, white);
+    Engine::SegmentFont::drawStringCentered(m_renderer, m_score,     W * 0.25f, 10.f, hudScale, white);
+    Engine::SegmentFont::drawStringCentered(m_renderer, m_highScore, W * 0.5f,  10.f, hudScale, gold);
+    Engine::SegmentFont::drawStringCentered(m_renderer, m_lives,     W * 0.75f, 10.f, hudScale, white);
 }
 
 void BreakoutGame::renderGameOver() {

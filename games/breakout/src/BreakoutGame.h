@@ -1,5 +1,6 @@
 #pragma once
 #include <engine/core/Application.h>
+#include <engine/core/SaveData.h>
 #include <engine/renderer/Renderer2D.h>
 #include <array>
 #include <glm/glm.hpp>
@@ -48,8 +49,10 @@ private:
 
     std::array<Brick, ROWS * COLS> m_bricks{};
 
-    int   m_score    = 0;
-    int   m_lives    = 3;
+    Engine::SaveData m_saveData;
+    int   m_score     = 0;
+    int   m_highScore = 0;
+    int   m_lives     = 3;
     bool  m_ballHeld   = true;
     bool  m_ceilingHit = false;
     int   m_bricksDestroyed = 0;
