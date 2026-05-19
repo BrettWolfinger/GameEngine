@@ -4,6 +4,7 @@ add_library(engine STATIC
     core/Input.cpp
     renderer/Shader.cpp
     renderer/Renderer2D.cpp
+    renderer/SegmentFont.cpp
     audio/AudioManager.cpp
 )
 
