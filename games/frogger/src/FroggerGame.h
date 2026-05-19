@@ -13,6 +13,8 @@ protected:
     void onUpdate(float dt) override;
     void onRender()         override;
 
+    void renderBackground();
+
 private:
     struct Frog {
         int   col      = 6;    // starting column (center)
