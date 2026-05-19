@@ -1,5 +1,6 @@
 #include "BreakoutGame.h"
 #include <engine/renderer/SegmentFont.h>
+#include <engine/renderer/PixelFont.h>
 #include <engine/core/Input.h>
 #include <engine/audio/AudioManager.h>
 #include <GLFW/glfw3.h>
@@ -304,13 +305,13 @@ void BreakoutGame::renderTitleScreen() {
 
     m_renderer.drawRect(0.f, 0.f, W, H, dim);
 
-    float titleScale = 14.f;
+    float titleScale = 8.f;
     float titleY     = H * 0.35f;
-    Engine::SegmentFont::drawStringCentered(m_renderer, "BREAKOUT", W * 0.5f, titleY, titleScale, white);
+    Engine::PixelFont::drawStringCentered(m_renderer, "BREAKOUT", W * 0.5f, titleY, titleScale, white);
 
-    float promptScale = 6.f;
-    float promptY     = titleY + titleScale * 5.f + 40.f;
-    Engine::SegmentFont::drawStringCentered(m_renderer, "PRESS SPACE", W * 0.5f, promptY, promptScale, gray);
+    float promptScale = 4.f;
+    float promptY     = titleY + 7.f * titleScale + 40.f;
+    Engine::PixelFont::drawStringCentered(m_renderer, "PRESS SPACE", W * 0.5f, promptY, promptScale, gray);
 }
 
 void BreakoutGame::renderPlaying() {
@@ -340,17 +341,17 @@ void BreakoutGame::renderGameOver() {
 
     m_renderer.drawRect(0.f, 0.f, W, H, dim);
 
-    float titleScale = 10.f;
+    float titleScale = 6.f;
     float titleY     = H * 0.3f;
-    Engine::SegmentFont::drawStringCentered(m_renderer, "GAME OVER", W * 0.5f, titleY, titleScale, red);
+    Engine::PixelFont::drawStringCentered(m_renderer, "GAME OVER", W * 0.5f, titleY, titleScale, red);
 
     float scoreScale = 8.f;
-    float scoreY     = titleY + titleScale * 5.f + 24.f;
+    float scoreY     = titleY + 7.f * titleScale + 24.f;
     Engine::SegmentFont::drawStringCentered(m_renderer, m_score, W * 0.5f, scoreY, scoreScale, white);
 
-    float promptScale = 6.f;
-    float promptY     = scoreY + scoreScale * 5.f + 24.f;
-    Engine::SegmentFont::drawStringCentered(m_renderer, "R TO RESTART", W * 0.5f, promptY, promptScale, gray);
+    float promptScale = 4.f;
+    float promptY     = scoreY + 5.f * scoreScale + 24.f;
+    Engine::PixelFont::drawStringCentered(m_renderer, "R TO RESTART", W * 0.5f, promptY, promptScale, gray);
 }
 
 void BreakoutGame::renderWinScreen() {
@@ -361,15 +362,15 @@ void BreakoutGame::renderWinScreen() {
 
     m_renderer.drawRect(0.f, 0.f, W, H, dim);
 
-    float titleScale = 10.f;
+    float titleScale = 6.f;
     float titleY     = H * 0.3f;
-    Engine::SegmentFont::drawStringCentered(m_renderer, "YOU WIN", W * 0.5f, titleY, titleScale, gold);
+    Engine::PixelFont::drawStringCentered(m_renderer, "YOU WIN", W * 0.5f, titleY, titleScale, gold);
 
     float scoreScale = 8.f;
-    float scoreY     = titleY + titleScale * 5.f + 24.f;
+    float scoreY     = titleY + 7.f * titleScale + 24.f;
     Engine::SegmentFont::drawStringCentered(m_renderer, m_score, W * 0.5f, scoreY, scoreScale, white);
 
-    float promptScale = 6.f;
-    float promptY     = scoreY + scoreScale * 5.f + 24.f;
-    Engine::SegmentFont::drawStringCentered(m_renderer, "R TO RESTART", W * 0.5f, promptY, promptScale, gray);
+    float promptScale = 4.f;
+    float promptY     = scoreY + 5.f * scoreScale + 24.f;
+    Engine::PixelFont::drawStringCentered(m_renderer, "R TO RESTART", W * 0.5f, promptY, promptScale, gray);
 }

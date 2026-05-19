@@ -5,6 +5,7 @@ add_library(engine STATIC
     renderer/Shader.cpp
     renderer/Renderer2D.cpp
     renderer/SegmentFont.cpp
+    renderer/PixelFont.cpp
     audio/AudioManager.cpp
 )
 
