@@ -25,14 +25,18 @@ inline constexpr int HOME_SLOT_COUNT = 5;
 
 enum class PlatformType { Log, Turtle };
 
+// frameFirst = left cap (log) or single tile (turtle)
+// frameMid   = middle segment (log); same as frameFirst for non-segmented types
+// frameLast  = right cap (log); same as frameFirst for non-segmented types
 struct PlatformTypeInfo {
-    int   tileWidth;
-    float r, g, b;
+    int frameFirst;
+    int frameMid;
+    int frameLast;
 };
 
 inline constexpr PlatformTypeInfo PLATFORM_TYPE_INFO[] = {
-    /* Log    */ { 3, 0.55f, 0.27f, 0.07f },
-    /* Turtle */ { 2, 0.20f, 0.55f, 0.20f },
+    /* Log    */ { 24, 25, 26 },  // row 3 cols 0-2 (0-indexed)
+    /* Turtle */ { 17, 17, 17 },  // row 2 col 1 (0-indexed)
 };
 
 struct RiverLaneConfig {
@@ -40,16 +44,17 @@ struct RiverLaneConfig {
     int          direction;
     float        speed;
     PlatformType type;
+    int          tileWidth;  // tiles wide; controls log length via extra middle segments
     int          count;
     float        spacing;
 };
 
 inline constexpr RiverLaneConfig RIVER_LANE_CONFIGS[] = {
-    { 1,  1,  70.f, PlatformType::Log,    3, 280.f },
-    { 2, -1,  90.f, PlatformType::Turtle, 3, 230.f },
-    { 3,  1, 120.f, PlatformType::Log,    2, 320.f },
-    { 4, -1,  60.f, PlatformType::Turtle, 3, 220.f },
-    { 5,  1,  80.f, PlatformType::Log,    2, 350.f },
+    { 1,  1,  70.f, PlatformType::Log,    3, 3, 280.f },  // medium logs
+    { 2, -1,  90.f, PlatformType::Turtle, 2, 3, 230.f },  // turtle pairs
+    { 3,  1, 120.f, PlatformType::Log,    2, 2, 320.f },  // short logs (fast)
+    { 4, -1,  60.f, PlatformType::Turtle, 2, 3, 220.f },  // turtle pairs
+    { 5,  1,  80.f, PlatformType::Log,    4, 2, 350.f },  // long logs
 };
 inline constexpr int RIVER_LANE_COUNT = 5;
 

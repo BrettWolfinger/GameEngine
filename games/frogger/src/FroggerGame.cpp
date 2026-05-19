@@ -25,7 +25,7 @@ FroggerGame::FroggerGame()
             float startX = static_cast<float>(i) * lane.spacing;
             if (lane.direction < 0)
                 startX = W - startX;
-            m_platforms.emplace_back(startX, lane.row, lane.type, lane.speed, lane.direction);
+            m_platforms.emplace_back(startX, lane.row, lane.type, lane.tileWidth, lane.speed, lane.direction);
         }
     }
 }
