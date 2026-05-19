@@ -16,6 +16,8 @@ static constexpr float PADDLE_H       = 14.f;
 static constexpr float PADDLE_Y       = 550.f;
 static constexpr float PADDLE_SPEED   = 500.f;
 
+static constexpr float PADDLE_W_NARROW = 50.f;
+
 static constexpr float BALL_SIZE      = 10.f;
 static constexpr float BALL_SPEED     = 280.f;
 static constexpr float MAX_SPEED      = 600.f;
@@ -76,6 +78,7 @@ void BreakoutGame::resetGame() {
     m_score           = 0;
     m_lives           = 3;
     m_bricksDestroyed = 0;
+    m_ceilingHit      = false;
     m_paddle          = { W * 0.5f - PADDLE_W * 0.5f, PADDLE_Y, PADDLE_W, PADDLE_H };
     initBricks();
     resetBall();
@@ -165,6 +168,12 @@ void BreakoutGame::updatePlaying(float dt) {
         m_ball.y  = 0.f;
         m_ball.vy = std::abs(m_ball.vy);
         Engine::AudioManager::playTone(240.f, 0.04f);
+        if (!m_ceilingHit) {
+            m_ceilingHit    = true;
+            float cx        = m_paddle.x + m_paddle.w * 0.5f;
+            m_paddle.w      = PADDLE_W_NARROW;
+            m_paddle.x      = std::clamp(cx - m_paddle.w * 0.5f, 0.f, W - m_paddle.w);
+        }
     }
 
     // Ball lost off bottom

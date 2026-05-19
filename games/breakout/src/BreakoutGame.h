@@ -50,7 +50,8 @@ private:
 
     int   m_score    = 0;
     int   m_lives    = 3;
-    bool  m_ballHeld = true;
+    bool  m_ballHeld   = true;
+    bool  m_ceilingHit = false;
     int   m_bricksDestroyed = 0;
 
     GameState m_state = GameState::TitleScreen;
