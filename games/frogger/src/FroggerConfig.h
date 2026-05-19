@@ -20,3 +20,36 @@ inline constexpr int ROAD_LAST_ROW   = 11;
 
 inline constexpr int HOME_SLOTS[]    = { 1, 3, 6, 9, 11 };
 inline constexpr int HOME_SLOT_COUNT = 5;
+
+// ---------- Vehicles ----------
+
+enum class VehicleType { Car, RaceCar, Truck };
+
+struct VehicleTypeInfo {
+    int spriteFrame;  // row-major frame index into the sprite sheet
+    int tileWidth;    // width in tiles (Truck = 2, others = 1)
+};
+
+inline constexpr VehicleTypeInfo VEHICLE_TYPE_INFO[] = {
+    /* Car     */ { 48, 1 },  // sheet row 6, col 0
+    /* RaceCar */ { 58, 1 },  // sheet row 7, col 2
+    /* Truck   */ { 50, 2 },  // sheet row 6, cols 2-3
+};
+
+struct LaneConfig {
+    int         row;
+    int         direction; // +1 = right, -1 = left
+    float       speed;     // pixels per second
+    VehicleType type;
+    int         count;
+    float       spacing;   // pixels between vehicle starts
+};
+
+inline constexpr LaneConfig LANE_CONFIGS[] = {
+    { 11, -1,  80.f, VehicleType::Car,    3, 250.f },
+    { 10,  1, 150.f, VehicleType::RaceCar,4, 200.f },
+    {  9, -1,  60.f, VehicleType::Truck,  2, 360.f },
+    {  8,  1, 100.f, VehicleType::Car,    3, 250.f },
+    {  7, -1, 130.f, VehicleType::RaceCar,3, 230.f },
+};
+inline constexpr int LANE_COUNT = 5;

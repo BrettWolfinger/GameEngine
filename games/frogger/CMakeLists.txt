@@ -2,6 +2,7 @@ add_executable(frogger
     src/main.cpp
     src/FroggerGame.cpp
     src/Frog.cpp
+    src/Vehicle.cpp
 )
 
 target_include_directories(frogger PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)

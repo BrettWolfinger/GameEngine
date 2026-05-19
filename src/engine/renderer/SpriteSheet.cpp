@@ -26,4 +26,19 @@ UVRect SpriteSheet::getFrameUVs(int frameIndex) const {
     };
 }
 
+UVRect SpriteSheet::getSpanUVs(int frameIndex, int widthInCells) const {
+    const int col = frameIndex % m_cols;
+    const int row = frameIndex / m_cols;
+
+    const float fw = 1.f / static_cast<float>(m_cols);
+    const float fh = 1.f / static_cast<float>(m_rows);
+
+    return UVRect{
+        col                  * fw,
+        row                  * fh,
+        (col + widthInCells) * fw,
+        (row + 1)            * fh,
+    };
+}
+
 } // namespace Engine
