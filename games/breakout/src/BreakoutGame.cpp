@@ -81,12 +81,36 @@ void BreakoutGame::resetGame() {
     m_state = GameState::Playing;
 }
 
+#ifdef ENABLE_DEV_KEYS
+void BreakoutGame::updateDevKeys() {
+    // F1: title  F2: start game  F3: game over  F4: win screen  F5: clear all bricks  F6: lose a life
+    if (Engine::Input::isKeyPressed(GLFW_KEY_F1)) { m_state = GameState::TitleScreen; return; }
+    if (Engine::Input::isKeyPressed(GLFW_KEY_F2)) { resetGame(); return; }
+    if (Engine::Input::isKeyPressed(GLFW_KEY_F3)) { m_state = GameState::GameOver;    return; }
+    if (Engine::Input::isKeyPressed(GLFW_KEY_F4)) { m_state = GameState::WinScreen;   return; }
+    if (Engine::Input::isKeyPressed(GLFW_KEY_F5)) {
+        for (auto& b : m_bricks) b.alive = false;
+        m_state = GameState::WinScreen;
+        return;
+    }
+    if (Engine::Input::isKeyPressed(GLFW_KEY_F6)) {
+        --m_lives;
+        if (m_lives <= 0) m_state = GameState::GameOver;
+        else resetBall();
+    }
+}
+#endif
+
 // ---------------------------------------------------------------------------
 // onUpdate
 // ---------------------------------------------------------------------------
 void BreakoutGame::onUpdate(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q))
         quit();
+
+#ifdef ENABLE_DEV_KEYS
+    updateDevKeys();
+#endif
 
     switch (m_state) {
         case GameState::TitleScreen: updateTitleScreen(); break;
