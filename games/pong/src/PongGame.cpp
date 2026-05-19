@@ -1,5 +1,5 @@
 #include "PongGame.h"
-#include "SegmentRenderer.h"
+#include <engine/renderer/SegmentFont.h>
 #include <engine/core/Input.h>
 #include <engine/audio/AudioManager.h>
 #include <GLFW/glfw3.h>
@@ -120,10 +120,13 @@ void PongGame::updateModeSelect() {
 
     bool startGame = false;
     if (Engine::Input::isKeyPressed(GLFW_KEY_ENTER) ||
-        Engine::Input::isKeyPressed(GLFW_KEY_KP_ENTER)) {
+        Engine::Input::isKeyPressed(GLFW_KEY_KP_ENTER) || // numpad Enter
+
+        Engine::Input::isKeyPressed(GLFW_KEY_1)) {
         m_singlePlayer = true;
         startGame = true;
-    } else if (Engine::Input::isKeyPressed(GLFW_KEY_SPACE)) {
+    } else if (Engine::Input::isKeyPressed(GLFW_KEY_SPACE) ||
+               Engine::Input::isKeyPressed(GLFW_KEY_2)) {
         m_singlePlayer = false;
         startGame = true;
     }
@@ -231,14 +234,15 @@ void PongGame::renderModeSelect() {
     float s  = 14.f;
     float cy = H * 0.5f - s * 2.5f;
 
-    drawNP(m_renderer, 1, W * 0.25f, cy, s, white);
-    drawNP(m_renderer, 2, W * 0.75f, cy, s, white);
+    Engine::SegmentFont::drawStringCentered(m_renderer, "1P", W * 0.25f, cy, s, white);
+    Engine::SegmentFont::drawStringCentered(m_renderer, "2P", W * 0.75f, cy, s, white);
 
     m_renderer.drawRect(W * 0.5f - 2.f, cy - 20.f, 4.f, s * 5.f + 40.f, gray);
 
+    float hs    = 5.f;
     float hintY = cy + s * 5.f + 16.f;
-    m_renderer.drawRect(W * 0.25f - 36.f, hintY, 72.f, 8.f, gray);  // SPACE
-    m_renderer.drawRect(W * 0.75f - 36.f, hintY, 72.f, 8.f, white); // ENTER
+    Engine::SegmentFont::drawStringCentered(m_renderer, "SPACE", W * 0.25f, hintY, hs, gray);
+    Engine::SegmentFont::drawStringCentered(m_renderer, "ENTER", W * 0.75f, hintY, hs, gray);
 }
 
 void PongGame::renderWinScreen() {
@@ -249,8 +253,8 @@ void PongGame::renderWinScreen() {
 
     m_renderer.drawRect(0.f, 0.f, W, H, dim);
 
-    drawNumber(m_renderer, m_scoreLeft,  W * 0.25f, 30.f, 10.f, gray);
-    drawNumber(m_renderer, m_scoreRight, W * 0.75f, 30.f, 10.f, gray);
+    Engine::SegmentFont::drawStringCentered(m_renderer, m_scoreLeft,  W * 0.25f, 30.f, 10.f, gray);
+    Engine::SegmentFont::drawStringCentered(m_renderer, m_scoreRight, W * 0.75f, 30.f, 10.f, gray);
 
     float digitScale = 28.f;
     float digitCX    = W * 0.5f;
@@ -260,7 +264,7 @@ void PongGame::renderWinScreen() {
     float bracketGap = digitScale * 3.f * 0.5f + 20.f;
     m_renderer.drawRect(digitCX - bracketGap - barW, digitY - 4.f, barW, barH, gold);
     m_renderer.drawRect(digitCX + bracketGap,        digitY - 4.f, barW, barH, gold);
-    drawNumber(m_renderer, m_winner, digitCX, digitY, digitScale, gold);
+    Engine::SegmentFont::drawStringCentered(m_renderer, m_winner, digitCX, digitY, digitScale, gold);
 
     float labelY = digitY - 24.f;
     float lbW = 12.f, lbH = 6.f, lbGap = 6.f;
@@ -289,9 +293,9 @@ void PongGame::renderPlaying() {
     m_renderer.drawRect(m_right.x, m_right.y, m_right.width, m_right.height, white);
     m_renderer.drawRect(m_ball.x,  m_ball.y,  m_ball.size,   m_ball.size,    white);
 
-    drawNumber(m_renderer, m_scoreLeft,  W * 0.25f, 30.f, 10.f, white);
-    drawNumber(m_renderer, m_scoreRight, W * 0.75f, 30.f, 10.f, white);
+    Engine::SegmentFont::drawStringCentered(m_renderer, m_scoreLeft,  W * 0.25f, 30.f, 10.f, white);
+    Engine::SegmentFont::drawStringCentered(m_renderer, m_scoreRight, W * 0.75f, 30.f, 10.f, white);
 
     if (m_countdown > 0.f)
-        drawNumber(m_renderer, static_cast<int>(m_countdown) + 1, W * 0.5f, H * 0.5f - 25.f, 14.f, white);
+        Engine::SegmentFont::drawStringCentered(m_renderer, static_cast<int>(m_countdown) + 1, W * 0.5f, H * 0.5f - 25.f, 14.f, white);
 }
