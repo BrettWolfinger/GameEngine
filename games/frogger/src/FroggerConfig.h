@@ -21,6 +21,38 @@ inline constexpr int ROAD_LAST_ROW   = 11;
 inline constexpr int HOME_SLOTS[]    = { 1, 3, 6, 9, 11 };
 inline constexpr int HOME_SLOT_COUNT = 5;
 
+// ---------- Platforms (river) ----------
+
+enum class PlatformType { Log, Turtle };
+
+struct PlatformTypeInfo {
+    int   tileWidth;
+    float r, g, b;
+};
+
+inline constexpr PlatformTypeInfo PLATFORM_TYPE_INFO[] = {
+    /* Log    */ { 3, 0.55f, 0.27f, 0.07f },
+    /* Turtle */ { 2, 0.20f, 0.55f, 0.20f },
+};
+
+struct RiverLaneConfig {
+    int          row;
+    int          direction;
+    float        speed;
+    PlatformType type;
+    int          count;
+    float        spacing;
+};
+
+inline constexpr RiverLaneConfig RIVER_LANE_CONFIGS[] = {
+    { 1,  1,  70.f, PlatformType::Log,    3, 280.f },
+    { 2, -1,  90.f, PlatformType::Turtle, 3, 230.f },
+    { 3,  1, 120.f, PlatformType::Log,    2, 320.f },
+    { 4, -1,  60.f, PlatformType::Turtle, 3, 220.f },
+    { 5,  1,  80.f, PlatformType::Log,    2, 350.f },
+};
+inline constexpr int RIVER_LANE_COUNT = 5;
+
 // ---------- Vehicles ----------
 
 enum class VehicleType { Car, RaceCar, Truck };

@@ -4,6 +4,7 @@
 #include <engine/renderer/SpriteSheet.h>
 #include "Frog.h"
 #include "Vehicle.h"
+#include "Platform.h"
 #include <memory>
 #include <optional>
 #include <vector>
@@ -23,4 +24,5 @@ private:
     std::shared_ptr<Engine::SpriteSheet> m_sheet;
     std::optional<Frog>                  m_frog;
     std::vector<Vehicle>                 m_vehicles;
+    std::vector<Platform>                m_platforms;
 };
