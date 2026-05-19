@@ -3,6 +3,7 @@
 #include <engine/core/SaveData.h>
 #include <engine/renderer/Renderer2D.h>
 #include <array>
+#include <string_view>
 #include <glm/glm.hpp>
 
 struct Brick { float x, y, w, h; bool alive; glm::vec4 color; int points; };
@@ -36,6 +37,7 @@ private:
 
     void renderTitleScreen();
     void renderPlaying();
+    void renderEndScreen(std::string_view title, const glm::vec4& titleColor);
     void renderGameOver();
     void renderWinScreen();
 

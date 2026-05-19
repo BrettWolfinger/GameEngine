@@ -361,9 +361,8 @@ void BreakoutGame::renderPlaying() {
     Engine::SegmentFont::drawStringCentered(m_renderer, m_lives,     W * 0.75f, 10.f, hudScale, white);
 }
 
-void BreakoutGame::renderGameOver() {
+void BreakoutGame::renderEndScreen(std::string_view title, const glm::vec4& titleColor) {
     const glm::vec4 white { 1.f,   1.f,   1.f,  1.f };
-    const glm::vec4 red   { 0.95f, 0.2f,  0.2f, 1.f };
     const glm::vec4 gold  { 1.f,   0.85f, 0.1f, 1.f };
     const glm::vec4 gray  { 0.4f,  0.4f,  0.4f, 1.f };
     const glm::vec4 dim   { 0.08f, 0.08f, 0.08f, 1.f };
@@ -372,7 +371,7 @@ void BreakoutGame::renderGameOver() {
 
     float titleScale = 6.f;
     float titleY     = H * 0.3f;
-    Engine::PixelFont::drawStringCentered(m_renderer, "GAME OVER", W * 0.5f, titleY, titleScale, red);
+    Engine::PixelFont::drawStringCentered(m_renderer, title, W * 0.5f, titleY, titleScale, titleColor);
 
     float scoreScale = 8.f;
     float scoreY     = titleY + 7.f * titleScale + 24.f;
@@ -388,28 +387,10 @@ void BreakoutGame::renderGameOver() {
     Engine::PixelFont::drawStringCentered(m_renderer, "R TO RESTART", W * 0.5f, promptY, promptScale, gray);
 }
 
+void BreakoutGame::renderGameOver() {
+    renderEndScreen("GAME OVER", { 0.95f, 0.2f, 0.2f, 1.f });
+}
+
 void BreakoutGame::renderWinScreen() {
-    const glm::vec4 white  { 1.f,   1.f,   1.f,  1.f };
-    const glm::vec4 gold   { 1.f,   0.85f, 0.1f, 1.f };
-    const glm::vec4 gray   { 0.4f,  0.4f,  0.4f, 1.f };
-    const glm::vec4 dim    { 0.08f, 0.08f, 0.08f, 1.f };
-
-    m_renderer.drawRect(0.f, 0.f, W, H, dim);
-
-    float titleScale = 6.f;
-    float titleY     = H * 0.3f;
-    Engine::PixelFont::drawStringCentered(m_renderer, "YOU WIN", W * 0.5f, titleY, titleScale, gold);
-
-    float scoreScale = 8.f;
-    float scoreY     = titleY + 7.f * titleScale + 24.f;
-    Engine::SegmentFont::drawStringCentered(m_renderer, m_score, W * 0.5f, scoreY, scoreScale, white);
-
-    if (m_newHighScore) {
-        float newBestY = scoreY + 5.f * scoreScale + 16.f;
-        Engine::PixelFont::drawStringCentered(m_renderer, "NEW HIGH SCORE", W * 0.5f, newBestY, 3.f, gold);
-    }
-
-    float promptScale = 4.f;
-    float promptY     = scoreY + 5.f * scoreScale + (m_newHighScore ? 42.f : 24.f);
-    Engine::PixelFont::drawStringCentered(m_renderer, "R TO RESTART", W * 0.5f, promptY, promptScale, gray);
+    renderEndScreen("YOU WIN", { 1.f, 0.85f, 0.1f, 1.f });
 }
