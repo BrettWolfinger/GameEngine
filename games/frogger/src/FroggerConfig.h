@@ -21,6 +21,43 @@ inline constexpr int ROAD_LAST_ROW   = 11;
 inline constexpr int HOME_SLOTS[]    = { 1, 3, 6, 9, 11 };
 inline constexpr int HOME_SLOT_COUNT = 5;
 
+// ---------- Platforms (river) ----------
+
+enum class PlatformType { Log, Turtle };
+
+// frameFirst = left cap (log) or single tile (turtle)
+// frameMid   = middle segment (log); same as frameFirst for non-segmented types
+// frameLast  = right cap (log); same as frameFirst for non-segmented types
+struct PlatformTypeInfo {
+    int frameFirst;
+    int frameMid;
+    int frameLast;
+};
+
+inline constexpr PlatformTypeInfo PLATFORM_TYPE_INFO[] = {
+    /* Log    */ { 24, 25, 26 },  // row 3 cols 0-2 (0-indexed)
+    /* Turtle */ { 17, 17, 17 },  // row 2 col 1 (0-indexed)
+};
+
+struct RiverLaneConfig {
+    int          row;
+    int          direction;
+    float        speed;
+    PlatformType type;
+    int          tileWidth;  // tiles wide; controls log length via extra middle segments
+    int          count;
+    float        spacing;
+};
+
+inline constexpr RiverLaneConfig RIVER_LANE_CONFIGS[] = {
+    { 1,  1,  70.f, PlatformType::Log,    3, 3, 280.f },  // medium logs
+    { 2, -1,  90.f, PlatformType::Turtle, 2, 3, 230.f },  // turtle pairs
+    { 3,  1, 120.f, PlatformType::Log,    2, 2, 320.f },  // short logs (fast)
+    { 4, -1,  60.f, PlatformType::Turtle, 2, 3, 220.f },  // turtle pairs
+    { 5,  1,  80.f, PlatformType::Log,    4, 2, 350.f },  // long logs
+};
+inline constexpr int RIVER_LANE_COUNT = 5;
+
 // ---------- Vehicles ----------
 
 enum class VehicleType { Car, RaceCar, Truck };

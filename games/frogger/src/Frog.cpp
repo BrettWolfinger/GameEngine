@@ -24,12 +24,35 @@ Frog::Frog(std::shared_ptr<Engine::SpriteSheet> sheet)
 }
 
 void Frog::reset() {
-    m_col      = 6;
-    m_row      = 13;
-    m_angle    = 3.14159265f;
-    m_hopping  = false;
-    m_hopTimer = 0.f;
+    m_col        = 6;
+    m_row        = 13;
+    m_angle      = 3.14159265f;
+    m_hopping    = false;
+    m_hopTimer   = 0.f;
+    m_rideOffset = 0.f;
     m_animator.setClip("idle");
+}
+
+void Frog::teleport(int col, int row) {
+    m_col        = col;
+    m_row        = row;
+    m_angle      = 3.14159265f;
+    m_hopping    = false;
+    m_hopTimer   = 0.f;
+    m_rideOffset = 0.f;
+    m_animator.setClip("idle");
+}
+
+void Frog::applyRide(float dx) {
+    m_rideOffset += dx;
+    while (m_rideOffset >= static_cast<float>(TILE)) {
+        ++m_col;
+        m_rideOffset -= static_cast<float>(TILE);
+    }
+    while (m_rideOffset <= -static_cast<float>(TILE)) {
+        --m_col;
+        m_rideOffset += static_cast<float>(TILE);
+    }
 }
 
 void Frog::update(float dt) {
@@ -47,6 +70,7 @@ void Frog::update(float dt) {
         if (Engine::Input::isKeyPressed(GLFW_KEY_RIGHT) || Engine::Input::isKeyPressed(GLFW_KEY_D)) dc =  1;
 
         if (dc != 0 || dr != 0) {
+            m_rideOffset = 0.f;
             m_col = std::clamp(m_col + dc, 0, COLS - 1);
             m_row = std::clamp(m_row + dr, 0, ROWS - 1);
             m_hopping  = true;
@@ -63,7 +87,7 @@ void Frog::update(float dt) {
 }
 
 void Frog::render(Engine::Renderer2D& renderer) const {
-    const float x = static_cast<float>(m_col * TILE);
+    const float x = pixelX();
     const float y = static_cast<float>(m_row * TILE);
     const Engine::UVRect uvs = m_animator.currentFrameUVs();
     renderer.drawTexturedRect(x, y, TILE, TILE,
