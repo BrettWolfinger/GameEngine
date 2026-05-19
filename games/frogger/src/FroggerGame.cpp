@@ -18,6 +18,19 @@ static constexpr int H        = ROWS * TILE;      // 672
 static constexpr int SHEET_COLS = 8;
 static constexpr int SHEET_ROWS = 16;
 
+// Scene zone layout (rows, top=0)
+static constexpr int HOME_ROW        = 0;
+static constexpr int RIVER_FIRST_ROW = 1;
+static constexpr int RIVER_LAST_ROW  = 5;
+static constexpr int MEDIAN_ROW      = 6;
+static constexpr int ROAD_FIRST_ROW  = 7;
+static constexpr int ROAD_LAST_ROW   = 11;
+// Rows 12-13 = safe starting area
+
+// Home goal slot positions (col indices, 5 evenly-ish spaced across 13 cols)
+static constexpr int HOME_SLOTS[]  = { 1, 3, 6, 9, 11 };
+static constexpr int HOME_SLOT_COUNT = 5;
+
 // Hop animation: 4 frames x 0.1s each
 static constexpr int   HOP_FRAMES   = 4;
 static constexpr float HOP_FRAME_DT = 0.1f;
@@ -81,8 +94,30 @@ void FroggerGame::onUpdate(float dt) {
     m_animator->update(dt);
 }
 
+void FroggerGame::renderBackground() {
+    const glm::vec4 grass  { 0.10f, 0.35f, 0.10f, 1.f };
+    const glm::vec4 river  { 0.05f, 0.15f, 0.45f, 1.f };
+    const glm::vec4 road   { 0.18f, 0.18f, 0.18f, 1.f };
+    const glm::vec4 goal   { 0.03f, 0.10f, 0.03f, 1.f }; // dark slots in home row
+
+    for (int row = 0; row < ROWS; ++row) {
+        const float ry = static_cast<float>(row * TILE);
+        glm::vec4 color;
+        if      (row >= RIVER_FIRST_ROW && row <= RIVER_LAST_ROW) color = river;
+        else if (row >= ROAD_FIRST_ROW  && row <= ROAD_LAST_ROW)  color = road;
+        else                                                        color = grass;
+        m_renderer.drawRect(0.f, ry, static_cast<float>(W), static_cast<float>(TILE), color);
+    }
+
+    // Goal slots in the home row
+    for (int i = 0; i < HOME_SLOT_COUNT; ++i)
+        m_renderer.drawRect(static_cast<float>(HOME_SLOTS[i] * TILE), 0.f,
+                            static_cast<float>(TILE), static_cast<float>(TILE), goal);
+}
+
 void FroggerGame::onRender() {
     m_renderer.beginScene(W, H);
+    renderBackground();
 
     const float x = static_cast<float>(m_frog.col * TILE);
     const float y = static_cast<float>(m_frog.row * TILE);
