@@ -53,8 +53,9 @@ private:
     int   m_score     = 0;
     int   m_highScore = 0;
     int   m_lives     = 3;
-    bool  m_ballHeld   = true;
-    bool  m_ceilingHit = false;
+    bool  m_ballHeld      = true;
+    bool  m_ceilingHit    = false;
+    bool  m_newHighScore  = false;
     int   m_bricksDestroyed = 0;
 
     GameState m_state = GameState::TitleScreen;

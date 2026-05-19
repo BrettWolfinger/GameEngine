@@ -82,6 +82,7 @@ void BreakoutGame::resetGame() {
     m_lives           = 3;
     m_bricksDestroyed = 0;
     m_ceilingHit      = false;
+    m_newHighScore    = false;
     // m_highScore intentionally not reset — persists across sessions
     m_paddle          = { W * 0.5f - PADDLE_W * 0.5f, PADDLE_Y, PADDLE_W, PADDLE_H };
     initBricks();
@@ -105,6 +106,11 @@ void BreakoutGame::updateDevKeys() {
         --m_lives;
         if (m_lives <= 0) m_state = GameState::GameOver;
         else resetBall();
+    }
+    if (Engine::Input::isKeyPressed(GLFW_KEY_F7)) {
+        m_highScore = 0;
+        m_saveData.setInt("high_score", 0);
+        m_saveData.save();
     }
 }
 #endif
@@ -185,11 +191,6 @@ void BreakoutGame::updatePlaying(float dt) {
         --m_lives;
         Engine::AudioManager::playTone(120.f, 0.3f);
         if (m_lives <= 0) {
-            if (m_score > m_highScore) {
-                m_highScore = m_score;
-                m_saveData.setInt("high_score", m_highScore);
-                m_saveData.save();
-            }
             m_state = GameState::GameOver;
         } else {
             resetBall();
@@ -271,6 +272,13 @@ void BreakoutGame::updatePlaying(float dt) {
         m_score += b.points;
         ++m_bricksDestroyed;
 
+        if (m_score > m_highScore) {
+            m_highScore    = m_score;
+            m_newHighScore = true;
+            m_saveData.setInt("high_score", m_highScore);
+            m_saveData.save();
+        }
+
         // Speed increase every BRICKS_PER_SPEED_STEP bricks
         if (m_bricksDestroyed % BRICKS_PER_SPEED_STEP == 0) {
             float speed = std::sqrt(m_ball.vx * m_ball.vx + m_ball.vy * m_ball.vy);
@@ -288,14 +296,8 @@ void BreakoutGame::updatePlaying(float dt) {
         for (const auto& brick : m_bricks) {
             if (brick.alive) { anyAlive = true; break; }
         }
-        if (!anyAlive) {
-            if (m_score > m_highScore) {
-                m_highScore = m_score;
-                m_saveData.setInt("high_score", m_highScore);
-                m_saveData.save();
-            }
+        if (!anyAlive)
             m_state = GameState::WinScreen;
-        }
     }
 }
 
@@ -362,6 +364,7 @@ void BreakoutGame::renderPlaying() {
 void BreakoutGame::renderGameOver() {
     const glm::vec4 white { 1.f,   1.f,   1.f,  1.f };
     const glm::vec4 red   { 0.95f, 0.2f,  0.2f, 1.f };
+    const glm::vec4 gold  { 1.f,   0.85f, 0.1f, 1.f };
     const glm::vec4 gray  { 0.4f,  0.4f,  0.4f, 1.f };
     const glm::vec4 dim   { 0.08f, 0.08f, 0.08f, 1.f };
 
@@ -375,8 +378,13 @@ void BreakoutGame::renderGameOver() {
     float scoreY     = titleY + 7.f * titleScale + 24.f;
     Engine::SegmentFont::drawStringCentered(m_renderer, m_score, W * 0.5f, scoreY, scoreScale, white);
 
+    if (m_newHighScore) {
+        float newBestY = scoreY + 5.f * scoreScale + 16.f;
+        Engine::PixelFont::drawStringCentered(m_renderer, "NEW HIGH SCORE", W * 0.5f, newBestY, 3.f, gold);
+    }
+
     float promptScale = 4.f;
-    float promptY     = scoreY + 5.f * scoreScale + 24.f;
+    float promptY     = scoreY + 5.f * scoreScale + (m_newHighScore ? 42.f : 24.f);
     Engine::PixelFont::drawStringCentered(m_renderer, "R TO RESTART", W * 0.5f, promptY, promptScale, gray);
 }
 
@@ -396,7 +404,12 @@ void BreakoutGame::renderWinScreen() {
     float scoreY     = titleY + 7.f * titleScale + 24.f;
     Engine::SegmentFont::drawStringCentered(m_renderer, m_score, W * 0.5f, scoreY, scoreScale, white);
 
+    if (m_newHighScore) {
+        float newBestY = scoreY + 5.f * scoreScale + 16.f;
+        Engine::PixelFont::drawStringCentered(m_renderer, "NEW HIGH SCORE", W * 0.5f, newBestY, 3.f, gold);
+    }
+
     float promptScale = 4.f;
-    float promptY     = scoreY + 5.f * scoreScale + 24.f;
+    float promptY     = scoreY + 5.f * scoreScale + (m_newHighScore ? 42.f : 24.f);
     Engine::PixelFont::drawStringCentered(m_renderer, "R TO RESTART", W * 0.5f, promptY, promptScale, gray);
 }
