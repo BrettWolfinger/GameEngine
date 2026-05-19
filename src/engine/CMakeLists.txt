@@ -5,6 +5,9 @@ add_library(engine STATIC
     core/SaveData.cpp
     renderer/Shader.cpp
     renderer/Renderer2D.cpp
+    renderer/Texture.cpp
+    renderer/SpriteSheet.cpp
+    renderer/SpriteAnimator.cpp
     renderer/SegmentFont.cpp
     renderer/PixelFont.cpp
     audio/AudioManager.cpp
@@ -16,6 +19,7 @@ target_include_directories(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
 target_compile_definitions(engine PUBLIC GLFW_INCLUDE_NONE)
 
 target_include_directories(engine PRIVATE ${miniaudio_SOURCE_DIR})
+target_include_directories(engine PRIVATE ${stb_image_SOURCE_DIR})
 
 target_link_libraries(engine PUBLIC glad_gl glfw glm::glm)
 

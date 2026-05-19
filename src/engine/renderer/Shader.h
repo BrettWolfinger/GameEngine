@@ -12,6 +12,7 @@ public:
     void bind() const;
     void setMat4(const char* name, const glm::mat4& v) const;
     void setVec4(const char* name, const glm::vec4& v) const;
+    void setInt (const char* name, int v)              const;
 
 private:
     GLuint m_program = 0;
