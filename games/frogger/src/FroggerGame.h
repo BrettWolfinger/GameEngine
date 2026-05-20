@@ -36,4 +36,7 @@ private:
     bool                                 m_allHomesFilled = false;
     int                                  m_lives = 3;
     GameState                            m_state = GameState::Playing;
+    float                                m_deathX     = 0.f;
+    float                                m_deathY     = 0.f;
+    float                                m_deathTimer = 0.f;
 };
