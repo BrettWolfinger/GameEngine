@@ -2,6 +2,7 @@
 #include "FroggerConfig.h"
 #include "Log.h"
 #include "Turtle.h"
+#include "Crocodile.h"
 #include <engine/renderer/Texture.h>
 #include <engine/core/Input.h>
 #include <engine/renderer/PixelFont.h>
@@ -38,6 +39,9 @@ FroggerGame::FroggerGame()
                     m_platforms.push_back(std::make_unique<Turtle>(
                         startX, lane.row, lane.tileWidth, lane.speed, lane.direction,
                         m_sheet, static_cast<float>(i) * 1.5f));
+                    break;
+                case PlatformType::Crocodile:
+                    m_platforms.push_back(std::make_unique<Crocodile>(startX, lane.row, lane.speed, lane.direction));
                     break;
             }
         }

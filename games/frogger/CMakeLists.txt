@@ -7,6 +7,7 @@ add_executable(frogger
     src/Platform.cpp
     src/Log.cpp
     src/Turtle.cpp
+    src/Crocodile.cpp
 )
 
 target_include_directories(frogger PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
