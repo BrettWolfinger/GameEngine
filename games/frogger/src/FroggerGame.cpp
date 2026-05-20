@@ -81,58 +81,68 @@ void FroggerGame::onUpdate(float dt) {
     for (auto& p : m_platforms)
         p.update(dt);
 
+    const int frogRow = m_frog->row();
+
+    if (frogRow == HOME_ROW) { checkHomeRow(); return; }
+    checkRiverZone(dt);
+    checkRoadZone();
+}
+
+void FroggerGame::checkHomeRow() {
+    int slotIdx = -1;
+    for (int i = 0; i < HOME_SLOT_COUNT; ++i)
+        if (m_frog->col() == HOME_SLOTS[i]) { slotIdx = i; break; }
+
+    if (slotIdx >= 0 && !m_filledSlots[slotIdx]) {
+        m_filledSlots[slotIdx] = true;
+        m_frog->reset();
+        m_allHomesFilled = true;
+        for (int i = 0; i < HOME_SLOT_COUNT; ++i)
+            if (!m_filledSlots[i]) { m_allHomesFilled = false; break; }
+        if (m_allHomesFilled)
+            m_state = GameState::Win;
+    } else {
+        die();
+    }
+}
+
+void FroggerGame::checkRiverZone(float dt) {
     const int   frogRow = m_frog->row();
     const float frogPx  = m_frog->pixelX();
 
-    // Home row: valid unfilled slot = success; anything else = death
-    if (frogRow == HOME_ROW) {
-        int slotIdx = -1;
-        for (int i = 0; i < HOME_SLOT_COUNT; ++i)
-            if (m_frog->col() == HOME_SLOTS[i]) { slotIdx = i; break; }
+    if (frogRow < RIVER_FIRST_ROW || frogRow > RIVER_LAST_ROW) return;
 
-        if (slotIdx >= 0 && !m_filledSlots[slotIdx]) {
-            m_filledSlots[slotIdx] = true;
-            m_frog->reset();
-            m_allHomesFilled = true;
-            for (int i = 0; i < HOME_SLOT_COUNT; ++i)
-                if (!m_filledSlots[i]) { m_allHomesFilled = false; break; }
-            if (m_allHomesFilled)
-                m_state = GameState::Win;
-        } else {
-            die();
-        }
-        return;
-    }
-
-    // River zone: must be on a platform or drown
-    if (frogRow >= RIVER_FIRST_ROW && frogRow <= RIVER_LAST_ROW) {
-        const Platform* riding = nullptr;
-        for (const auto& p : m_platforms) {
-            if (p.row() != frogRow) continue;
-            const float pw = static_cast<float>(p.tileWidth() * TILE);
-            if (frogPx < p.x() + pw && frogPx + TILE > p.x()) {
-                riding = &p;
-                break;
-            }
-        }
-        if (riding) {
-            m_frog->applyRide(riding->velocityX() * dt);
-            if (m_frog->col() < 0 || m_frog->col() >= COLS)
-                die();
-        } else {
-            die();
+    const Platform* riding = nullptr;
+    for (const auto& p : m_platforms) {
+        if (p.row() != frogRow) continue;
+        const float pw = static_cast<float>(p.tileWidth() * TILE);
+        if (frogPx < p.x() + pw && frogPx + TILE > p.x()) {
+            riding = &p;
+            break;
         }
     }
 
-    // Road zone: vehicle collision = death
-    if (frogRow >= ROAD_FIRST_ROW && frogRow <= ROAD_LAST_ROW) {
-        for (const auto& v : m_vehicles) {
-            if (v.row() != frogRow) continue;
-            const float vw = static_cast<float>(v.tileWidth() * TILE);
-            if (frogPx < v.x() + vw && frogPx + TILE > v.x()) {
-                die();
-                break;
-            }
+    if (riding) {
+        m_frog->applyRide(riding->velocityX() * dt);
+        if (m_frog->col() < 0 || m_frog->col() >= COLS)
+            die();
+    } else {
+        die();
+    }
+}
+
+void FroggerGame::checkRoadZone() {
+    const int   frogRow = m_frog->row();
+    const float frogPx  = m_frog->pixelX();
+
+    if (frogRow < ROAD_FIRST_ROW || frogRow > ROAD_LAST_ROW) return;
+
+    for (const auto& v : m_vehicles) {
+        if (v.row() != frogRow) continue;
+        const float vw = static_cast<float>(v.tileWidth() * TILE);
+        if (frogPx < v.x() + vw && frogPx + TILE > v.x()) {
+            die();
+            return;
         }
     }
 }

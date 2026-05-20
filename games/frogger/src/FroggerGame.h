@@ -24,6 +24,9 @@ private:
     void renderBackground();
     void renderHUD();
     void renderEndScreen(std::string_view title, const glm::vec4& titleColor);
+    void checkHomeRow();
+    void checkRiverZone(float dt);
+    void checkRoadZone();
     void die();
     void restartGame();
 
