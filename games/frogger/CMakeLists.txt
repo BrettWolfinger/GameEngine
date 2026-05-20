@@ -2,6 +2,7 @@ add_executable(frogger
     src/main.cpp
     src/FroggerGame.cpp
     src/Frog.cpp
+    src/LaneObject.cpp
     src/Vehicle.cpp
     src/Platform.cpp
 )
