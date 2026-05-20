@@ -3,6 +3,9 @@
 #include <engine/renderer/Texture.h>
 #include <engine/core/Input.h>
 #include <GLFW/glfw3.h>
+#include <glm/gtc/constants.hpp>
+
+static constexpr int HOME_FILLED_FRAME = 4;  // row 0 col 4 (0-indexed)
 
 FroggerGame::FroggerGame()
     : Engine::Application("Frogger", W, H)
@@ -49,7 +52,25 @@ void FroggerGame::onUpdate(float dt) {
     const int   frogRow = m_frog->row();
     const float frogPx  = m_frog->pixelX();
 
-    // River zone: frog must be on a platform or it drowns
+    // Home row: land on a valid unfilled slot or die
+    if (frogRow == HOME_ROW) {
+        int slotIdx = -1;
+        for (int i = 0; i < HOME_SLOT_COUNT; ++i) {
+            if (m_frog->col() == HOME_SLOTS[i]) { slotIdx = i; break; }
+        }
+        if (slotIdx >= 0 && !m_filledSlots[slotIdx]) {
+            m_filledSlots[slotIdx] = true;
+            m_frog->reset();
+            m_allHomesFilled = true;
+            for (int i = 0; i < HOME_SLOT_COUNT; ++i)
+                if (!m_filledSlots[i]) { m_allHomesFilled = false; break; }
+        } else {
+            m_frog->reset();
+        }
+        return;
+    }
+
+    // River zone: must be on a platform or drown
     if (frogRow >= RIVER_FIRST_ROW && frogRow <= RIVER_LAST_ROW) {
         const Platform* riding = nullptr;
         for (const auto& p : m_platforms) {
@@ -97,9 +118,21 @@ void FroggerGame::renderBackground() {
         m_renderer.drawRect(0.f, ry, static_cast<float>(W), static_cast<float>(TILE), color);
     }
 
+    // Empty home slots
     for (int i = 0; i < HOME_SLOT_COUNT; ++i)
         m_renderer.drawRect(static_cast<float>(HOME_SLOTS[i] * TILE), 0.f,
                             static_cast<float>(TILE), static_cast<float>(TILE), goal);
+
+    // Filled home slots — sprite from sheet
+    const Engine::UVRect uvs = m_sheet->getFrameUVs(HOME_FILLED_FRAME);
+    for (int i = 0; i < HOME_SLOT_COUNT; ++i) {
+        if (!m_filledSlots[i]) continue;
+        m_renderer.drawTexturedRect(static_cast<float>(HOME_SLOTS[i] * TILE), 0.f,
+                                    static_cast<float>(TILE), static_cast<float>(TILE),
+                                    m_sheet->texture(),
+                                    uvs.u0, uvs.v0, uvs.u1, uvs.v1,
+                                    glm::pi<float>());
+    }
 }
 
 void FroggerGame::onRender() {
