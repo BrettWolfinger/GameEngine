@@ -37,18 +37,19 @@ struct RiverLaneConfig {
     int          row;
     int          direction;
     float        speed;
-    PlatformType type;
-    int          tileWidth;  // tiles wide; controls log length via extra middle segments
+    PlatformType types[4];  // cycling sequence; only first typeCount entries are used
+    int          typeCount;
+    int          tileWidth;  // tiles wide; controls log length (Crocodile ignores this)
     int          count;
-    float        spacing;
+    float        spacing;   // must satisfy: count * spacing <= W + (tileWidth * TILE)
 };
 
 inline constexpr RiverLaneConfig RIVER_LANE_CONFIGS[] = {
-    { 1,  1,  70.f, PlatformType::Log,    3, 3, 280.f },  // medium logs
-    { 2, -1,  90.f, PlatformType::Turtle, 2, 3, 230.f },  // turtle pairs
-    { 3,  1, 100.f, PlatformType::Crocodile, 3, 2, 350.f }, // crocodiles
-    { 4, -1,  60.f, PlatformType::Turtle, 2, 3, 220.f },  // turtle pairs
-    { 5,  1,  80.f, PlatformType::Log,    4, 2, 350.f },  // long logs
+    { 1,  1,  70.f, { PlatformType::Log, PlatformType::Crocodile }, 2, 3, 3, 256.f }, // logs + crocs
+    { 2, -1,  90.f, { PlatformType::Turtle },                       1, 2, 3, 230.f }, // turtle pairs
+    { 3,  1, 100.f, { PlatformType::Crocodile },                    1, 3, 2, 350.f }, // crocodiles
+    { 4, -1,  60.f, { PlatformType::Turtle },                       1, 2, 3, 220.f }, // turtle pairs
+    { 5,  1,  80.f, { PlatformType::Log },                          1, 4, 2, 350.f }, // long logs
 };
 inline constexpr int RIVER_LANE_COUNT = 5;
 
