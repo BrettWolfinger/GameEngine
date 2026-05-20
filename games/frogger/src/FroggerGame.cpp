@@ -31,7 +31,7 @@ FroggerGame::FroggerGame()
             float startX = static_cast<float>(i) * lane.spacing;
             if (lane.direction < 0)
                 startX = W - startX;
-            switch (lane.type) {
+            switch (lane.types[i % lane.typeCount]) {
                 case PlatformType::Log:
                     m_platforms.push_back(std::make_unique<Log>(startX, lane.row, lane.tileWidth, lane.speed, lane.direction));
                     break;
