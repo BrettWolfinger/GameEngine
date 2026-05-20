@@ -83,9 +83,9 @@ void FroggerGame::onUpdate(float dt) {
 
     const int frogRow = m_frog->row();
 
-    if (frogRow == HOME_ROW) { checkHomeRow(); return; }
-    checkRiverZone(dt);
-    checkRoadZone();
+    if      (frogRow == HOME_ROW)                                     checkHomeRow();
+    else if (frogRow >= RIVER_FIRST_ROW && frogRow <= RIVER_LAST_ROW) checkRiverZone(dt);
+    else if (frogRow >= ROAD_FIRST_ROW  && frogRow <= ROAD_LAST_ROW)  checkRoadZone();
 }
 
 void FroggerGame::checkHomeRow() {
@@ -110,8 +110,6 @@ void FroggerGame::checkRiverZone(float dt) {
     const int   frogRow = m_frog->row();
     const float frogPx  = m_frog->pixelX();
 
-    if (frogRow < RIVER_FIRST_ROW || frogRow > RIVER_LAST_ROW) return;
-
     const Platform* riding = nullptr;
     for (const auto& p : m_platforms) {
         if (p.row() != frogRow) continue;
@@ -134,8 +132,6 @@ void FroggerGame::checkRiverZone(float dt) {
 void FroggerGame::checkRoadZone() {
     const int   frogRow = m_frog->row();
     const float frogPx  = m_frog->pixelX();
-
-    if (frogRow < ROAD_FIRST_ROW || frogRow > ROAD_LAST_ROW) return;
 
     for (const auto& v : m_vehicles) {
         if (v.row() != frogRow) continue;
