@@ -1,5 +1,7 @@
 #include "FroggerGame.h"
 #include "FroggerConfig.h"
+#include "Log.h"
+#include "Turtle.h"
 #include <engine/renderer/Texture.h>
 #include <engine/core/Input.h>
 #include <engine/renderer/PixelFont.h>
@@ -28,7 +30,16 @@ FroggerGame::FroggerGame()
             float startX = static_cast<float>(i) * lane.spacing;
             if (lane.direction < 0)
                 startX = W - startX;
-            m_platforms.emplace_back(startX, lane.row, lane.type, lane.tileWidth, lane.speed, lane.direction);
+            switch (lane.type) {
+                case PlatformType::Log:
+                    m_platforms.push_back(std::make_unique<Log>(startX, lane.row, lane.tileWidth, lane.speed, lane.direction));
+                    break;
+                case PlatformType::Turtle:
+                    m_platforms.push_back(std::make_unique<Turtle>(
+                        startX, lane.row, lane.tileWidth, lane.speed, lane.direction,
+                        m_sheet, static_cast<float>(i) * 1.5f));
+                    break;
+            }
         }
     }
 }
@@ -79,7 +90,7 @@ void FroggerGame::onUpdate(float dt) {
     for (auto& v : m_vehicles)
         v.update(dt);
     for (auto& p : m_platforms)
-        p.update(dt);
+        p->update(dt);
 
     const int frogRow = m_frog->row();
 
@@ -112,15 +123,15 @@ void FroggerGame::checkRiverZone(float dt) {
 
     const Platform* riding = nullptr;
     for (const auto& p : m_platforms) {
-        if (p.row() != frogRow) continue;
-        const float pw = static_cast<float>(p.tileWidth() * TILE);
-        if (frogPx < p.x() + pw && frogPx + TILE > p.x()) {
-            riding = &p;
+        if (p->row() != frogRow) continue;
+        const float pw = static_cast<float>(p->tileWidth() * TILE);
+        if (frogPx < p->x() + pw && frogPx + TILE > p->x()) {
+            riding = p.get();
             break;
         }
     }
 
-    if (riding) {
+    if (riding && riding->isSafe()) {
         m_frog->applyRide(riding->velocityX() * dt);
         if (m_frog->col() < 0 || m_frog->col() >= COLS)
             die();
@@ -201,7 +212,7 @@ void FroggerGame::onRender() {
     renderBackground();
 
     for (auto& p : m_platforms)
-        p.render(m_renderer, *m_sheet);
+        p->render(m_renderer, *m_sheet);
     for (auto& v : m_vehicles)
         v.render(m_renderer, *m_sheet);
 
