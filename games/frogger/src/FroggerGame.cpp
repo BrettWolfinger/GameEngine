@@ -35,7 +35,9 @@ FroggerGame::FroggerGame()
                     m_platforms.push_back(std::make_unique<Log>(startX, lane.row, lane.tileWidth, lane.speed, lane.direction));
                     break;
                 case PlatformType::Turtle:
-                    m_platforms.push_back(std::make_unique<Turtle>(startX, lane.row, lane.tileWidth, lane.speed, lane.direction));
+                    m_platforms.push_back(std::make_unique<Turtle>(
+                        startX, lane.row, lane.tileWidth, lane.speed, lane.direction,
+                        m_sheet, static_cast<float>(i) * 1.5f));
                     break;
             }
         }
