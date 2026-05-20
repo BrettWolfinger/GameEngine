@@ -39,7 +39,7 @@ Turtle::Turtle(float startX, int row, int tileWidth, float speed, int direction,
     m_animator.setClip("surfaced");
 }
 
-bool Turtle::isSafe() const {
+bool Turtle::isSafe(float /*frogPx*/) const {
     return m_state == TurtleState::Surfaced || m_state == TurtleState::Diving;
 }
 
