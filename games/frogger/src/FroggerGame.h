@@ -33,8 +33,8 @@ private:
     Engine::Renderer2D                   m_renderer;
     std::shared_ptr<Engine::SpriteSheet> m_sheet;
     std::optional<Frog>                  m_frog;
-    std::vector<Vehicle>                 m_vehicles;
-    std::vector<Platform>                m_platforms;
+    std::vector<Vehicle>                          m_vehicles;
+    std::vector<std::unique_ptr<Platform>>        m_platforms;
     bool                                 m_filledSlots[HOME_SLOT_COUNT] = {};
     bool                                 m_allHomesFilled = false;
     int                                  m_lives = 3;

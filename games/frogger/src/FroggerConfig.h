@@ -33,20 +33,6 @@ inline constexpr int LIVES_START = 3;
 
 enum class PlatformType { Log, Turtle };
 
-// frameFirst = left cap (log) or single tile (turtle)
-// frameMid   = middle segment (log); same as frameFirst for non-segmented types
-// frameLast  = right cap (log); same as frameFirst for non-segmented types
-struct PlatformTypeInfo {
-    int frameFirst;
-    int frameMid;
-    int frameLast;
-};
-
-inline constexpr PlatformTypeInfo PLATFORM_TYPE_INFO[] = {
-    /* Log    */ { 24, 25, 26 },  // row 3 cols 0-2 (0-indexed)
-    /* Turtle */ { 17, 17, 17 },  // row 2 col 1 (0-indexed)
-};
-
 struct RiverLaneConfig {
     int          row;
     int          direction;
