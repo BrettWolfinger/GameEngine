@@ -28,7 +28,7 @@ private:
     static constexpr int   MOUTH_SWIM_FRAMES[] = { 12, 13, 14, 15 };   // row 1 col 4-7
     static constexpr int   MOUTH_OPEN_COUNT    = 3;
     static constexpr int   MOUTH_SWIM_COUNT    = 4;
-    static constexpr float MOUTH_FRAME_DT      = 0.1f;
+    static constexpr float MOUTH_FRAME_DT      = 0.2f;
     static constexpr float CLOSED_DURATION     = 4.0f;
     static constexpr float OPEN_DURATION       = 3.0f;
 

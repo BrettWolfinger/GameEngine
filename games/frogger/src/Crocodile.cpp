@@ -8,7 +8,7 @@ Crocodile::Crocodile(float startX, int row, float speed, int direction, float mo
 {}
 
 bool Crocodile::isSafe(float frogPx) const {
-    if (m_mouthState == MouthState::Closed) return true;
+    if (m_mouthState != MouthState::Open) return true;
     const float headX = (m_direction > 0) ? m_x + 2.f * TILE : m_x;
     return !(frogPx < headX + TILE && frogPx + TILE > headX);
 }
