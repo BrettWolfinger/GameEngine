@@ -20,7 +20,7 @@ public:
 
 private:
     static constexpr int   HOP_FRAMES   = 4;
-    static constexpr float HOP_FRAME_DT = 0.1f;
+    static constexpr float HOP_FRAME_DT = 0.05f;
     static constexpr float HOP_DURATION = HOP_FRAMES * HOP_FRAME_DT;
 
     int   m_col        = 6;

@@ -25,4 +25,6 @@ private:
     std::optional<Frog>                  m_frog;
     std::vector<Vehicle>                 m_vehicles;
     std::vector<Platform>                m_platforms;
+    bool                                 m_filledSlots[HOME_SLOT_COUNT] = {};
+    bool                                 m_allHomesFilled = false;
 };
