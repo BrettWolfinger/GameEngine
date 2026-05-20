@@ -31,7 +31,7 @@ inline constexpr int LIVES_START = 3;
 
 // ---------- Platforms (river) ----------
 
-enum class PlatformType { Log, Turtle };
+enum class PlatformType { Log, Turtle, Crocodile };
 
 struct RiverLaneConfig {
     int          row;
@@ -46,7 +46,7 @@ struct RiverLaneConfig {
 inline constexpr RiverLaneConfig RIVER_LANE_CONFIGS[] = {
     { 1,  1,  70.f, PlatformType::Log,    3, 3, 280.f },  // medium logs
     { 2, -1,  90.f, PlatformType::Turtle, 2, 3, 230.f },  // turtle pairs
-    { 3,  1, 120.f, PlatformType::Log,    2, 2, 320.f },  // short logs (fast)
+    { 3,  1, 100.f, PlatformType::Crocodile, 3, 2, 350.f }, // crocodiles
     { 4, -1,  60.f, PlatformType::Turtle, 2, 3, 220.f },  // turtle pairs
     { 5,  1,  80.f, PlatformType::Log,    4, 2, 350.f },  // long logs
 };

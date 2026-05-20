@@ -11,7 +11,7 @@ public:
            std::shared_ptr<Engine::SpriteSheet> sheet, float phaseOffset = 0.f);
 
     void render(Engine::Renderer2D&, const Engine::SpriteSheet&) const override;
-    bool isSafe() const override;
+    bool isSafe(float frogPx) const override;
 
 protected:
     void onUpdate(float dt) override;
