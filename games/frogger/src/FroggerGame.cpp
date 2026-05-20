@@ -2,10 +2,12 @@
 #include "FroggerConfig.h"
 #include <engine/renderer/Texture.h>
 #include <engine/core/Input.h>
+#include <engine/renderer/PixelFont.h>
 #include <GLFW/glfw3.h>
 #include <glm/gtc/constants.hpp>
 
-static constexpr int HOME_FILLED_FRAME = 4;  // row 0 col 4 (0-indexed)
+static constexpr int HOME_FILLED_FRAME = 4;   // row 0 col 4 (0-indexed)
+static constexpr int LIVES_START       = 3;
 
 FroggerGame::FroggerGame()
     : Engine::Application("Frogger", W, H)
@@ -33,15 +35,40 @@ FroggerGame::FroggerGame()
     }
 }
 
+void FroggerGame::die() {
+    m_frog->reset();
+    if (--m_lives <= 0)
+        m_state = GameState::GameOver;
+}
+
+void FroggerGame::restartGame() {
+    m_lives          = LIVES_START;
+    m_allHomesFilled = false;
+    m_state          = GameState::Playing;
+    for (bool& s : m_filledSlots) s = false;
+    m_frog->reset();
+}
+
 void FroggerGame::onUpdate(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q))
         quit();
+
+    if (m_state != GameState::Playing) {
+        if (Engine::Input::isKeyPressed(GLFW_KEY_SPACE))
+            restartGame();
+        return;
+    }
 
     m_frog->update(dt);
 
 #ifdef ENABLE_DEV_KEYS
     if (Engine::Input::isKeyPressed(GLFW_KEY_F1))
         m_frog->teleport(6, MEDIAN_ROW);
+    if (Engine::Input::isKeyPressed(GLFW_KEY_F2)) {
+        for (bool& s : m_filledSlots) s = true;
+        m_allHomesFilled = true;
+        m_state = GameState::Win;
+    }
 #endif
 
     for (auto& v : m_vehicles)
@@ -52,20 +79,22 @@ void FroggerGame::onUpdate(float dt) {
     const int   frogRow = m_frog->row();
     const float frogPx  = m_frog->pixelX();
 
-    // Home row: land on a valid unfilled slot or die
+    // Home row: valid unfilled slot = success; anything else = death
     if (frogRow == HOME_ROW) {
         int slotIdx = -1;
-        for (int i = 0; i < HOME_SLOT_COUNT; ++i) {
+        for (int i = 0; i < HOME_SLOT_COUNT; ++i)
             if (m_frog->col() == HOME_SLOTS[i]) { slotIdx = i; break; }
-        }
+
         if (slotIdx >= 0 && !m_filledSlots[slotIdx]) {
             m_filledSlots[slotIdx] = true;
             m_frog->reset();
             m_allHomesFilled = true;
             for (int i = 0; i < HOME_SLOT_COUNT; ++i)
                 if (!m_filledSlots[i]) { m_allHomesFilled = false; break; }
+            if (m_allHomesFilled)
+                m_state = GameState::Win;
         } else {
-            m_frog->reset();
+            die();
         }
         return;
     }
@@ -84,19 +113,19 @@ void FroggerGame::onUpdate(float dt) {
         if (riding) {
             m_frog->applyRide(riding->velocityX() * dt);
             if (m_frog->col() < 0 || m_frog->col() >= COLS)
-                m_frog->reset();
+                die();
         } else {
-            m_frog->reset();
+            die();
         }
     }
 
-    // Road zone: vehicle collision resets frog
+    // Road zone: vehicle collision = death
     if (frogRow >= ROAD_FIRST_ROW && frogRow <= ROAD_LAST_ROW) {
         for (const auto& v : m_vehicles) {
             if (v.row() != frogRow) continue;
             const float vw = static_cast<float>(v.tileWidth() * TILE);
             if (frogPx < v.x() + vw && frogPx + TILE > v.x()) {
-                m_frog->reset();
+                die();
                 break;
             }
         }
@@ -118,12 +147,10 @@ void FroggerGame::renderBackground() {
         m_renderer.drawRect(0.f, ry, static_cast<float>(W), static_cast<float>(TILE), color);
     }
 
-    // Empty home slots
     for (int i = 0; i < HOME_SLOT_COUNT; ++i)
         m_renderer.drawRect(static_cast<float>(HOME_SLOTS[i] * TILE), 0.f,
                             static_cast<float>(TILE), static_cast<float>(TILE), goal);
 
-    // Filled home slots — sprite from sheet
     const Engine::UVRect uvs = m_sheet->getFrameUVs(HOME_FILLED_FRAME);
     for (int i = 0; i < HOME_SLOT_COUNT; ++i) {
         if (!m_filledSlots[i]) continue;
@@ -133,6 +160,31 @@ void FroggerGame::renderBackground() {
                                     uvs.u0, uvs.v0, uvs.u1, uvs.v1,
                                     glm::pi<float>());
     }
+}
+
+void FroggerGame::renderHUD() {
+    // Life icons: frog sprites in bottom-left of the safe zone
+    const Engine::UVRect uvs = m_sheet->getFrameUVs(0);
+    const float iconSize = static_cast<float>(TILE) * 0.6f;
+    const float iconY    = static_cast<float>((ROWS - 1) * TILE) + (TILE - iconSize) * 0.5f;
+    for (int i = 0; i < m_lives; ++i) {
+        const float iconX = static_cast<float>(i) * (iconSize + 4.f) + 4.f;
+        m_renderer.drawTexturedRect(iconX, iconY, iconSize, iconSize,
+                                    m_sheet->texture(),
+                                    uvs.u0, uvs.v0, uvs.u1, uvs.v1,
+                                    glm::pi<float>());
+    }
+}
+
+void FroggerGame::renderEndScreen(std::string_view title, const glm::vec4& titleColor) {
+    // Dim overlay
+    m_renderer.drawRect(0.f, 0.f, static_cast<float>(W), static_cast<float>(H),
+                        { 0.f, 0.f, 0.f, 0.55f });
+
+    const float cx = W * 0.5f;
+    const float scale = 3.f;
+    Engine::PixelFont::drawStringCentered(m_renderer, title,                    cx, H * 0.38f, scale,   titleColor);
+    Engine::PixelFont::drawStringCentered(m_renderer, "PRESS SPACE TO PLAY AGAIN", cx, H * 0.52f, 1.5f, { 1.f, 1.f, 1.f, 1.f });
 }
 
 void FroggerGame::onRender() {
@@ -145,4 +197,10 @@ void FroggerGame::onRender() {
         v.render(m_renderer, *m_sheet);
 
     m_frog->render(m_renderer);
+    renderHUD();
+
+    if (m_state == GameState::GameOver)
+        renderEndScreen("GAME OVER", { 0.9f, 0.2f, 0.2f, 1.f });
+    else if (m_state == GameState::Win)
+        renderEndScreen("YOU WIN!", { 0.2f, 0.9f, 0.2f, 1.f });
 }
