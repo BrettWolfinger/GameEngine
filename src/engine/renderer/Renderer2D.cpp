@@ -71,14 +71,13 @@ Renderer2D::Renderer2D() {
     glBindVertexArray(0);
 
     // ---- Textured-rect VAO ----
-    // Interleaved pos(xy) + uv(xy), unit quad with V-flip so Y=0 is top.
-    // Layout: bl, tl, br, tr  (CCW winding pairs)
-    //   pos (0,0)→uv(0,1)  pos (1,0)→uv(1,1)  pos (1,1)→uv(1,0)  pos (0,1)→uv(0,0)
+    // Interleaved pos(xy) + uv(xy), unit quad. In our Y-down ortho, pos(0,0) is
+    // the top-left of the tile, so V=0 (image top) maps to screen top.
     float texVerts[] = {
-        0.f, 0.f,  0.f, 1.f,   // bottom-left  in screen → top    in texture (V flipped)
-        1.f, 0.f,  1.f, 1.f,   // bottom-right in screen → top
-        1.f, 1.f,  1.f, 0.f,   // top-right    in screen → bottom
-        0.f, 1.f,  0.f, 0.f,   // top-left     in screen → bottom
+        0.f, 0.f,  0.f, 0.f,   // top-left     in screen → top    in texture
+        1.f, 0.f,  1.f, 0.f,   // top-right    in screen → top
+        1.f, 1.f,  1.f, 1.f,   // bottom-right in screen → bottom in texture
+        0.f, 1.f,  0.f, 1.f,   // bottom-left  in screen → bottom
     };
     unsigned int texIndices[] = { 0,1,2, 2,3,0 };
 

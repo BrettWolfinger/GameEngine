@@ -10,7 +10,7 @@
 namespace Engine {
 
 Texture::Texture(const std::string& path) {
-    stbi_set_flip_vertically_on_load(false); // Y=0 is top; no flip needed for our ortho setup
+    stbi_set_flip_vertically_on_load(false); // V=0 is image top; vertex UV mapping handles orientation
 
     int channels = 0;
     unsigned char* data = stbi_load(path.c_str(), &m_width, &m_height, &channels, STBI_rgb_alpha);

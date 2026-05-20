@@ -25,7 +25,7 @@ private:
 
     int   m_col        = 6;
     int   m_row        = 13;
-    float m_angle      = 3.14159265f;
+    float m_angle      = 0.f;
     bool  m_hopping    = false;
     float m_hopTimer   = 0.f;
     float m_rideOffset = 0.f;

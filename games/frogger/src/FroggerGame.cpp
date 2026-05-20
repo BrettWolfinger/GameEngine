@@ -6,8 +6,6 @@
 #include <GLFW/glfw3.h>
 #include <glm/gtc/constants.hpp>
 
-static constexpr int HOME_FILLED_FRAME = 4;   // row 0 col 4 (0-indexed)
-static constexpr int LIVES_START       = 3;
 
 FroggerGame::FroggerGame()
     : Engine::Application("Frogger", W, H)
@@ -36,6 +34,9 @@ FroggerGame::FroggerGame()
 }
 
 void FroggerGame::die() {
+    m_deathX     = m_frog->pixelX();
+    m_deathY     = static_cast<float>(m_frog->row() * TILE);
+    m_deathTimer = DEATH_DISPLAY_DURATION;
     m_frog->reset();
     if (--m_lives <= 0)
         m_state = GameState::GameOver;
@@ -45,6 +46,7 @@ void FroggerGame::restartGame() {
     m_lives          = LIVES_START;
     m_allHomesFilled = false;
     m_state          = GameState::Playing;
+    m_deathTimer     = 0.f;
     for (bool& s : m_filledSlots) s = false;
     m_frog->reset();
 }
@@ -70,6 +72,9 @@ void FroggerGame::onUpdate(float dt) {
         m_state = GameState::Win;
     }
 #endif
+
+    if (m_deathTimer > 0.f)
+        m_deathTimer -= dt;
 
     for (auto& v : m_vehicles)
         v.update(dt);
@@ -157,8 +162,7 @@ void FroggerGame::renderBackground() {
         m_renderer.drawTexturedRect(static_cast<float>(HOME_SLOTS[i] * TILE), 0.f,
                                     static_cast<float>(TILE), static_cast<float>(TILE),
                                     m_sheet->texture(),
-                                    uvs.u0, uvs.v0, uvs.u1, uvs.v1,
-                                    glm::pi<float>());
+                                    uvs.u0, uvs.v0, uvs.u1, uvs.v1);
     }
 }
 
@@ -171,8 +175,7 @@ void FroggerGame::renderHUD() {
         const float iconX = static_cast<float>(i) * (iconSize + 4.f) + 4.f;
         m_renderer.drawTexturedRect(iconX, iconY, iconSize, iconSize,
                                     m_sheet->texture(),
-                                    uvs.u0, uvs.v0, uvs.u1, uvs.v1,
-                                    glm::pi<float>());
+                                    uvs.u0, uvs.v0, uvs.u1, uvs.v1);
     }
 }
 
@@ -197,6 +200,14 @@ void FroggerGame::onRender() {
         v.render(m_renderer, *m_sheet);
 
     m_frog->render(m_renderer);
+
+    if (m_deathTimer > 0.f) {
+        const Engine::UVRect skullUVs = m_sheet->getFrameUVs(SKULL_FRAME);
+        m_renderer.drawTexturedRect(m_deathX, m_deathY, TILE, TILE,
+                                    m_sheet->texture(),
+                                    skullUVs.u0, skullUVs.v0, skullUVs.u1, skullUVs.v1);
+    }
+
     renderHUD();
 
     if (m_state == GameState::GameOver)

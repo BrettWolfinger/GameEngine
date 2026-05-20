@@ -20,6 +20,14 @@ inline constexpr int ROAD_LAST_ROW   = 11;
 
 inline constexpr int HOME_SLOTS[]    = { 1, 3, 6, 9, 11 };
 inline constexpr int HOME_SLOT_COUNT = 5;
+inline constexpr int HOME_FILLED_FRAME = 4;    // seated frog sprite: row 0 col 4 (0-indexed)
+
+// ---------- Death feedback ----------
+inline constexpr int   SKULL_FRAME            = 8;     // skull sprite: row 1 col 0 (0-indexed)
+inline constexpr float DEATH_DISPLAY_DURATION = 1.5f;
+
+// ---------- Game rules ----------
+inline constexpr int LIVES_START = 3;
 
 // ---------- Platforms (river) ----------
 

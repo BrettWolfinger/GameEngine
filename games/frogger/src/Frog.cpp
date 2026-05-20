@@ -26,7 +26,7 @@ Frog::Frog(std::shared_ptr<Engine::SpriteSheet> sheet)
 void Frog::reset() {
     m_col        = 6;
     m_row        = 13;
-    m_angle      = 3.14159265f;
+    m_angle      = 0.f;
     m_hopping    = false;
     m_hopTimer   = 0.f;
     m_rideOffset = 0.f;
@@ -36,7 +36,7 @@ void Frog::reset() {
 void Frog::teleport(int col, int row) {
     m_col        = col;
     m_row        = row;
-    m_angle      = 3.14159265f;
+    m_angle      = 0.f;
     m_hopping    = false;
     m_hopTimer   = 0.f;
     m_rideOffset = 0.f;
@@ -75,10 +75,10 @@ void Frog::update(float dt) {
             m_row = std::clamp(m_row + dr, 0, ROWS - 1);
             m_hopping  = true;
             m_hopTimer = HOP_DURATION;
-            if      (dr < 0) m_angle = glm::radians(180.f);
-            else if (dr > 0) m_angle = 0.f;
-            else if (dc > 0) m_angle = glm::radians(-90.f);
-            else             m_angle = glm::radians(90.f);
+            if      (dr < 0) m_angle = 0.f;
+            else if (dr > 0) m_angle = glm::radians(180.f);
+            else if (dc > 0) m_angle = glm::radians(90.f);
+            else             m_angle = glm::radians(-90.f);
             m_animator.setClip("hop");
         }
     }
