@@ -87,6 +87,50 @@ void AsteroidsGame::onUpdate(float dt) {
 
     for (auto& a : m_asteroids)
         a.update(dt, W, H);
+
+    // Bullet-asteroid collision
+    std::vector<Asteroid> newFragments;
+    for (auto& b : m_bullets) {
+        if (!b.isAlive()) continue;
+        for (auto& a : m_asteroids) {
+            if (a.size == AsteroidSize::Dead) continue;
+            const float dist = glm::length(b.pos - a.pos);
+            if (dist >= a.radius() + Bullet::SIZE * 0.5f) continue;
+
+            b.lifetime = 0.f;
+            const AsteroidSize hitSize = a.size;
+            a.size = AsteroidSize::Dead;
+
+            // Spread 4 fragments 90° apart, each at twice the parent speed.
+            const float baseAngle = std::atan2(a.vel.y, a.vel.x);
+            const float speed     = glm::length(a.vel) * 2.f;
+
+            if (hitSize == AsteroidSize::Large) {
+                for (int i = 0; i < 4; ++i) {
+                    const float ang = baseAngle + glm::half_pi<float>() * i;
+                    const glm::vec2 vel(std::cos(ang) * speed, std::sin(ang) * speed);
+                    const float rot = 1.0f * (i % 2 == 0 ? 1.f : -1.f);
+                    newFragments.push_back(Asteroid::makeMedium(i, a.pos, vel, rot));
+                }
+            } else if (hitSize == AsteroidSize::Medium) {
+                for (int i = 0; i < 4; ++i) {
+                    const float ang = baseAngle + glm::half_pi<float>() * i;
+                    const glm::vec2 vel(std::cos(ang) * speed, std::sin(ang) * speed);
+                    const float rot = 1.5f * (i % 2 == 0 ? 1.f : -1.f);
+                    newFragments.push_back(Asteroid::makeSmall(a.variant, i, a.pos, vel, rot));
+                }
+            }
+            // Small: destroyed, no fragments.
+            break;
+        }
+    }
+
+    m_asteroids.erase(
+        std::remove_if(m_asteroids.begin(), m_asteroids.end(),
+                       [](const Asteroid& a) { return a.size == AsteroidSize::Dead; }),
+        m_asteroids.end());
+
+    m_asteroids.insert(m_asteroids.end(), newFragments.begin(), newFragments.end());
 }
 
 void AsteroidsGame::onRender() {

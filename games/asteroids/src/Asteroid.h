@@ -4,7 +4,7 @@
 #include <engine/renderer/SpriteSheet.h>
 #include <glm/glm.hpp>
 
-enum class AsteroidSize { Large, Medium, Small };
+enum class AsteroidSize { Large, Medium, Small, Dead };
 
 struct Asteroid {
     glm::vec2    pos;
@@ -12,8 +12,11 @@ struct Asteroid {
     float        angle     = 0.f;   // radians
     float        rotSpeed  = 0.f;   // radians/sec
     AsteroidSize size      = AsteroidSize::Large;
+    int          variant   = 0;     // medium: 0-3; small: group 0-3
     int          frameIndex = 0;    // top-left frame in 16×16 grid
     int          cellCount  = 4;    // cells per side
+
+    float radius() const { return cellCount * 8.f * SCALE; }
 
     void update(float dt, int screenW, int screenH);
     void render(Engine::Renderer2D& renderer, const Engine::SpriteSheet& sheet) const;

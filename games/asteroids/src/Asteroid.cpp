@@ -24,7 +24,8 @@ Asteroid Asteroid::makeMedium(int variant, glm::vec2 pos, glm::vec2 vel, float r
     a.vel        = vel;
     a.rotSpeed   = rotSpeed;
     a.size       = AsteroidSize::Medium;
-    a.frameIndex = MEDIUM_FRAMES[variant & 3];
+    a.variant    = variant & 3;
+    a.frameIndex = MEDIUM_FRAMES[a.variant];
     a.cellCount  = 2;
     return a;
 }
@@ -35,7 +36,8 @@ Asteroid Asteroid::makeSmall(int group, int idx, glm::vec2 pos, glm::vec2 vel, f
     a.vel        = vel;
     a.rotSpeed   = rotSpeed;
     a.size       = AsteroidSize::Small;
-    a.frameIndex = SMALL_FRAMES[group & 3][idx & 3];
+    a.variant    = group & 3;
+    a.frameIndex = SMALL_FRAMES[a.variant][idx & 3];
     a.cellCount  = 1;
     return a;
 }

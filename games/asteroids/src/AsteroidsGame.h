@@ -8,6 +8,7 @@
 #include "Asteroid.h"
 #include <memory>
 #include <optional>
+#include <random>
 #include <vector>
 
 class AsteroidsGame : public Engine::Application {
