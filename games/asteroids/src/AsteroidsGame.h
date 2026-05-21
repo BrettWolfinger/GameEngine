@@ -4,8 +4,10 @@
 #include <engine/renderer/SpriteSheet.h>
 #include <engine/renderer/Texture.h>
 #include "Ship.h"
+#include "Bullet.h"
 #include <memory>
 #include <optional>
+#include <vector>
 
 class AsteroidsGame : public Engine::Application {
 public:
@@ -19,4 +21,7 @@ private:
     Engine::Renderer2D                   m_renderer;
     std::shared_ptr<Engine::SpriteSheet> m_sheet;
     std::optional<Ship>                  m_ship;
+    std::vector<Bullet>  m_bullets;
+
+    static constexpr int MAX_BULLETS = 4;
 };

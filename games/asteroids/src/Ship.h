@@ -13,17 +13,24 @@ public:
     void render(Engine::Renderer2D& renderer) const;
     void reset();
 
+    glm::vec2 pos()      const { return m_pos; }
+    float     angle()    const { return m_angle; }
+    bool      tryShoot();
+
+    static constexpr float RENDER_SIZE = 48.f;
+
 private:
-    static constexpr float ROTATE_SPEED      = 3.0f;
-    static constexpr float THRUST_FORCE      = 250.f;
-    static constexpr float MAX_SPEED         = 450.f;
-    static constexpr float DRAG              = 0.98f;
-    static constexpr float SHIP_RENDER_SIZE  = 48.f;
+    static constexpr float ROTATE_SPEED   = 3.0f;
+    static constexpr float THRUST_FORCE   = 250.f;
+    static constexpr float MAX_SPEED      = 450.f;
+    static constexpr float DRAG           = 0.98f;
+    static constexpr float FIRE_COOLDOWN  = 0.25f;
 
     glm::vec2 m_pos;
     float     m_angle;
     glm::vec2 m_vel;
     bool      m_thrusting;
+    float     m_fireTimer = 0.f;
     std::string m_currentClip;
 
     Engine::SpriteAnimator m_animator;

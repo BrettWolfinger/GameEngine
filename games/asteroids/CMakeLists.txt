@@ -2,6 +2,7 @@ add_executable(asteroids
     src/main.cpp
     src/AsteroidsGame.cpp
     src/Ship.cpp
+    src/Bullet.cpp
 )
 
 target_include_directories(asteroids PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)

@@ -35,8 +35,16 @@ void Ship::reset() {
     m_angle     = 0.f;
     m_vel       = { 0.f, 0.f };
     m_thrusting = false;
+    m_fireTimer = 0.f;
     m_currentClip = "idle";
     m_animator.setClip("idle");
+}
+
+bool Ship::tryShoot() {
+    if (m_fireTimer > 0.f || !Engine::Input::isKeyDown(GLFW_KEY_SPACE))
+        return false;
+    m_fireTimer = FIRE_COOLDOWN;
+    return true;
 }
 
 void Ship::update(float dt, int screenW, int screenH) {
@@ -54,6 +62,9 @@ void Ship::update(float dt, int screenW, int screenH) {
         if (speed > MAX_SPEED)
             m_vel *= MAX_SPEED / speed;
     }
+
+    if (m_fireTimer > 0.f)
+        m_fireTimer -= dt;
 
     float dragFactor = std::pow(DRAG, dt * 60.f);
     m_vel *= dragFactor;
@@ -75,7 +86,7 @@ void Ship::update(float dt, int screenW, int screenH) {
 }
 
 void Ship::render(Engine::Renderer2D& renderer) const {
-    const float half = SHIP_RENDER_SIZE * 0.5f;
+    const float half = RENDER_SIZE * 0.5f;
     const Engine::Texture& tex = m_animator.sheet().texture();
 
     if (m_thrusting) {
@@ -83,13 +94,13 @@ void Ship::render(Engine::Renderer2D& renderer) const {
         const float tx = m_pos.x + backward.x * 20.f - half;
         const float ty = m_pos.y + backward.y * 20.f - half;
         const Engine::UVRect thrUVs = m_animator.currentFrameUVs();
-        renderer.drawTexturedRect(tx, ty, SHIP_RENDER_SIZE, SHIP_RENDER_SIZE,
+        renderer.drawTexturedRect(tx, ty, RENDER_SIZE, RENDER_SIZE,
                                   tex, thrUVs.u0, thrUVs.v0, thrUVs.u1, thrUVs.v1,
                                   m_angle);
     }
 
     const Engine::UVRect shipUVs = m_animator.sheet().getFrameUVs(0);
-    renderer.drawTexturedRect(m_pos.x - half, m_pos.y - half, SHIP_RENDER_SIZE, SHIP_RENDER_SIZE,
+    renderer.drawTexturedRect(m_pos.x - half, m_pos.y - half, RENDER_SIZE, RENDER_SIZE,
                               tex, shipUVs.u0, shipUVs.v0, shipUVs.u1, shipUVs.v1,
                               m_angle);
 }
