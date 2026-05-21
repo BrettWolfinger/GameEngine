@@ -25,5 +25,5 @@ private:
     std::vector<std::unique_ptr<Bullet>>      m_bullets;
     std::vector<std::unique_ptr<Asteroid>>    m_asteroids;
 
-    static constexpr int MAX_BULLETS = 4;
+
 };

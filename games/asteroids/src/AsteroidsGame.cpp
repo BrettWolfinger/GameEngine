@@ -90,13 +90,9 @@ void AsteroidsGame::onUpdate(float dt) {
     // --- Normal per-tick updates ---
     m_ship->update(dt, W, H);
 
-    if (m_ship->tryShoot() && (int)m_bullets.size() < MAX_BULLETS) {
-        const float angle = m_ship->angle();
-        glm::vec2 forward = { glm::sin(angle), -glm::cos(angle) };
-        glm::vec2 nose    = m_ship->pos() + forward * (Ship::RENDER_SIZE * 0.5f);
-
+    if (auto shot = m_ship->tryShoot()) {
         m_bullets.push_back(std::make_unique<Bullet>(
-            nose, forward * Bullet::SPEED,
+            shot->pos, shot->direction * Bullet::SPEED,
             m_sheet->getFrameUVs(128), &m_sheet->texture()));
     }
 

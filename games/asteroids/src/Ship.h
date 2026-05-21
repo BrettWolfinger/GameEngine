@@ -4,19 +4,23 @@
 #include <engine/renderer/Renderer2D.h>
 #include <glm/glm.hpp>
 #include <memory>
+#include <optional>
 #include <string>
 
 class Ship {
 public:
+    struct BulletSpawn { glm::vec2 pos; glm::vec2 direction; };
+
     explicit Ship(std::shared_ptr<Engine::SpriteSheet> sheet);
 
     void update(float dt, int screenW, int screenH);
     void render(Engine::Renderer2D& renderer) const;
     void reset();
 
-    glm::vec2 pos()      const { return m_pos; }
-    float     angle()    const { return m_angle; }
-    bool      tryShoot();
+    glm::vec2 pos()   const { return m_pos; }
+    float     angle() const { return m_angle; }
+
+    std::optional<BulletSpawn> tryShoot();
 
     static constexpr float RENDER_SIZE = 32.f * SCALE;
 
