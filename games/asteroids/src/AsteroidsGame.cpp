@@ -58,33 +58,14 @@ void AsteroidsGame::onUpdate(float dt) {
     // Snapshot the count so newly-appended fragments are skipped this pass.
     const size_t n = m_asteroids.size();
     for (size_t i = 0; i < n; ++i) {
-        Asteroid& a = *m_asteroids[i];
-        if (!a.isDead()) continue;
-
-        const float baseAngle = std::atan2(a.vel.y, a.vel.x);
-        const float speed     = glm::length(a.vel) * 2.f;
-
-        if (a.size == AsteroidSize::Large) {
-            for (int j = 0; j < 4; ++j) {
-                const float ang = baseAngle + glm::half_pi<float>() * j;
-                m_asteroids.push_back(Asteroid::makeMedium(j, a.pos,
-                    { std::cos(ang) * speed, std::sin(ang) * speed },
-                    1.0f * (j % 2 == 0 ? 1.f : -1.f)));
-            }
-        } else if (a.size == AsteroidSize::Medium) {
-            for (int j = 0; j < 4; ++j) {
-                const float ang = baseAngle + glm::half_pi<float>() * j;
-                m_asteroids.push_back(Asteroid::makeSmall(a.variant, j, a.pos,
-                    { std::cos(ang) * speed, std::sin(ang) * speed },
-                    1.5f * (j % 2 == 0 ? 1.f : -1.f)));
-            }
-        }
-        // Small: destroyed, no fragments.
+        if (!m_asteroids[i]->wasShot()) continue;
+        for (auto& f : m_asteroids[i]->split())
+            m_asteroids.push_back(std::move(f));
     }
 
     m_asteroids.erase(
         std::remove_if(m_asteroids.begin(), m_asteroids.end(),
-                       [](const auto& a) { return a->isDead(); }),
+                       [](const auto& a) { return a->wasShot(); }),
         m_asteroids.end());
 
     // --- Normal per-tick updates ---

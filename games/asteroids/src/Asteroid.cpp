@@ -18,7 +18,7 @@ void Asteroid::registerCollider() {
     m_colliderHandle = Engine::Services::collision().add(
         Engine::ColliderDesc::makeCircle(kAsteroidLayer, kBulletLayer, pos.x, pos.y, radius()),
         [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
-            m_dead = true;
+            m_wasShot = true;
             Engine::Services::collision().remove(self);
             m_colliderHandle = Engine::NULL_COLLIDER;
         });
@@ -62,6 +62,34 @@ std::unique_ptr<Asteroid> Asteroid::makeSmall(int group, int idx, glm::vec2 pos,
     a->cellCount  = 1;
     a->registerCollider();
     return a;
+}
+
+// ---- split ------------------------------------------------------------------
+
+std::vector<std::unique_ptr<Asteroid>> Asteroid::split() const {
+    std::vector<std::unique_ptr<Asteroid>> fragments;
+    if (size == AsteroidSize::Small) return fragments;
+
+    const float baseAngle = std::atan2(vel.y, vel.x);
+    const float speed     = glm::length(vel) * 2.f;
+
+    if (size == AsteroidSize::Large) {
+        for (int i = 0; i < 4; ++i) {
+            const float ang = baseAngle + glm::half_pi<float>() * i;
+            fragments.push_back(makeMedium(i, pos,
+                { std::cos(ang) * speed, std::sin(ang) * speed },
+                1.0f * (i % 2 == 0 ? 1.f : -1.f)));
+        }
+    } else if (size == AsteroidSize::Medium) {
+        for (int i = 0; i < 4; ++i) {
+            const float ang = baseAngle + glm::half_pi<float>() * i;
+            fragments.push_back(makeSmall(variant, i, pos,
+                { std::cos(ang) * speed, std::sin(ang) * speed },
+                1.5f * (i % 2 == 0 ? 1.f : -1.f)));
+        }
+    }
+
+    return fragments;
 }
 
 // ---- update -----------------------------------------------------------------
