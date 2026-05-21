@@ -82,7 +82,10 @@ void AsteroidsGame::onRender() {
     for (const auto& b : m_bullets)
         b->render(m_renderer);
 
-    // Lives HUD — row of small ship icons in the top-left
+    renderLivesHUD();
+}
+
+void AsteroidsGame::renderLivesHUD() {
     static constexpr float ICON_SIZE = 20.f;
     static constexpr float ICON_PAD  = 6.f;
     const Engine::UVRect iconUV = m_sheet->getFrameUVs(m_ship->frameIndex(), m_ship->frameCells(), m_ship->frameCells());

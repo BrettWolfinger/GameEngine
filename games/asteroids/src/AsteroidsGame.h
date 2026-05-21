@@ -33,4 +33,5 @@ private:
     bool                                      m_gameOver = false;
 
     void spawnInitialAsteroidRing();
+    void renderLivesHUD();
 };
