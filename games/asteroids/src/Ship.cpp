@@ -46,12 +46,14 @@ void Ship::reset() {
     m_animator.setClip("idle");
 }
 
-bool Ship::tryShoot() {
+std::optional<Ship::BulletSpawn> Ship::tryShoot() {
     if (m_fireTimer > 0.f || !Engine::Input::isKeyDown(GLFW_KEY_SPACE))
-        return false;
+        return std::nullopt;
     m_fireTimer  = FIRE_COOLDOWN;
     m_flashTimer = FLASH_DURATION;
-    return true;
+    const glm::vec2 direction = { glm::sin(m_angle), -glm::cos(m_angle) };
+    const glm::vec2 nose      = m_pos + direction * (RENDER_SIZE * 0.5f);
+    return BulletSpawn{ nose, direction };
 }
 
 void Ship::update(float dt, int screenW, int screenH) {
