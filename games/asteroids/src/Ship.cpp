@@ -1,6 +1,8 @@
 #include "Ship.h"
 #include "AsteroidsConfig.h"
 #include <engine/core/Input.h>
+#include <engine/core/Services.h>
+#include <engine/physics/CollisionWorld.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
@@ -33,17 +35,38 @@ Ship::Ship(std::shared_ptr<Engine::SpriteSheet> sheet)
 
     m_currentClip = "idle";
     m_animator.setClip("idle");
+
+    m_colliderHandle = Engine::Services::collision().add(
+        Engine::ColliderDesc::makeCircle(kShipLayer, kAsteroidLayer, m_pos.x, m_pos.y, COLLISION_RADIUS),
+        [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
+            m_wasHit = true;
+            Engine::Services::collision().remove(self);
+            m_colliderHandle = Engine::NULL_COLLIDER;
+        });
+}
+
+Ship::~Ship() {
+    Engine::Services::collision().remove(m_colliderHandle);
 }
 
 void Ship::reset() {
-    m_pos       = { W * 0.5f, H * 0.5f };
-    m_angle     = 0.f;
-    m_vel       = { 0.f, 0.f };
-    m_thrusting  = false;
-    m_fireTimer  = 0.f;
-    m_flashTimer = 0.f;
+    m_pos         = { W * 0.5f, H * 0.5f };
+    m_angle       = 0.f;
+    m_vel         = { 0.f, 0.f };
+    m_thrusting   = false;
+    m_fireTimer   = 0.f;
+    m_flashTimer  = 0.f;
+    m_wasHit      = false;
     m_currentClip = "idle";
     m_animator.setClip("idle");
+
+    m_colliderHandle = Engine::Services::collision().add(
+        Engine::ColliderDesc::makeCircle(kShipLayer, kAsteroidLayer, m_pos.x, m_pos.y, COLLISION_RADIUS),
+        [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
+            m_wasHit = true;
+            Engine::Services::collision().remove(self);
+            m_colliderHandle = Engine::NULL_COLLIDER;
+        });
 }
 
 std::optional<Ship::BulletSpawn> Ship::tryShoot() {
@@ -92,6 +115,9 @@ void Ship::update(float dt, int screenW, int screenH) {
     }
 
     m_animator.update(dt);
+
+    if (m_colliderHandle != Engine::NULL_COLLIDER)
+        Engine::Services::collision().updateCircle(m_colliderHandle, m_pos.x, m_pos.y, COLLISION_RADIUS);
 }
 
 void Ship::render(Engine::Renderer2D& renderer) const {

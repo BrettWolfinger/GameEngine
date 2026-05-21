@@ -33,6 +33,11 @@ void AsteroidsGame::onUpdate(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q))
         quit();
 
+    if (m_ship->wasHit()) {
+        m_ship->reset();
+        m_bullets.clear();
+    }
+
     // Spawn fragments for asteroids flagged by collision this tick.
     // Snapshot the count so newly-appended fragments are skipped this pass.
     const size_t n = m_asteroids.size();
