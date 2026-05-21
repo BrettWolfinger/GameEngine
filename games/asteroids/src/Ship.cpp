@@ -39,6 +39,7 @@ Ship::Ship(std::shared_ptr<Engine::SpriteSheet> sheet)
     m_colliderHandle = Engine::Services::collision().add(
         Engine::ColliderDesc::makeCircle(kShipLayer, kAsteroidLayer, m_pos.x, m_pos.y, COLLISION_RADIUS),
         [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
+            if (m_invincibleTimer > 0.f) return;
             m_wasHit = true;
             Engine::Services::collision().remove(self);
             m_colliderHandle = Engine::NULL_COLLIDER;
@@ -50,19 +51,21 @@ Ship::~Ship() {
 }
 
 void Ship::reset() {
-    m_pos         = { W * 0.5f, H * 0.5f };
-    m_angle       = 0.f;
-    m_vel         = { 0.f, 0.f };
-    m_thrusting   = false;
-    m_fireTimer   = 0.f;
-    m_flashTimer  = 0.f;
-    m_wasHit      = false;
-    m_currentClip = "idle";
+    m_pos             = { W * 0.5f, H * 0.5f };
+    m_angle           = 0.f;
+    m_vel             = { 0.f, 0.f };
+    m_thrusting       = false;
+    m_fireTimer       = 0.f;
+    m_flashTimer      = 0.f;
+    m_wasHit          = false;
+    m_invincibleTimer = INVINCIBLE_DURATION;
+    m_currentClip     = "idle";
     m_animator.setClip("idle");
 
     m_colliderHandle = Engine::Services::collision().add(
         Engine::ColliderDesc::makeCircle(kShipLayer, kAsteroidLayer, m_pos.x, m_pos.y, COLLISION_RADIUS),
         [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
+            if (m_invincibleTimer > 0.f) return;
             m_wasHit = true;
             Engine::Services::collision().remove(self);
             m_colliderHandle = Engine::NULL_COLLIDER;
@@ -95,8 +98,9 @@ void Ship::update(float dt, int screenW, int screenH) {
             m_vel *= MAX_SPEED / speed;
     }
 
-    if (m_fireTimer  > 0.f) m_fireTimer  -= dt;
-    if (m_flashTimer > 0.f) m_flashTimer -= dt;
+    if (m_fireTimer       > 0.f) m_fireTimer       -= dt;
+    if (m_flashTimer      > 0.f) m_flashTimer      -= dt;
+    if (m_invincibleTimer > 0.f) m_invincibleTimer -= dt;
 
     float dragFactor = std::pow(DRAG, dt * 60.f);
     m_vel *= dragFactor;
@@ -121,6 +125,9 @@ void Ship::update(float dt, int screenW, int screenH) {
 }
 
 void Ship::render(Engine::Renderer2D& renderer) const {
+    if (m_invincibleTimer > 0.f && static_cast<int>(m_invincibleTimer / 0.1f) % 2 == 0)
+        return;
+
     const float half = RENDER_SIZE * 0.5f;
     const Engine::Texture& tex = m_animator.sheet().texture();
 
@@ -134,7 +141,7 @@ void Ship::render(Engine::Renderer2D& renderer) const {
                                   m_angle);
     }
 
-    const Engine::UVRect shipUVs = m_animator.sheet().getFrameUVs(0, 2, 2);
+    const Engine::UVRect shipUVs = m_animator.sheet().getFrameUVs(m_frameIndex, m_frameCells, m_frameCells);
     renderer.drawTexturedRect(m_pos.x - half, m_pos.y - half, RENDER_SIZE, RENDER_SIZE,
                               tex, shipUVs.u0, shipUVs.v0, shipUVs.u1, shipUVs.v1,
                               m_angle);
