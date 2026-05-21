@@ -20,6 +20,8 @@ AsteroidsGame::AsteroidsGame()
 }
 
 void AsteroidsGame::preStep(float dt) {
+    if (m_gameOver) return;
+
     m_ship->update(dt, W, H);
 
     for (auto& b : m_bullets)
@@ -32,6 +34,16 @@ void AsteroidsGame::preStep(float dt) {
 void AsteroidsGame::onUpdate(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q))
         quit();
+
+    if (m_gameOver) return;
+
+    if (m_ship->wasHit()) {
+        m_bullets.clear();
+        if (--m_lives > 0)
+            m_ship->reset();
+        else
+            m_gameOver = true;
+    }
 
     // Spawn fragments for asteroids flagged by collision this tick.
     // Snapshot the count so newly-appended fragments are skipped this pass.
@@ -69,6 +81,20 @@ void AsteroidsGame::onRender() {
 
     for (const auto& b : m_bullets)
         b->render(m_renderer);
+
+    renderLivesHUD();
+}
+
+void AsteroidsGame::renderLivesHUD() {
+    static constexpr float ICON_SIZE = 20.f;
+    static constexpr float ICON_PAD  = 6.f;
+    const Engine::UVRect iconUV = m_sheet->getFrameUVs(m_ship->frameIndex(), m_ship->frameCells(), m_ship->frameCells());
+    for (int i = 0; i < m_lives; ++i) {
+        const float x = ICON_PAD + i * (ICON_SIZE + ICON_PAD);
+        m_renderer.drawTexturedRect(x, ICON_PAD, ICON_SIZE, ICON_SIZE,
+                                    m_sheet->texture(),
+                                    iconUV.u0, iconUV.v0, iconUV.u1, iconUV.v1);
+    }
 }
 
 void AsteroidsGame::spawnInitialAsteroidRing() {
