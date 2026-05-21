@@ -1,6 +1,5 @@
 #include "AsteroidsGame.h"
 #include "AsteroidsConfig.h"
-#include <engine/physics/Collider.h>
 #include <engine/renderer/Texture.h>
 #include <engine/core/Input.h>
 #include <GLFW/glfw3.h>
@@ -10,11 +9,6 @@
 #include <random>
 #include <cmath>
 
-namespace {
-    constexpr uint32_t kBulletLayer   = 1 << 0;
-    constexpr uint32_t kAsteroidLayer = 1 << 1;
-}
-
 AsteroidsGame::AsteroidsGame()
     : Engine::Application("Asteroids", W, H)
 {
@@ -22,7 +16,6 @@ AsteroidsGame::AsteroidsGame()
     m_sheet      = std::make_shared<Engine::SpriteSheet>(texture, 16, 16);
     m_ship.emplace(m_sheet);
 
-    // Spawn 4 large asteroids, each at least 150px from screen center.
     std::mt19937 rng(42);
     std::uniform_real_distribution<float> angleDist(0.f, glm::two_pi<float>());
     std::uniform_real_distribution<float> speedDist(40.f, 80.f);
@@ -50,82 +43,48 @@ AsteroidsGame::AsteroidsGame()
         const float rotMag   = rotDist(rng);
         const float rotSign  = rotSignDist(rng) ? 1.f : -1.f;
 
-        spawnAsteroid(Asteroid::makeLarge(pos,
-                                          { std::cos(velAngle) * speed, std::sin(velAngle) * speed },
-                                          rotMag * rotSign));
+        m_asteroids.push_back(Asteroid::makeLarge(
+            pos,
+            { std::cos(velAngle) * speed, std::sin(velAngle) * speed },
+            rotMag * rotSign));
     }
-}
-
-void AsteroidsGame::spawnAsteroid(Asteroid a) {
-    a.colliderHandle = collisionWorld().add(
-        Engine::ColliderDesc::makeCircle(kAsteroidLayer, kBulletLayer,
-                                         a.pos.x, a.pos.y, a.radius()),
-        nullptr);  // asteroid doesn't need its own callback; bullet handles the event
-    m_asteroids.push_back(a);
 }
 
 void AsteroidsGame::onUpdate(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q))
         quit();
 
-    // --- Process collision hits queued by step() (which ran before this onUpdate) ---
-    for (auto& hit : m_pendingHits) {
-        const Engine::ColliderHandle bh = hit.first;
-        const Engine::ColliderHandle ah = hit.second;
+    // Spawn fragments for asteroids killed by collision last tick.
+    // Snapshot the count so newly-appended fragments are skipped this pass.
+    const size_t n = m_asteroids.size();
+    for (size_t i = 0; i < n; ++i) {
+        Asteroid& a = *m_asteroids[i];
+        if (!a.isDead()) continue;
 
-        // Find the live bullet that was hit.
-        auto bIt = std::find_if(m_bullets.begin(), m_bullets.end(),
-                                [bh](const Bullet& b) { return b.colliderHandle == bh && b.isAlive(); });
-        if (bIt == m_bullets.end()) continue;  // already processed by an earlier hit this tick
+        const float baseAngle = std::atan2(a.vel.y, a.vel.x);
+        const float speed     = glm::length(a.vel) * 2.f;
 
-        bIt->lifetime = 0.f;
-        collisionWorld().remove(bh);
-        bIt->colliderHandle = Engine::NULL_COLLIDER;
-
-        // Find the live asteroid that was hit.
-        auto aIt = std::find_if(m_asteroids.begin(), m_asteroids.end(),
-                                [ah](const Asteroid& a) { return a.colliderHandle == ah && a.size != AsteroidSize::Dead; });
-        if (aIt == m_asteroids.end()) continue;
-
-        const AsteroidSize hitSize = aIt->size;
-        const int          variant = aIt->variant;
-        const glm::vec2    pos     = aIt->pos;
-        const glm::vec2    vel     = aIt->vel;
-
-        aIt->size = AsteroidSize::Dead;
-        collisionWorld().remove(ah);
-        aIt->colliderHandle = Engine::NULL_COLLIDER;
-
-        // Spread 4 fragments 90° apart at twice the parent speed.
-        const float baseAngle = std::atan2(vel.y, vel.x);
-        const float speed     = glm::length(vel) * 2.f;
-
-        if (hitSize == AsteroidSize::Large) {
-            for (int i = 0; i < 4; ++i) {
-                const float ang = baseAngle + glm::half_pi<float>() * i;
-                const glm::vec2 fvel(std::cos(ang) * speed, std::sin(ang) * speed);
-                spawnAsteroid(Asteroid::makeMedium(i, pos, fvel, 1.0f * (i % 2 == 0 ? 1.f : -1.f)));
+        if (a.size == AsteroidSize::Large) {
+            for (int j = 0; j < 4; ++j) {
+                const float ang = baseAngle + glm::half_pi<float>() * j;
+                m_asteroids.push_back(Asteroid::makeMedium(j, a.pos,
+                    { std::cos(ang) * speed, std::sin(ang) * speed },
+                    1.0f * (j % 2 == 0 ? 1.f : -1.f)));
             }
-        } else if (hitSize == AsteroidSize::Medium) {
-            for (int i = 0; i < 4; ++i) {
-                const float ang = baseAngle + glm::half_pi<float>() * i;
-                const glm::vec2 fvel(std::cos(ang) * speed, std::sin(ang) * speed);
-                spawnAsteroid(Asteroid::makeSmall(variant, i, pos, fvel, 1.5f * (i % 2 == 0 ? 1.f : -1.f)));
+        } else if (a.size == AsteroidSize::Medium) {
+            for (int j = 0; j < 4; ++j) {
+                const float ang = baseAngle + glm::half_pi<float>() * j;
+                m_asteroids.push_back(Asteroid::makeSmall(a.variant, j, a.pos,
+                    { std::cos(ang) * speed, std::sin(ang) * speed },
+                    1.5f * (j % 2 == 0 ? 1.f : -1.f)));
             }
         }
         // Small: destroyed, no fragments.
     }
-    m_pendingHits.clear();
-
-    // Remove dead bullets (hit above) and dead asteroids (hit above).
-    m_bullets.erase(
-        std::remove_if(m_bullets.begin(), m_bullets.end(),
-                       [](const Bullet& b) { return !b.isAlive(); }),
-        m_bullets.end());
 
     m_asteroids.erase(
         std::remove_if(m_asteroids.begin(), m_asteroids.end(),
-                       [](const Asteroid& a) { return a.size == AsteroidSize::Dead; }),
+                       [](const auto& a) { return a->isDead(); }),
         m_asteroids.end());
 
     // --- Normal per-tick updates ---
@@ -136,55 +95,31 @@ void AsteroidsGame::onUpdate(float dt) {
         glm::vec2 forward = { glm::sin(angle), -glm::cos(angle) };
         glm::vec2 nose    = m_ship->pos() + forward * (Ship::RENDER_SIZE * 0.5f);
 
-        Bullet b;
-        b.pos      = nose;
-        b.vel      = forward * Bullet::SPEED;
-        b.lifetime = Bullet::LIFETIME;
-        b.uv       = m_sheet->getFrameUVs(128);
-        b.tex      = &m_sheet->texture();
-        b.colliderHandle = collisionWorld().add(
-            Engine::ColliderDesc::makeCircle(kBulletLayer, kAsteroidLayer,
-                                             b.pos.x, b.pos.y, Bullet::SIZE * 0.5f),
-            [this](Engine::ColliderHandle self, Engine::ColliderHandle other) {
-                m_pendingHits.push_back({ self, other });
-            });
-        m_bullets.push_back(b);
+        m_bullets.push_back(std::make_unique<Bullet>(
+            nose, forward * Bullet::SPEED,
+            m_sheet->getFrameUVs(128), &m_sheet->texture()));
     }
 
     for (auto& b : m_bullets)
-        b.update(dt);
+        b->update(dt);
 
-    // Deregister bullets that expired by lifetime (not by collision).
-    for (auto& b : m_bullets) {
-        if (!b.isAlive() && b.colliderHandle != Engine::NULL_COLLIDER) {
-            collisionWorld().remove(b.colliderHandle);
-            b.colliderHandle = Engine::NULL_COLLIDER;
-        }
-    }
     m_bullets.erase(
         std::remove_if(m_bullets.begin(), m_bullets.end(),
-                       [](const Bullet& b) { return !b.isAlive(); }),
+                       [](const auto& b) { return !b->isAlive(); }),
         m_bullets.end());
 
     for (auto& a : m_asteroids)
-        a.update(dt, W, H);
-
-    // Sync all collider positions for next step().
-    for (auto& b : m_bullets)
-        collisionWorld().updateCircle(b.colliderHandle, b.pos.x, b.pos.y, Bullet::SIZE * 0.5f);
-
-    for (auto& a : m_asteroids)
-        collisionWorld().updateCircle(a.colliderHandle, a.pos.x, a.pos.y, a.radius());
+        a->update(dt, W, H);
 }
 
 void AsteroidsGame::onRender() {
     m_renderer.beginScene(W, H);
 
     for (const auto& a : m_asteroids)
-        a.render(m_renderer, *m_sheet);
+        a->render(m_renderer, *m_sheet);
 
     m_ship->render(m_renderer);
 
     for (const auto& b : m_bullets)
-        b.render(m_renderer);
+        b->render(m_renderer);
 }

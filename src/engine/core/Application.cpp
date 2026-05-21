@@ -9,6 +9,7 @@ Application::Application(const char* title, int width, int height) {
     m_window = std::make_unique<Window>(title, width, height);
     Input::init(m_window->getNativeWindow());
     AudioManager::init();
+    Services::setCollision(&m_collisionWorld);
 }
 
 void Application::run() {
