@@ -12,7 +12,9 @@ enum class PlayMode { Loop, OneShot };
 struct AnimClip {
     std::vector<int> frames;
     float            frameDuration; // seconds per frame
-    PlayMode         mode = PlayMode::Loop;
+    PlayMode         mode    = PlayMode::Loop;
+    int              wFrames = 1;  // sprite width in grid cells
+    int              hFrames = 1;  // sprite height in grid cells
 };
 
 class SpriteAnimator {

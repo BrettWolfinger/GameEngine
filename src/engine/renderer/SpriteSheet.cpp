@@ -26,6 +26,14 @@ UVRect SpriteSheet::getFrameUVs(int frameIndex) const {
     };
 }
 
+UVRect SpriteSheet::getFrameUVs(int topLeftFrame, int wFrames, int hFrames) const {
+    UVRect tl = getFrameUVs(topLeftFrame);
+    int brCol = (topLeftFrame % m_cols) + wFrames - 1;
+    int brRow = (topLeftFrame / m_cols) + hFrames - 1;
+    UVRect br = getFrameUVs(brRow * m_cols + brCol);
+    return { tl.u0, tl.v0, br.u1, br.v1 };
+}
+
 UVRect SpriteSheet::getSpanUVs(int frameIndex, int widthInCells) const {
     const int col = frameIndex % m_cols;
     const int row = frameIndex / m_cols;
