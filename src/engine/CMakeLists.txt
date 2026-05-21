@@ -11,6 +11,8 @@ add_library(engine STATIC
     renderer/SegmentFont.cpp
     renderer/PixelFont.cpp
     audio/AudioManager.cpp
+    physics/CollisionWorld.cpp
+    core/Services.cpp
 )
 
 # Expose src/ so consumers use #include <engine/...>
