@@ -19,11 +19,14 @@ protected:
     void onRender()         override;
 
 private:
+    static constexpr int   STARTING_ASTEROID_COUNT        = 4;
+    static constexpr float STARTING_ASTEROID_MIN_DIST_FROM_PLAYER = 150.f;
+
     Engine::Renderer2D                        m_renderer;
     std::shared_ptr<Engine::SpriteSheet>      m_sheet;
     std::optional<Ship>                       m_ship;
     std::vector<std::unique_ptr<Bullet>>      m_bullets;
     std::vector<std::unique_ptr<Asteroid>>    m_asteroids;
 
-
+    void spawnInitialAsteroidRing();
 };

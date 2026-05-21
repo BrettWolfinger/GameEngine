@@ -24,6 +24,18 @@ void Asteroid::registerCollider() {
         });
 }
 
+// ---- spawn ------------------------------------------------------------------
+
+std::unique_ptr<Asteroid> Asteroid::spawnLarge(glm::vec2 pos, std::mt19937& rng) {
+    const float velAngle = std::uniform_real_distribution<float>(0.f, 6.2831853f)(rng);
+    const float speed    = std::uniform_real_distribution<float>(40.f, 80.f)(rng);
+    const float rotMag   = std::uniform_real_distribution<float>(0.5f, 1.5f)(rng);
+    const float rotSign  = std::uniform_int_distribution<int>(0, 1)(rng) ? 1.f : -1.f;
+    return makeLarge(pos,
+                     { std::cos(velAngle) * speed, std::sin(velAngle) * speed },
+                     rotMag * rotSign);
+}
+
 // ---- factories --------------------------------------------------------------
 
 std::unique_ptr<Asteroid> Asteroid::makeLarge(glm::vec2 pos, glm::vec2 vel, float rotSpeed) {

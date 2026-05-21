@@ -6,6 +6,8 @@
 #include <engine/renderer/SpriteSheet.h>
 #include <glm/glm.hpp>
 #include <memory>
+#include <random>
+#include <vector>
 
 enum class AsteroidSize { Large, Medium, Small };
 
@@ -33,6 +35,9 @@ public:
 
     void update(float dt, int screenW, int screenH);
     void render(Engine::Renderer2D& renderer, const Engine::SpriteSheet& sheet) const;
+
+    // Spawns a large asteroid at pos with randomised velocity and rotation.
+    static std::unique_ptr<Asteroid> spawnLarge(glm::vec2 pos, std::mt19937& rng);
 
     static std::unique_ptr<Asteroid> makeLarge (                    glm::vec2 pos, glm::vec2 vel, float rotSpeed);
     static std::unique_ptr<Asteroid> makeMedium(int variant,        glm::vec2 pos, glm::vec2 vel, float rotSpeed);

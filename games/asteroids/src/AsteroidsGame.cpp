@@ -16,38 +16,7 @@ AsteroidsGame::AsteroidsGame()
     m_sheet      = std::make_shared<Engine::SpriteSheet>(texture, 16, 16);
     m_ship.emplace(m_sheet);
 
-    std::mt19937 rng(42);
-    std::uniform_real_distribution<float> angleDist(0.f, glm::two_pi<float>());
-    std::uniform_real_distribution<float> speedDist(40.f, 80.f);
-    std::uniform_real_distribution<float> rotDist(0.5f, 1.5f);
-    std::uniform_int_distribution<int>    rotSignDist(0, 1);
-
-    const glm::vec2 center(W * 0.5f, H * 0.5f);
-    constexpr float MIN_DIST = 150.f;
-    constexpr int   COUNT    = 4;
-
-    for (int i = 0; i < COUNT; ++i) {
-        const float baseAngle   = (glm::two_pi<float>() / COUNT) * i;
-        const float jitter      = std::uniform_real_distribution<float>(
-                                      -glm::pi<float>() / 6.f,
-                                       glm::pi<float>() / 6.f)(rng);
-        const float spawnAngle  = baseAngle + jitter;
-        const float spawnRadius = MIN_DIST + std::uniform_real_distribution<float>(0.f, 120.f)(rng);
-
-        glm::vec2 pos = center + glm::vec2(std::cos(spawnAngle), std::sin(spawnAngle)) * spawnRadius;
-        pos.x = std::clamp(pos.x, 32.f, static_cast<float>(W) - 32.f);
-        pos.y = std::clamp(pos.y, 32.f, static_cast<float>(H) - 32.f);
-
-        const float velAngle = angleDist(rng);
-        const float speed    = speedDist(rng);
-        const float rotMag   = rotDist(rng);
-        const float rotSign  = rotSignDist(rng) ? 1.f : -1.f;
-
-        m_asteroids.push_back(Asteroid::makeLarge(
-            pos,
-            { std::cos(velAngle) * speed, std::sin(velAngle) * speed },
-            rotMag * rotSign));
-    }
+    spawnInitialAsteroidRing();
 }
 
 void AsteroidsGame::onUpdate(float dt) {
@@ -99,4 +68,25 @@ void AsteroidsGame::onRender() {
 
     for (const auto& b : m_bullets)
         b->render(m_renderer);
+}
+
+void AsteroidsGame::spawnInitialAsteroidRing() {
+    std::mt19937 rng(42);
+    const glm::vec2 playerStart(W * 0.5f, H * 0.5f);
+
+    for (int i = 0; i < STARTING_ASTEROID_COUNT; ++i) {
+        const float baseAngle   = (glm::two_pi<float>() / STARTING_ASTEROID_COUNT) * i;
+        const float jitter      = std::uniform_real_distribution<float>(
+                                      -glm::pi<float>() / 6.f,
+                                       glm::pi<float>() / 6.f)(rng);
+        const float spawnRadius = STARTING_ASTEROID_MIN_DIST_FROM_PLAYER
+                                + std::uniform_real_distribution<float>(0.f, 120.f)(rng);
+
+        glm::vec2 pos = playerStart + glm::vec2(std::cos(baseAngle + jitter),
+                                                std::sin(baseAngle + jitter)) * spawnRadius;
+        pos.x = std::clamp(pos.x, 32.f, static_cast<float>(W) - 32.f);
+        pos.y = std::clamp(pos.y, 32.f, static_cast<float>(H) - 32.f);
+
+        m_asteroids.push_back(Asteroid::spawnLarge(pos, rng));
+    }
 }
