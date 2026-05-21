@@ -19,11 +19,21 @@ AsteroidsGame::AsteroidsGame()
     spawnInitialAsteroidRing();
 }
 
+void AsteroidsGame::preStep(float dt) {
+    m_ship->update(dt, W, H);
+
+    for (auto& b : m_bullets)
+        b->update(dt);
+
+    for (auto& a : m_asteroids)
+        a->update(dt, W, H);
+}
+
 void AsteroidsGame::onUpdate(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q))
         quit();
 
-    // Spawn fragments for asteroids killed by collision last tick.
+    // Spawn fragments for asteroids flagged by collision this tick.
     // Snapshot the count so newly-appended fragments are skipped this pass.
     const size_t n = m_asteroids.size();
     for (size_t i = 0; i < n; ++i) {
@@ -37,25 +47,16 @@ void AsteroidsGame::onUpdate(float dt) {
                        [](const auto& a) { return a->wasShot(); }),
         m_asteroids.end());
 
-    // --- Normal per-tick updates ---
-    m_ship->update(dt, W, H);
-
     if (auto shot = m_ship->tryShoot()) {
         m_bullets.push_back(std::make_unique<Bullet>(
             shot->pos, shot->direction * Bullet::SPEED,
             m_sheet->getFrameUVs(128), &m_sheet->texture()));
     }
 
-    for (auto& b : m_bullets)
-        b->update(dt);
-
     m_bullets.erase(
         std::remove_if(m_bullets.begin(), m_bullets.end(),
                        [](const auto& b) { return !b->isAlive(); }),
         m_bullets.end());
-
-    for (auto& a : m_asteroids)
-        a->update(dt, W, H);
 }
 
 void AsteroidsGame::onRender() {

@@ -15,6 +15,7 @@ public:
     AsteroidsGame();
 
 protected:
+    void preStep(float dt)  override;
     void onUpdate(float dt) override;
     void onRender()         override;
 

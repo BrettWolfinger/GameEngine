@@ -19,6 +19,7 @@ public:
 
 protected:
     virtual void onInit()            {}
+    virtual void preStep(float dt)   {}
     virtual void onUpdate(float dt)  {}
     virtual void onRender()          {}
     virtual void onShutdown()        {}
