@@ -28,6 +28,7 @@ void Application::run() {
 
         while (accum >= fixedDt) {
             Input::update();
+            m_collisionWorld.step();
             onUpdate(static_cast<float>(fixedDt));
             accum -= fixedDt;
         }

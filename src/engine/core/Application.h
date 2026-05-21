@@ -2,6 +2,7 @@
 #include <memory>
 #include "Window.h"
 #include "../audio/AudioManager.h"
+#include "../physics/CollisionWorld.h"
 
 namespace Engine {
 
@@ -21,9 +22,12 @@ protected:
     virtual void onRender()          {}
     virtual void onShutdown()        {}
 
+    CollisionWorld& collisionWorld() { return m_collisionWorld; }
+
 private:
     std::unique_ptr<Window> m_window;
-    bool m_running = true;
+    CollisionWorld          m_collisionWorld;
+    bool                    m_running = true;
 };
 
 } // namespace Engine

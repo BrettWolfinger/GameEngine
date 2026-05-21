@@ -1,5 +1,6 @@
 #pragma once
 #include <engine/core/Application.h>
+#include <engine/physics/Collider.h>
 #include <engine/renderer/Renderer2D.h>
 #include <engine/renderer/SpriteSheet.h>
 #include <engine/renderer/Texture.h>
@@ -8,7 +9,7 @@
 #include "Asteroid.h"
 #include <memory>
 #include <optional>
-#include <random>
+#include <utility>
 #include <vector>
 
 class AsteroidsGame : public Engine::Application {
@@ -23,8 +24,13 @@ private:
     Engine::Renderer2D                   m_renderer;
     std::shared_ptr<Engine::SpriteSheet> m_sheet;
     std::optional<Ship>                  m_ship;
-    std::vector<Bullet>   m_bullets;
-    std::vector<Asteroid> m_asteroids;
+    std::vector<Bullet>                  m_bullets;
+    std::vector<Asteroid>                m_asteroids;
+
+    // Collision hit pairs queued by step() callbacks, processed in onUpdate.
+    std::vector<std::pair<Engine::ColliderHandle, Engine::ColliderHandle>> m_pendingHits;
 
     static constexpr int MAX_BULLETS = 4;
+
+    void spawnAsteroid(Asteroid a);
 };

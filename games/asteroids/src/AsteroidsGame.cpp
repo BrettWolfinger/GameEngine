@@ -1,5 +1,6 @@
 #include "AsteroidsGame.h"
 #include "AsteroidsConfig.h"
+#include <engine/physics/Collider.h>
 #include <engine/renderer/Texture.h>
 #include <engine/core/Input.h>
 #include <GLFW/glfw3.h>
@@ -8,6 +9,11 @@
 #include <algorithm>
 #include <random>
 #include <cmath>
+
+namespace {
+    constexpr uint32_t kBulletLayer   = 1 << 0;
+    constexpr uint32_t kAsteroidLayer = 1 << 1;
+}
 
 AsteroidsGame::AsteroidsGame()
     : Engine::Application("Asteroids", W, H)
@@ -24,14 +30,10 @@ AsteroidsGame::AsteroidsGame()
     std::uniform_int_distribution<int>    rotSignDist(0, 1);
 
     const glm::vec2 center(W * 0.5f, H * 0.5f);
-    constexpr float MIN_DIST  = 150.f;
-    constexpr int   COUNT     = 4;
+    constexpr float MIN_DIST = 150.f;
+    constexpr int   COUNT    = 4;
 
-    // Fixed spawn positions arranged in a ring so they're naturally spread out
-    // and guaranteed to be at least MIN_DIST from center.
     for (int i = 0; i < COUNT; ++i) {
-        // Evenly space the base directions, then jitter by up to 30° to avoid
-        // a perfectly symmetric look.
         const float baseAngle   = (glm::two_pi<float>() / COUNT) * i;
         const float jitter      = std::uniform_real_distribution<float>(
                                       -glm::pi<float>() / 6.f,
@@ -40,27 +42,93 @@ AsteroidsGame::AsteroidsGame()
         const float spawnRadius = MIN_DIST + std::uniform_real_distribution<float>(0.f, 120.f)(rng);
 
         glm::vec2 pos = center + glm::vec2(std::cos(spawnAngle), std::sin(spawnAngle)) * spawnRadius;
-
-        // Clamp to screen bounds (leaving a cell-width margin so the asteroid
-        // is fully visible at spawn).
         pos.x = std::clamp(pos.x, 32.f, static_cast<float>(W) - 32.f);
         pos.y = std::clamp(pos.y, 32.f, static_cast<float>(H) - 32.f);
 
         const float velAngle = angleDist(rng);
         const float speed    = speedDist(rng);
-        glm::vec2   vel(std::cos(velAngle) * speed, std::sin(velAngle) * speed);
+        const float rotMag   = rotDist(rng);
+        const float rotSign  = rotSignDist(rng) ? 1.f : -1.f;
 
-        const float rotMag  = rotDist(rng);
-        const float rotSign = rotSignDist(rng) ? 1.f : -1.f;
-
-        m_asteroids.push_back(Asteroid::makeLarge(pos, vel, rotMag * rotSign));
+        spawnAsteroid(Asteroid::makeLarge(pos,
+                                          { std::cos(velAngle) * speed, std::sin(velAngle) * speed },
+                                          rotMag * rotSign));
     }
+}
+
+void AsteroidsGame::spawnAsteroid(Asteroid a) {
+    a.colliderHandle = collisionWorld().add(
+        Engine::ColliderDesc::makeCircle(kAsteroidLayer, kBulletLayer,
+                                         a.pos.x, a.pos.y, a.radius()),
+        nullptr);  // asteroid doesn't need its own callback; bullet handles the event
+    m_asteroids.push_back(a);
 }
 
 void AsteroidsGame::onUpdate(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q))
         quit();
 
+    // --- Process collision hits queued by step() (which ran before this onUpdate) ---
+    for (auto& hit : m_pendingHits) {
+        const Engine::ColliderHandle bh = hit.first;
+        const Engine::ColliderHandle ah = hit.second;
+
+        // Find the live bullet that was hit.
+        auto bIt = std::find_if(m_bullets.begin(), m_bullets.end(),
+                                [bh](const Bullet& b) { return b.colliderHandle == bh && b.isAlive(); });
+        if (bIt == m_bullets.end()) continue;  // already processed by an earlier hit this tick
+
+        bIt->lifetime = 0.f;
+        collisionWorld().remove(bh);
+        bIt->colliderHandle = Engine::NULL_COLLIDER;
+
+        // Find the live asteroid that was hit.
+        auto aIt = std::find_if(m_asteroids.begin(), m_asteroids.end(),
+                                [ah](const Asteroid& a) { return a.colliderHandle == ah && a.size != AsteroidSize::Dead; });
+        if (aIt == m_asteroids.end()) continue;
+
+        const AsteroidSize hitSize = aIt->size;
+        const int          variant = aIt->variant;
+        const glm::vec2    pos     = aIt->pos;
+        const glm::vec2    vel     = aIt->vel;
+
+        aIt->size = AsteroidSize::Dead;
+        collisionWorld().remove(ah);
+        aIt->colliderHandle = Engine::NULL_COLLIDER;
+
+        // Spread 4 fragments 90° apart at twice the parent speed.
+        const float baseAngle = std::atan2(vel.y, vel.x);
+        const float speed     = glm::length(vel) * 2.f;
+
+        if (hitSize == AsteroidSize::Large) {
+            for (int i = 0; i < 4; ++i) {
+                const float ang = baseAngle + glm::half_pi<float>() * i;
+                const glm::vec2 fvel(std::cos(ang) * speed, std::sin(ang) * speed);
+                spawnAsteroid(Asteroid::makeMedium(i, pos, fvel, 1.0f * (i % 2 == 0 ? 1.f : -1.f)));
+            }
+        } else if (hitSize == AsteroidSize::Medium) {
+            for (int i = 0; i < 4; ++i) {
+                const float ang = baseAngle + glm::half_pi<float>() * i;
+                const glm::vec2 fvel(std::cos(ang) * speed, std::sin(ang) * speed);
+                spawnAsteroid(Asteroid::makeSmall(variant, i, pos, fvel, 1.5f * (i % 2 == 0 ? 1.f : -1.f)));
+            }
+        }
+        // Small: destroyed, no fragments.
+    }
+    m_pendingHits.clear();
+
+    // Remove dead bullets (hit above) and dead asteroids (hit above).
+    m_bullets.erase(
+        std::remove_if(m_bullets.begin(), m_bullets.end(),
+                       [](const Bullet& b) { return !b.isAlive(); }),
+        m_bullets.end());
+
+    m_asteroids.erase(
+        std::remove_if(m_asteroids.begin(), m_asteroids.end(),
+                       [](const Asteroid& a) { return a.size == AsteroidSize::Dead; }),
+        m_asteroids.end());
+
+    // --- Normal per-tick updates ---
     m_ship->update(dt, W, H);
 
     if (m_ship->tryShoot() && (int)m_bullets.size() < MAX_BULLETS) {
@@ -72,14 +140,27 @@ void AsteroidsGame::onUpdate(float dt) {
         b.pos      = nose;
         b.vel      = forward * Bullet::SPEED;
         b.lifetime = Bullet::LIFETIME;
-        b.uv       = m_sheet->getFrameUVs(128);  // bullet, 1×1
+        b.uv       = m_sheet->getFrameUVs(128);
         b.tex      = &m_sheet->texture();
+        b.colliderHandle = collisionWorld().add(
+            Engine::ColliderDesc::makeCircle(kBulletLayer, kAsteroidLayer,
+                                             b.pos.x, b.pos.y, Bullet::SIZE * 0.5f),
+            [this](Engine::ColliderHandle self, Engine::ColliderHandle other) {
+                m_pendingHits.push_back({ self, other });
+            });
         m_bullets.push_back(b);
     }
 
     for (auto& b : m_bullets)
         b.update(dt);
 
+    // Deregister bullets that expired by lifetime (not by collision).
+    for (auto& b : m_bullets) {
+        if (!b.isAlive() && b.colliderHandle != Engine::NULL_COLLIDER) {
+            collisionWorld().remove(b.colliderHandle);
+            b.colliderHandle = Engine::NULL_COLLIDER;
+        }
+    }
     m_bullets.erase(
         std::remove_if(m_bullets.begin(), m_bullets.end(),
                        [](const Bullet& b) { return !b.isAlive(); }),
@@ -88,49 +169,12 @@ void AsteroidsGame::onUpdate(float dt) {
     for (auto& a : m_asteroids)
         a.update(dt, W, H);
 
-    // Bullet-asteroid collision
-    std::vector<Asteroid> newFragments;
-    for (auto& b : m_bullets) {
-        if (!b.isAlive()) continue;
-        for (auto& a : m_asteroids) {
-            if (a.size == AsteroidSize::Dead) continue;
-            const float dist = glm::length(b.pos - a.pos);
-            if (dist >= a.radius() + Bullet::SIZE * 0.5f) continue;
+    // Sync all collider positions for next step().
+    for (auto& b : m_bullets)
+        collisionWorld().updateCircle(b.colliderHandle, b.pos.x, b.pos.y, Bullet::SIZE * 0.5f);
 
-            b.lifetime = 0.f;
-            const AsteroidSize hitSize = a.size;
-            a.size = AsteroidSize::Dead;
-
-            // Spread 4 fragments 90° apart, each at twice the parent speed.
-            const float baseAngle = std::atan2(a.vel.y, a.vel.x);
-            const float speed     = glm::length(a.vel) * 2.f;
-
-            if (hitSize == AsteroidSize::Large) {
-                for (int i = 0; i < 4; ++i) {
-                    const float ang = baseAngle + glm::half_pi<float>() * i;
-                    const glm::vec2 vel(std::cos(ang) * speed, std::sin(ang) * speed);
-                    const float rot = 1.0f * (i % 2 == 0 ? 1.f : -1.f);
-                    newFragments.push_back(Asteroid::makeMedium(i, a.pos, vel, rot));
-                }
-            } else if (hitSize == AsteroidSize::Medium) {
-                for (int i = 0; i < 4; ++i) {
-                    const float ang = baseAngle + glm::half_pi<float>() * i;
-                    const glm::vec2 vel(std::cos(ang) * speed, std::sin(ang) * speed);
-                    const float rot = 1.5f * (i % 2 == 0 ? 1.f : -1.f);
-                    newFragments.push_back(Asteroid::makeSmall(a.variant, i, a.pos, vel, rot));
-                }
-            }
-            // Small: destroyed, no fragments.
-            break;
-        }
-    }
-
-    m_asteroids.erase(
-        std::remove_if(m_asteroids.begin(), m_asteroids.end(),
-                       [](const Asteroid& a) { return a.size == AsteroidSize::Dead; }),
-        m_asteroids.end());
-
-    m_asteroids.insert(m_asteroids.end(), newFragments.begin(), newFragments.end());
+    for (auto& a : m_asteroids)
+        collisionWorld().updateCircle(a.colliderHandle, a.pos.x, a.pos.y, a.radius());
 }
 
 void AsteroidsGame::onRender() {
