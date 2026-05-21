@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <cmath>
+#include <algorithm>
 
 Ship::Ship(std::shared_ptr<Engine::SpriteSheet> sheet)
     : m_pos(W * 0.5f, H * 0.5f)
@@ -34,8 +35,9 @@ void Ship::reset() {
     m_pos       = { W * 0.5f, H * 0.5f };
     m_angle     = 0.f;
     m_vel       = { 0.f, 0.f };
-    m_thrusting = false;
-    m_fireTimer = 0.f;
+    m_thrusting  = false;
+    m_fireTimer  = 0.f;
+    m_flashTimer = 0.f;
     m_currentClip = "idle";
     m_animator.setClip("idle");
 }
@@ -43,7 +45,8 @@ void Ship::reset() {
 bool Ship::tryShoot() {
     if (m_fireTimer > 0.f || !Engine::Input::isKeyDown(GLFW_KEY_SPACE))
         return false;
-    m_fireTimer = FIRE_COOLDOWN;
+    m_fireTimer  = FIRE_COOLDOWN;
+    m_flashTimer = FLASH_DURATION;
     return true;
 }
 
@@ -63,8 +66,8 @@ void Ship::update(float dt, int screenW, int screenH) {
             m_vel *= MAX_SPEED / speed;
     }
 
-    if (m_fireTimer > 0.f)
-        m_fireTimer -= dt;
+    if (m_fireTimer  > 0.f) m_fireTimer  -= dt;
+    if (m_flashTimer > 0.f) m_flashTimer -= dt;
 
     float dragFactor = std::pow(DRAG, dt * 60.f);
     m_vel *= dragFactor;
@@ -91,8 +94,8 @@ void Ship::render(Engine::Renderer2D& renderer) const {
 
     if (m_thrusting) {
         glm::vec2 backward = { -glm::sin(m_angle), glm::cos(m_angle) };
-        const float tx = m_pos.x + backward.x * 20.f - half;
-        const float ty = m_pos.y + backward.y * 20.f - half;
+        const float tx = m_pos.x + backward.x * 16.f - half;
+        const float ty = m_pos.y + backward.y * 16.f - half;
         const Engine::UVRect thrUVs = m_animator.currentFrameUVs();
         renderer.drawTexturedRect(tx, ty, RENDER_SIZE, RENDER_SIZE,
                                   tex, thrUVs.u0, thrUVs.v0, thrUVs.u1, thrUVs.v1,
@@ -103,4 +106,25 @@ void Ship::render(Engine::Renderer2D& renderer) const {
     renderer.drawTexturedRect(m_pos.x - half, m_pos.y - half, RENDER_SIZE, RENDER_SIZE,
                               tex, shipUVs.u0, shipUVs.v0, shipUVs.u1, shipUVs.v1,
                               m_angle);
+
+    if (m_flashTimer > 0.f) {
+        // Flash occupies the top-left 16x16 of each 64x64 cell in cols 1,2,3 (y=64 row)
+        // 16/256 = 0.0625 per side; col offset = col * 0.25
+        static constexpr Engine::UVRect FLASH_UVS[3] = {
+            { 0.25f, 0.25f, 0.3125f, 0.3125f },
+            { 0.50f, 0.25f, 0.5625f, 0.3125f },
+            { 0.75f, 0.25f, 0.8125f, 0.3125f },
+        };
+        static constexpr float FLASH_SIZE = 16.f * SCALE;
+        int frame = std::clamp((int)((1.f - m_flashTimer / FLASH_DURATION) * 3.f), 0, 2);
+        glm::vec2 forward     = { glm::sin(m_angle), -glm::cos(m_angle) };
+        glm::vec2 nose        = m_pos + forward * (RENDER_SIZE * 0.5f);
+        // Content sits at the bottom of the 16x16 frame; shift center forward by half
+        // the render size so the content (bottom edge) lands at the nose.
+        glm::vec2 flashCenter = nose + forward * (FLASH_SIZE * 0.5f);
+        const auto& uv        = FLASH_UVS[frame];
+        renderer.drawTexturedRect(flashCenter.x - FLASH_SIZE * 0.5f, flashCenter.y - FLASH_SIZE * 0.5f,
+                                  FLASH_SIZE, FLASH_SIZE,
+                                  tex, uv.u0, uv.v0, uv.u1, uv.v1, m_angle);
+    }
 }
