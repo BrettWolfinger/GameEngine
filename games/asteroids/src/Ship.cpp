@@ -18,11 +18,15 @@ Ship::Ship(std::shared_ptr<Engine::SpriteSheet> sheet)
     idleClip.frames        = { 0 };
     idleClip.frameDuration = 0.1f;
     idleClip.mode          = Engine::PlayMode::Loop;
+    idleClip.wFrames       = 2;
+    idleClip.hFrames       = 2;
 
     Engine::AnimClip thrustClip;
-    thrustClip.frames        = { 2, 4 };
+    thrustClip.frames        = { 4, 8 };
     thrustClip.frameDuration = 0.08f;
     thrustClip.mode          = Engine::PlayMode::Loop;
+    thrustClip.wFrames       = 2;
+    thrustClip.hFrames       = 2;
 
     m_animator.addClip("idle",   std::move(idleClip));
     m_animator.addClip("thrust", std::move(thrustClip));
@@ -102,19 +106,13 @@ void Ship::render(Engine::Renderer2D& renderer) const {
                                   m_angle);
     }
 
-    const Engine::UVRect shipUVs = m_animator.sheet().getFrameUVs(0);
+    const Engine::UVRect shipUVs = m_animator.sheet().getFrameUVs(0, 2, 2);
     renderer.drawTexturedRect(m_pos.x - half, m_pos.y - half, RENDER_SIZE, RENDER_SIZE,
                               tex, shipUVs.u0, shipUVs.v0, shipUVs.u1, shipUVs.v1,
                               m_angle);
 
     if (m_flashTimer > 0.f) {
-        // Flash occupies the top-left 16x16 of each 64x64 cell in cols 1,2,3 (y=64 row)
-        // 16/256 = 0.0625 per side; col offset = col * 0.25
-        static constexpr Engine::UVRect FLASH_UVS[3] = {
-            { 0.25f, 0.25f, 0.3125f, 0.3125f },
-            { 0.50f, 0.25f, 0.5625f, 0.3125f },
-            { 0.75f, 0.25f, 0.8125f, 0.3125f },
-        };
+        static constexpr int FLASH_FRAMES[3] = { 68, 72, 76 };
         static constexpr float FLASH_SIZE = 16.f * SCALE;
         int frame = std::clamp((int)((1.f - m_flashTimer / FLASH_DURATION) * 3.f), 0, 2);
         glm::vec2 forward     = { glm::sin(m_angle), -glm::cos(m_angle) };
@@ -122,7 +120,7 @@ void Ship::render(Engine::Renderer2D& renderer) const {
         // Content sits at the bottom of the 16x16 frame; shift center forward by half
         // the render size so the content (bottom edge) lands at the nose.
         glm::vec2 flashCenter = nose + forward * (FLASH_SIZE * 0.5f);
-        const auto& uv        = FLASH_UVS[frame];
+        const Engine::UVRect uv = m_animator.sheet().getFrameUVs(FLASH_FRAMES[frame]);
         renderer.drawTexturedRect(flashCenter.x - FLASH_SIZE * 0.5f, flashCenter.y - FLASH_SIZE * 0.5f,
                                   FLASH_SIZE, FLASH_SIZE,
                                   tex, uv.u0, uv.v0, uv.u1, uv.v1, m_angle);

@@ -10,7 +10,7 @@ AsteroidsGame::AsteroidsGame()
     : Engine::Application("Asteroids", W, H)
 {
     auto texture = std::make_shared<Engine::Texture>("games/asteroids/assets/asteroids-arcade.png");
-    m_sheet      = std::make_shared<Engine::SpriteSheet>(texture, 8, 8);
+    m_sheet      = std::make_shared<Engine::SpriteSheet>(texture, 16, 16);
     m_ship.emplace(m_sheet);
 }
 
@@ -25,12 +25,11 @@ void AsteroidsGame::onUpdate(float dt) {
         glm::vec2 forward = { glm::sin(angle), -glm::cos(angle) };
         glm::vec2 nose    = m_ship->pos() + forward * (Ship::RENDER_SIZE * 0.5f);
 
-        // Bullet sprite: col 0, row 3 of the 64x64 grid (y=192–255 in the 256x256 sheet)
         Bullet b;
         b.pos      = nose;
         b.vel      = forward * Bullet::SPEED;
         b.lifetime = Bullet::LIFETIME;
-        b.uv       = { 0.f, 0.5f, 0.0625f, 0.5625f };
+        b.uv       = m_sheet->getFrameUVs(128);  // bullet, 1x1
         b.tex      = &m_sheet->texture();
         m_bullets.push_back(b);
     }

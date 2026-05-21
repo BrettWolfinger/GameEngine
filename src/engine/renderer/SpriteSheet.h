@@ -15,8 +15,8 @@ public:
     // Returns UV coordinates for the given zero-based frame index (row-major order).
     UVRect getFrameUVs(int frameIndex) const;
 
-    // Returns UV coordinates spanning widthInCells cells horizontally from frameIndex.
-    UVRect getSpanUVs(int frameIndex, int widthInCells) const;
+    // Returns UV coordinates spanning wFrames x hFrames cells, anchored at topLeftFrame.
+    UVRect getFrameUVs(int topLeftFrame, int wFrames, int hFrames) const;
 
     const Texture& texture()  const { return *m_texture; }
     int            frameCount() const { return m_cols * m_rows; }

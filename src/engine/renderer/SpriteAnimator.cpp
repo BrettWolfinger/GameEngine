@@ -46,8 +46,8 @@ UVRect SpriteAnimator::currentFrameUVs() const {
     if (!m_current || m_current->frames.empty())
         return m_sheet->getFrameUVs(0);
 
-    const int sheetFrame = m_current->frames[m_frameIdx];
-    return m_sheet->getFrameUVs(sheetFrame);
+    const int frameIndex = m_current->frames[m_frameIdx];
+    return m_sheet->getFrameUVs(frameIndex, m_current->wFrames, m_current->hFrames);
 }
 
 } // namespace Engine
