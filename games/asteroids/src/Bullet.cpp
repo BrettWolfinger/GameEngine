@@ -3,11 +3,12 @@
 #include <engine/core/Services.h>
 #include <engine/physics/CollisionWorld.h>
 
-Bullet::Bullet(glm::vec2 pos, glm::vec2 vel, Engine::UVRect uv, const Engine::Texture* tex)
+Bullet::Bullet(glm::vec2 pos, glm::vec2 vel, Engine::UVRect uv, const Engine::Texture* tex,
+               uint32_t selfLayer, uint32_t targetLayer)
     : pos(pos), vel(vel), lifetime(LIFETIME), uv(uv), tex(tex)
 {
     m_colliderHandle = Engine::Services::collision().add(
-        Engine::ColliderDesc::makeCircle(kBulletLayer, kAsteroidLayer, pos.x, pos.y, SIZE * 0.5f),
+        Engine::ColliderDesc::makeCircle(selfLayer, targetLayer, pos.x, pos.y, SIZE * 0.5f),
         [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
             lifetime = 0.f;
             Engine::Services::collision().remove(self);

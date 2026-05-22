@@ -123,6 +123,15 @@ void Asteroid::update(float dt, int screenW, int screenH) {
         Engine::Services::collision().updateCircle(m_colliderHandle, pos.x, pos.y, radius());
 }
 
+int Asteroid::scoreValue() const {
+    switch (size) {
+        case AsteroidSize::Large:  return SCORE_LARGE;
+        case AsteroidSize::Medium: return SCORE_MEDIUM;
+        case AsteroidSize::Small:  return SCORE_SMALL;
+        default: return 0;
+    }
+}
+
 // ---- audio ------------------------------------------------------------------
 
 void Asteroid::playDestructionSound() const {

@@ -40,7 +40,7 @@ Ship::Ship(std::shared_ptr<Engine::SpriteSheet> sheet, const ShipConfig& config)
     m_animator.setClip("idle");
 
     m_colliderHandle = Engine::Services::collision().add(
-        Engine::ColliderDesc::makeCircle(kShipLayer, kAsteroidLayer, m_pos.x, m_pos.y, COLLISION_RADIUS),
+        Engine::ColliderDesc::makeCircle(kShipLayer, kAsteroidLayer | kUfoBulletLayer, m_pos.x, m_pos.y, COLLISION_RADIUS),
         [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
             if (m_invincibleTimer > 0.f) return;
             m_wasHit = true;
@@ -69,7 +69,7 @@ void Ship::reset() {
     m_animator.setClip("idle");
 
     m_colliderHandle = Engine::Services::collision().add(
-        Engine::ColliderDesc::makeCircle(kShipLayer, kAsteroidLayer, m_pos.x, m_pos.y, COLLISION_RADIUS),
+        Engine::ColliderDesc::makeCircle(kShipLayer, kAsteroidLayer | kUfoBulletLayer, m_pos.x, m_pos.y, COLLISION_RADIUS),
         [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
             if (m_invincibleTimer > 0.f) return;
             m_wasHit = true;
