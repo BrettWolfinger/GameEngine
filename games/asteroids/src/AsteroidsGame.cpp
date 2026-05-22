@@ -331,8 +331,9 @@ void AsteroidsGame::renderShipSelect() {
         const float      cx       = x + PREVIEW_SIZE * 0.5f;
         const Engine::UVRect uv   = m_sheet->getFrameUVs(ShipConfigs::All[i].shipFrame, 2, 2);
 
+        const glm::vec4 spriteTint = selected ? glm::vec4{1.f, 1.f, 1.f, 1.f} : glm::vec4{0.35f, 0.35f, 0.35f, 1.f};
         m_renderer.drawTexturedRect(x, previewY, PREVIEW_SIZE, PREVIEW_SIZE,
-                                    tex, uv.u0, uv.v0, uv.u1, uv.v1);
+                                    tex, uv.u0, uv.v0, uv.u1, uv.v1, 0.f, spriteTint);
 
         const glm::vec4& nameColor = selected ? GOLD : WHITE;
         Engine::PixelFont::drawStringCentered(m_renderer, ShipConfigs::All[i].name, cx, nameY, 2.f, nameColor);

@@ -38,13 +38,14 @@ static const char* kTexFrag = R"(
 in vec2 v_uv;
 uniform sampler2D u_tex;
 uniform vec4 u_uvRegion; // (u0, v0, u1, v1)
+uniform vec4 u_tint;
 out vec4 fragColor;
 void main() {
     vec2 uv = vec2(
         u_uvRegion.x + v_uv.x * (u_uvRegion.z - u_uvRegion.x),
         u_uvRegion.y + v_uv.y * (u_uvRegion.w - u_uvRegion.y)
     );
-    fragColor = texture(u_tex, uv);
+    fragColor = texture(u_tex, uv) * u_tint;
     if (fragColor.a < 0.1) discard;
 }
 )";
@@ -114,6 +115,8 @@ Renderer2D::~Renderer2D() {
 void Renderer2D::beginScene(int width, int height) {
     glClearColor(0.f, 0.f, 0.f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // Screen-space ortho: (0,0) top-left, (w,h) bottom-right
     m_proj = glm::ortho(0.f, (float)width, (float)height, 0.f, -1.f, 1.f);
 }
@@ -134,7 +137,8 @@ void Renderer2D::drawRect(float x, float y, float w, float h, const glm::vec4& c
 void Renderer2D::drawTexturedRect(float x, float y, float w, float h,
                                    const Texture& tex,
                                    float u0, float v0, float u1, float v1,
-                                   float angle) {
+                                   float angle,
+                                   const glm::vec4& tint) {
     // Translate to sprite center, rotate, translate back, then scale
     glm::mat4 model = glm::translate(glm::mat4(1.f), glm::vec3(x + w * 0.5f, y + h * 0.5f, 0.f));
     if (angle != 0.f)
@@ -147,6 +151,7 @@ void Renderer2D::drawTexturedRect(float x, float y, float w, float h,
     m_texShader->bind();
     m_texShader->setMat4("u_mvp", m_proj * model);
     m_texShader->setVec4("u_uvRegion", glm::vec4(u0, v0, u1, v1));
+    m_texShader->setVec4("u_tint", tint);
     m_texShader->setInt("u_tex", 0);
 
     glBindVertexArray(m_texVao);
