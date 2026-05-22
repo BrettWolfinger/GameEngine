@@ -1,4 +1,5 @@
 add_library(engine STATIC
+    ui/Menu.cpp
     core/Application.cpp
     core/Window.cpp
     core/Input.cpp

@@ -4,7 +4,9 @@
 #include <engine/renderer/Renderer2D.h>
 #include <engine/renderer/SpriteSheet.h>
 #include <engine/renderer/Texture.h>
+#include <engine/ui/Menu.h>
 #include "Ship.h"
+#include "ShipConfig.h"
 #include "Bullet.h"
 #include "Asteroid.h"
 #include <memory>
@@ -15,6 +17,8 @@
 class AsteroidsGame : public Engine::Application {
 public:
     AsteroidsGame();
+
+    enum class Screen { Title, ShipSelect, Playing, GameOver };
 
 protected:
     void preStep(float dt)  override;
@@ -37,15 +41,28 @@ private:
     std::optional<Ship>                       m_ship;
     std::vector<std::unique_ptr<Bullet>>      m_bullets;
     std::vector<std::unique_ptr<Asteroid>>    m_asteroids;
+    std::vector<std::unique_ptr<Asteroid>>    m_bgAsteroids;
     std::mt19937                              m_rng;
     Engine::SaveData                          m_saveData;
+    Engine::Menu                              m_titleMenu;
+    Screen                                    m_screen       = Screen::Title;
+    int                                       m_selectedShip = 0;
     int                                       m_lives        = STARTING_LIVES;
     int                                       m_score        = 0;
     int                                       m_highScore    = 0;
     int                                       m_wave         = 1;
     float                                     m_waveTimer    = -1.f;
-    bool                                      m_gameOver     = false;
     bool                                      m_newHighScore = false;
+
+    // title screen helpers
+    void spawnBgAsteroids();
+    void updateTitleScreen(float dt);
+    void renderTitleScreen();
+
+    // ship selection helpers
+    void updateShipSelect();
+    void renderShipSelect();
+    void startGame();
 
     // onUpdate helpers
 #ifdef ENABLE_DEV_KEYS
