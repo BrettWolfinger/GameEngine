@@ -52,6 +52,7 @@ private:
 
     // onRender helpers
     void renderLivesHUD();
+    void renderWaveAnnouncement();
 
     // Spawning
     void      spawnInitialAsteroidRing();

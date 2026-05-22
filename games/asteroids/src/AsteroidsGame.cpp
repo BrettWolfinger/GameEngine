@@ -1,6 +1,8 @@
 #include "AsteroidsGame.h"
 #include "AsteroidsConfig.h"
 #include <engine/renderer/Texture.h>
+#include <engine/renderer/SegmentFont.h>
+#include <engine/renderer/PixelFont.h>
 #include <engine/core/Input.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -63,6 +65,7 @@ void AsteroidsGame::onRender() {
         b->render(m_renderer);
 
     renderLivesHUD();
+    renderWaveAnnouncement();
 }
 
 // ---- onUpdate helpers -------------------------------------------------------
@@ -139,6 +142,23 @@ void AsteroidsGame::renderLivesHUD() {
                                     m_sheet->texture(),
                                     iconUV.u0, iconUV.v0, iconUV.u1, iconUV.v1);
     }
+}
+
+void AsteroidsGame::renderWaveAnnouncement() {
+    if (m_waveTimer < 0.f) return;
+
+    static constexpr float LABEL_SCALE  = 7.f;
+    static constexpr float NUMBER_SCALE = 10.f;
+    static constexpr float GAP          = 15.f;
+    static constexpr glm::vec4 COLOR    = { 1.f, 1.f, 1.f, 1.f };
+
+    const float labelH  = 7.f * LABEL_SCALE;   // PixelFont glyphs are 7 rows tall
+    const float numberH = 5.f * NUMBER_SCALE;  // SegmentFont glyphs are 5 rows tall
+    const float totalH  = labelH + GAP + numberH;
+    const float topY    = H * 0.5f - totalH * 0.5f;
+
+    Engine::PixelFont::drawStringCentered  (m_renderer, "WAVE",     W * 0.5f, topY,                LABEL_SCALE,  COLOR);
+    Engine::SegmentFont::drawStringCentered(m_renderer, m_wave + 1, W * 0.5f, topY + labelH + GAP, NUMBER_SCALE, COLOR);
 }
 
 // ---- spawning ---------------------------------------------------------------
