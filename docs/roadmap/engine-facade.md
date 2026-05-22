@@ -214,6 +214,47 @@ private headers) and should be done deliberately, not alongside other work.
 
 ---
 
+### Phase 6 — Doxygen API documentation (future)
+
+Once the facade is stable, annotate facade headers with Doxygen comments and
+generate a browsable HTML API reference. The facade is the right place for these
+comments — it is the public contract for what games can do; internals are
+implementation detail and don't need annotation.
+
+**Comment style:**
+
+```cpp
+namespace Engine::Audio {
+
+/// Play a synthesized tone.
+/// @param frequencyHz  Pitch in Hz (e.g. 440 = A4).
+/// @param durationSec  Duration of the tone in seconds.
+/// @param amplitude    Volume in the range 0.0–1.0. Defaults to 0.4.
+inline void playTone(float frequencyHz, float durationSec, float amplitude = 0.4f);
+
+} // namespace Engine::Audio
+```
+
+**Scope:**
+- Annotate facade headers only — `engine/facade/*.h` and `engine/Engine.h`
+- Do not annotate engine internals (`Services`, `AudioManager`, etc.)
+- Annotate shared types games construct directly (`ParticleEmitParams`,
+  `ColliderDesc`, `ColliderHandle`)
+
+**CI integration:**
+
+Doxygen can run in CI on merge to main and publish to GitHub Pages, keeping the
+reference always current. Add to the build pipeline after the facade is
+feature-complete.
+
+**Discipline:**
+
+Doxygen comments must be updated in the same PR as the code change that
+necessitates them — stale parameter docs are worse than none. Treat them the
+same as the `docs/` markdown files.
+
+---
+
 ## Migration strategy
 
 - Introduce each facade on its own branch alongside the work that touches that
