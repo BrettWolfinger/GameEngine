@@ -82,13 +82,13 @@ std::optional<UFO::BulletSpawn> UFO::tryFire(glm::vec2 shipPos) {
     return BulletSpawn{ m_pos, dir };
 }
 
-void UFO::render(Engine::Renderer2D& renderer) const {
-    static constexpr glm::vec4 COLOR = { 0.3f, 0.95f, 0.95f, 1.f };
+void UFO::render(Engine::Renderer2D& renderer, const Engine::SpriteSheet& sheet) const {
     const float rs   = renderSize();
     const float half = rs * 0.5f;
-
-    renderer.drawRect(m_pos.x - half,        m_pos.y - rs * 0.2f, rs,   rs * 0.4f, COLOR);
-    renderer.drawRect(m_pos.x - half * 0.5f, m_pos.y - rs * 0.5f, half, rs * 0.3f, COLOR);
+    const int   frame = (m_size == UfoSize::Small) ? SMALL_FRAME : LARGE_FRAME;
+    const Engine::UVRect uv = sheet.getFrameUVs(frame, SPRITE_CELLS, SPRITE_CELLS);
+    renderer.drawTexturedRect(m_pos.x - half, m_pos.y - half, rs, rs,
+                              sheet.texture(), uv.u0, uv.v0, uv.u1, uv.v1);
 }
 
 void UFO::emitDestructionParticles() const {

@@ -2,6 +2,7 @@
 #include "AsteroidsConfig.h"
 #include <engine/physics/Collider.h>
 #include <engine/renderer/Renderer2D.h>
+#include <engine/renderer/SpriteSheet.h>
 #include <glm/glm.hpp>
 #include <optional>
 #include <random>
@@ -18,7 +19,7 @@ public:
     UFO& operator=(const UFO&) = delete;
 
     void update(float dt, int screenW, int screenH, glm::vec2 shipPos);
-    void render(Engine::Renderer2D& renderer) const;
+    void render(Engine::Renderer2D& renderer, const Engine::SpriteSheet& sheet) const;
 
     std::optional<BulletSpawn> tryFire(glm::vec2 shipPos);
 
@@ -33,6 +34,9 @@ public:
     static constexpr float SMALL_SPEED       = 120.f;
     static constexpr int   SCORE_LARGE       = 200;
     static constexpr int   SCORE_SMALL       = 1000;
+    static constexpr int   SMALL_FRAME       = 12;
+    static constexpr int   LARGE_FRAME       = 44;
+    static constexpr int   SPRITE_CELLS      = 2;
 
 private:
     static constexpr float ZIGZAG_INTERVAL    = 1.5f;

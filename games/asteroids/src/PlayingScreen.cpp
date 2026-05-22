@@ -77,7 +77,7 @@ Screen PlayingScreen::update(float dt) {
 
 void PlayingScreen::render() {
     for (const auto& a : m_ctx.asteroids) a->render(m_ctx.renderer, *m_ctx.sheet);
-    if (m_ctx.ufo) m_ctx.ufo->render(m_ctx.renderer);
+    if (m_ctx.ufo) m_ctx.ufo->render(m_ctx.renderer, *m_ctx.sheet);
     if (m_ctx.ship) m_ctx.ship->render(m_ctx.renderer);
     for (const auto& b : m_ctx.bullets)    b->render(m_ctx.renderer);
     for (const auto& b : m_ctx.ufoBullets) b->render(m_ctx.renderer);
