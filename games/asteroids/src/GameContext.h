@@ -28,6 +28,7 @@ struct GameContext {
     int&   score;
     int&   highScore;
     int&   lives;
+    int&   nextLifeScore;
     int&   wave;
     float& waveTimer;
     bool&  newHighScore;

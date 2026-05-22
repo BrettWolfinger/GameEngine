@@ -46,6 +46,7 @@ private:
     int   m_highScore    = 0;
     int   m_lives        = 3;
     int   m_wave         = 1;
+    int   m_nextLifeScore = 1000;
     float m_waveTimer    = -1.f;
     bool  m_newHighScore = false;
     int   m_selectedShip = 0;
