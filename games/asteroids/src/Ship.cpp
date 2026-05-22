@@ -9,22 +9,23 @@
 #include <cmath>
 #include <algorithm>
 
-Ship::Ship(std::shared_ptr<Engine::SpriteSheet> sheet)
-    : m_pos(W * 0.5f, H * 0.5f)
+Ship::Ship(std::shared_ptr<Engine::SpriteSheet> sheet, const ShipConfig& config)
+    : m_config(config)
+    , m_pos(W * 0.5f, H * 0.5f)
     , m_angle(0.f)
     , m_vel(0.f, 0.f)
     , m_thrusting(false)
     , m_animator(std::move(sheet))
 {
     Engine::AnimClip idleClip;
-    idleClip.frames        = { 0 };
+    idleClip.frames        = { m_config.shipFrame };
     idleClip.frameDuration = 0.1f;
     idleClip.mode          = Engine::PlayMode::Loop;
     idleClip.wFrames       = 2;
     idleClip.hFrames       = 2;
 
     Engine::AnimClip thrustClip;
-    thrustClip.frames        = { 4, 8 };
+    thrustClip.frames        = { m_config.thrustFrame1, m_config.thrustFrame2 };
     thrustClip.frameDuration = 0.08f;
     thrustClip.mode          = Engine::PlayMode::Loop;
     thrustClip.wFrames       = 2;
@@ -75,7 +76,7 @@ void Ship::reset() {
 std::optional<Ship::BulletSpawn> Ship::tryShoot() {
     if (m_fireTimer > 0.f || !Engine::Input::isKeyDown(GLFW_KEY_SPACE))
         return std::nullopt;
-    m_fireTimer  = FIRE_COOLDOWN;
+    m_fireTimer  = m_config.fireCooldown;
     m_flashTimer = FLASH_DURATION;
     const glm::vec2 direction = { glm::sin(m_angle), -glm::cos(m_angle) };
     const glm::vec2 nose      = m_pos + direction * (RENDER_SIZE * 0.5f);
@@ -84,25 +85,25 @@ std::optional<Ship::BulletSpawn> Ship::tryShoot() {
 
 void Ship::update(float dt, int screenW, int screenH) {
     if (Engine::Input::isKeyDown(GLFW_KEY_LEFT) || Engine::Input::isKeyDown(GLFW_KEY_A))
-        m_angle -= ROTATE_SPEED * dt;
+        m_angle -= m_config.rotateSpeed * dt;
     if (Engine::Input::isKeyDown(GLFW_KEY_RIGHT) || Engine::Input::isKeyDown(GLFW_KEY_D))
-        m_angle += ROTATE_SPEED * dt;
+        m_angle += m_config.rotateSpeed * dt;
 
     m_thrusting = Engine::Input::isKeyDown(GLFW_KEY_UP) || Engine::Input::isKeyDown(GLFW_KEY_W);
 
     if (m_thrusting) {
         glm::vec2 forward = { glm::sin(m_angle), -glm::cos(m_angle) };
-        m_vel += forward * (THRUST_FORCE * dt);
+        m_vel += forward * (m_config.thrustForce * dt);
         float speed = glm::length(m_vel);
-        if (speed > MAX_SPEED)
-            m_vel *= MAX_SPEED / speed;
+        if (speed > m_config.maxSpeed)
+            m_vel *= m_config.maxSpeed / speed;
     }
 
     if (m_fireTimer       > 0.f) m_fireTimer       -= dt;
     if (m_flashTimer      > 0.f) m_flashTimer      -= dt;
     if (m_invincibleTimer > 0.f) m_invincibleTimer -= dt;
 
-    float dragFactor = std::pow(DRAG, dt * 60.f);
+    float dragFactor = std::pow(m_config.drag, dt * 60.f);
     m_vel *= dragFactor;
 
     m_pos += m_vel * dt;
@@ -141,7 +142,7 @@ void Ship::render(Engine::Renderer2D& renderer) const {
                                   m_angle);
     }
 
-    const Engine::UVRect shipUVs = m_animator.sheet().getFrameUVs(m_frameIndex, m_frameCells, m_frameCells);
+    const Engine::UVRect shipUVs = m_animator.sheet().getFrameUVs(m_config.shipFrame, m_frameCells, m_frameCells);
     renderer.drawTexturedRect(m_pos.x - half, m_pos.y - half, RENDER_SIZE, RENDER_SIZE,
                               tex, shipUVs.u0, shipUVs.v0, shipUVs.u1, shipUVs.v1,
                               m_angle);

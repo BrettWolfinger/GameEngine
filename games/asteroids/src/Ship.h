@@ -1,5 +1,6 @@
 #pragma once
 #include "AsteroidsConfig.h"
+#include "ShipConfig.h"
 #include <engine/physics/Collider.h>
 #include <engine/renderer/SpriteAnimator.h>
 #include <engine/renderer/Renderer2D.h>
@@ -12,7 +13,7 @@ class Ship {
 public:
     struct BulletSpawn { glm::vec2 pos; glm::vec2 direction; };
 
-    explicit Ship(std::shared_ptr<Engine::SpriteSheet> sheet);
+    explicit Ship(std::shared_ptr<Engine::SpriteSheet> sheet, const ShipConfig& config = ShipConfigs::All[0]);
     ~Ship();
     Ship(const Ship&)            = delete;
     Ship& operator=(const Ship&) = delete;
@@ -26,7 +27,7 @@ public:
     bool      wasHit()       const { return m_wasHit; }
     bool      isInvincible() const { return m_invincibleTimer > 0.f; }
     void      clearHit()           { m_wasHit = false; }
-    int       frameIndex()   const { return m_frameIndex; }
+    int       frameIndex()   const { return m_config.shipFrame; }
     int       frameCells()   const { return m_frameCells; }
 
     std::optional<BulletSpawn> tryShoot();
@@ -36,23 +37,18 @@ public:
     static constexpr float INVINCIBLE_DURATION = 2.f;
 
 private:
-    static constexpr float ROTATE_SPEED   = 3.0f;
-    static constexpr float THRUST_FORCE   = 250.f;
-    static constexpr float MAX_SPEED      = 450.f;
-    static constexpr float DRAG           = 0.98f;
-    static constexpr float FIRE_COOLDOWN  = 0.25f;
     static constexpr float FLASH_DURATION = 0.15f;
 
-    glm::vec2 m_pos;
-    float     m_angle;
-    glm::vec2 m_vel;
-    bool      m_thrusting;
-    float     m_fireTimer        = 0.f;
-    float     m_flashTimer       = 0.f;
-    float     m_invincibleTimer  = 0.f;
+    ShipConfig  m_config;
+    glm::vec2   m_pos;
+    float       m_angle;
+    glm::vec2   m_vel;
+    bool        m_thrusting;
+    float       m_fireTimer        = 0.f;
+    float       m_flashTimer       = 0.f;
+    float       m_invincibleTimer  = 0.f;
     std::string m_currentClip;
 
-    int                     m_frameIndex     = 0;
     int                     m_frameCells     = 2;
     Engine::SpriteAnimator  m_animator;
     Engine::ColliderHandle  m_colliderHandle = Engine::NULL_COLLIDER;

@@ -18,7 +18,6 @@ AsteroidsGame::AsteroidsGame()
 {
     auto texture = std::make_shared<Engine::Texture>("games/asteroids/assets/asteroids-arcade.png");
     m_sheet      = std::make_shared<Engine::SpriteSheet>(texture, 16, 16);
-    m_ship.emplace(m_sheet);
 
     m_saveData  = Engine::SaveData::load("asteroids");
     m_highScore = m_saveData.getInt("high_score", 0);
@@ -32,7 +31,7 @@ void AsteroidsGame::preStep(float dt) {
     for (auto& a : m_bgAsteroids)
         a->update(dt, W, H);
 
-    if (m_screen != Screen::Playing) return;
+    if (m_screen != Screen::Playing || !m_ship) return;
 
     m_ship->update(dt, W, H);
 
@@ -48,6 +47,11 @@ void AsteroidsGame::onUpdate(float dt) {
 
     if (m_screen == Screen::Title) {
         updateTitleScreen(dt);
+        return;
+    }
+
+    if (m_screen == Screen::ShipSelect) {
+        updateShipSelect();
         return;
     }
 
@@ -74,6 +78,11 @@ void AsteroidsGame::onRender() {
 
     if (m_screen == Screen::Title) {
         renderTitleScreen();
+        return;
+    }
+
+    if (m_screen == Screen::ShipSelect) {
+        renderShipSelect();
         return;
     }
 
@@ -242,10 +251,8 @@ void AsteroidsGame::restartGame() {
     m_score        = 0;
     m_wave         = 1;
     m_waveTimer    = -1.f;
-    m_screen       = Screen::Playing;
     m_newHighScore = false;
-    m_ship->reset();
-    spawnInitialAsteroidRing();
+    m_screen       = Screen::ShipSelect;
 }
 
 int AsteroidsGame::scoreForSize(AsteroidSize size) const {
@@ -274,13 +281,68 @@ void AsteroidsGame::updateTitleScreen(float dt) {
     (void)dt;
     m_titleMenu.update();
     if (m_titleMenu.confirmed()) {
-        if (m_titleMenu.selectedIndex() == 0) {
-            m_screen = Screen::Playing;
-            spawnInitialAsteroidRing();
-        } else {
+        if (m_titleMenu.selectedIndex() == 0)
+            m_screen = Screen::ShipSelect;
+        else
             quit();
-        }
     }
+}
+
+void AsteroidsGame::updateShipSelect() {
+    if (Engine::Input::isKeyPressed(GLFW_KEY_LEFT) || Engine::Input::isKeyPressed(GLFW_KEY_A))
+        m_selectedShip = (m_selectedShip - 1 + ShipConfigs::Count) % ShipConfigs::Count;
+    if (Engine::Input::isKeyPressed(GLFW_KEY_RIGHT) || Engine::Input::isKeyPressed(GLFW_KEY_D))
+        m_selectedShip = (m_selectedShip + 1) % ShipConfigs::Count;
+    if (Engine::Input::isKeyPressed(GLFW_KEY_ENTER) || Engine::Input::isKeyPressed(GLFW_KEY_KP_ENTER))
+        startGame();
+    if (Engine::Input::isKeyPressed(GLFW_KEY_ESCAPE))
+        m_screen = Screen::Title;
+}
+
+void AsteroidsGame::startGame() {
+    m_ship.emplace(m_sheet, ShipConfigs::All[m_selectedShip]);
+    m_screen = Screen::Playing;
+    spawnInitialAsteroidRing();
+}
+
+void AsteroidsGame::renderShipSelect() {
+    for (const auto& a : m_bgAsteroids)
+        a->render(m_renderer, *m_sheet);
+
+    static constexpr float     HEADER_SCALE = 4.f;
+    static constexpr float     PREVIEW_SIZE = 96.f;
+    static constexpr float     GAP          = 32.f;
+    static constexpr float     HINT_SCALE   = 2.f;
+    static constexpr glm::vec4 WHITE        = { 1.f, 1.f, 1.f, 1.f };
+    static constexpr glm::vec4 GOLD         = { 1.f, 0.85f, 0.1f, 1.f };
+
+    Engine::PixelFont::drawStringCentered(m_renderer, "SELECT SHIP", W * 0.5f, H * 0.12f, HEADER_SCALE, WHITE);
+
+    const float totalW = ShipConfigs::Count * PREVIEW_SIZE + (ShipConfigs::Count - 1) * GAP;
+    const float startX = W * 0.5f - totalW * 0.5f;
+    const float previewY = H * 0.35f;
+
+    const Engine::Texture& tex = m_sheet->texture();
+    const float nameY = previewY + PREVIEW_SIZE + 16.f;
+
+    for (int i = 0; i < ShipConfigs::Count; ++i) {
+        const bool       selected = (i == m_selectedShip);
+        const float      x        = startX + i * (PREVIEW_SIZE + GAP);
+        const float      cx       = x + PREVIEW_SIZE * 0.5f;
+        const Engine::UVRect uv   = m_sheet->getFrameUVs(ShipConfigs::All[i].shipFrame, 2, 2);
+
+        m_renderer.drawTexturedRect(x, previewY, PREVIEW_SIZE, PREVIEW_SIZE,
+                                    tex, uv.u0, uv.v0, uv.u1, uv.v1);
+
+        const glm::vec4& nameColor = selected ? GOLD : WHITE;
+        Engine::PixelFont::drawStringCentered(m_renderer, ShipConfigs::All[i].name, cx, nameY, 2.f, nameColor);
+
+        if (selected)
+            Engine::PixelFont::drawStringCentered(m_renderer, "^", cx, previewY - 16.f, 2.f, GOLD);
+    }
+
+    Engine::PixelFont::drawStringCentered(m_renderer, "< >  ENTER TO START",
+                                          W * 0.5f, H * 0.72f, HINT_SCALE, WHITE);
 }
 
 void AsteroidsGame::renderTitleScreen() {
