@@ -12,6 +12,7 @@
 PlayingScreen::PlayingScreen(GameContext& ctx) : m_ctx(ctx) {}
 
 void PlayingScreen::onEnter() {
+    m_ctx.bgAsteroids.clear();
     m_ctx.ship.emplace(m_ctx.sheet, ShipConfigs::All[m_ctx.selectedShip]);
     spawnInitialAsteroidRing();
 }
