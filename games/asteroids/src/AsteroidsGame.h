@@ -43,17 +43,20 @@ private:
     std::vector<std::unique_ptr<Asteroid>> m_asteroids;
     std::optional<UFO>                     m_ufo;
     std::vector<std::unique_ptr<Bullet>>   m_ufoBullets;
-    float                                  m_ufoSpawnTimer = 0.f;
 
     // ---- game state ----
-    int   m_score        = 0;
-    int   m_highScore    = 0;
-    int   m_lives        = 3;
-    int   m_wave         = 1;
-    int   m_nextLifeScore = 1000;
-    float m_waveTimer    = -1.f;
-    bool  m_newHighScore = false;
-    int   m_selectedShip = 0;
+    struct GameState {
+        int   score         = 0;
+        int   lives         = 3;
+        int   wave          = 1;
+        int   nextLifeScore = 1000;
+        float waveTimer     = -1.f;
+        bool  newHighScore  = false;
+        float ufoSpawnTimer = 0.f;
+    };
+    GameState m_state;
+    int       m_highScore    = 0;  // persists across games
+    int       m_selectedShip = 0;  // persists across games
 
     // ---- screen routing ----
     Screen          m_screen = Screen::Title;
