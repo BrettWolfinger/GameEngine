@@ -26,16 +26,16 @@ public:
     float     angle()        const { return m_angle; }
     bool      wasHit()       const { return m_wasHit; }
     bool      isInvincible() const { return m_invincibleTimer > 0.f; }
-    bool      isThrusting()  const { return m_thrusting; }
     void      clearHit()           { m_wasHit = false; }
     int       frameIndex()   const { return m_config.shipFrame; }
     int       frameCells()   const { return m_frameCells; }
 
     std::optional<BulletSpawn> tryShoot();
 
-    static constexpr float RENDER_SIZE        = 32.f * SCALE;
-    static constexpr float COLLISION_RADIUS   = RENDER_SIZE * 0.3f;
+    static constexpr float RENDER_SIZE         = 32.f * SCALE;
+    static constexpr float COLLISION_RADIUS    = RENDER_SIZE * 0.3f;
     static constexpr float INVINCIBLE_DURATION = 2.f;
+    static constexpr int   THRUST_AUDIO_SLOT   = 0;
 
 private:
     static constexpr float FLASH_DURATION = 0.15f;
