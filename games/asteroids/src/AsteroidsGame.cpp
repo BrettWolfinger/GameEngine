@@ -1,6 +1,8 @@
 #include "AsteroidsGame.h"
 #include "AsteroidsConfig.h"
 #include <engine/renderer/Texture.h>
+#include <engine/renderer/SegmentFont.h>
+#include <engine/renderer/PixelFont.h>
 #include <engine/core/Input.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -11,6 +13,7 @@
 
 AsteroidsGame::AsteroidsGame()
     : Engine::Application("Asteroids", W, H)
+    , m_rng(std::random_device{}())
 {
     auto texture = std::make_shared<Engine::Texture>("games/asteroids/assets/asteroids-arcade.png");
     m_sheet      = std::make_shared<Engine::SpriteSheet>(texture, 16, 16);
@@ -18,6 +21,8 @@ AsteroidsGame::AsteroidsGame()
 
     spawnInitialAsteroidRing();
 }
+
+// ---- core loop --------------------------------------------------------------
 
 void AsteroidsGame::preStep(float dt) {
     if (m_gameOver) return;
@@ -32,43 +37,20 @@ void AsteroidsGame::preStep(float dt) {
 }
 
 void AsteroidsGame::onUpdate(float dt) {
-    if (Engine::Input::isKeyPressed(GLFW_KEY_Q))
-        quit();
-
+    if (Engine::Input::isKeyPressed(GLFW_KEY_Q)) quit();
     if (m_gameOver) return;
 
-    if (m_ship->wasHit()) {
-        m_bullets.clear();
-        if (--m_lives > 0)
-            m_ship->reset();
-        else
-            m_gameOver = true;
-    }
+#ifdef ENABLE_DEV_KEYS
+    handleDevInput();
+#endif
 
-    // Spawn fragments for asteroids flagged by collision this tick.
-    // Snapshot the count so newly-appended fragments are skipped this pass.
-    const size_t n = m_asteroids.size();
-    for (size_t i = 0; i < n; ++i) {
-        if (!m_asteroids[i]->wasShot()) continue;
-        for (auto& f : m_asteroids[i]->split())
-            m_asteroids.push_back(std::move(f));
-    }
+    if (m_ship->wasHit()) handleShipHit();
 
-    m_asteroids.erase(
-        std::remove_if(m_asteroids.begin(), m_asteroids.end(),
-                       [](const auto& a) { return a->wasShot(); }),
-        m_asteroids.end());
-
-    if (auto shot = m_ship->tryShoot()) {
-        m_bullets.push_back(std::make_unique<Bullet>(
-            shot->pos, shot->direction * Bullet::SPEED,
-            m_sheet->getFrameUVs(128), &m_sheet->texture()));
-    }
-
-    m_bullets.erase(
-        std::remove_if(m_bullets.begin(), m_bullets.end(),
-                       [](const auto& b) { return !b->isAlive(); }),
-        m_bullets.end());
+    spawnAsteroidFragments();
+    removeDeadAsteroids();
+    advanceWaveIfCleared(dt);
+    tryFireBullet();
+    removeDeadBullets();
 }
 
 void AsteroidsGame::onRender() {
@@ -83,7 +65,72 @@ void AsteroidsGame::onRender() {
         b->render(m_renderer);
 
     renderLivesHUD();
+    renderWaveAnnouncement();
 }
+
+// ---- onUpdate helpers -------------------------------------------------------
+
+#ifdef ENABLE_DEV_KEYS
+void AsteroidsGame::handleDevInput() {
+    if (Engine::Input::isKeyPressed(GLFW_KEY_C))
+        m_asteroids.clear();
+}
+#endif
+
+void AsteroidsGame::handleShipHit() {
+    m_bullets.clear();
+    if (--m_lives > 0)
+        m_ship->reset();
+    else
+        m_gameOver = true;
+}
+
+void AsteroidsGame::spawnAsteroidFragments() {
+    const size_t n = m_asteroids.size();
+    for (size_t i = 0; i < n; ++i) {
+        if (!m_asteroids[i]->wasShot()) continue;
+        for (auto& f : m_asteroids[i]->split())
+            m_asteroids.push_back(std::move(f));
+    }
+}
+
+void AsteroidsGame::removeDeadAsteroids() {
+    m_asteroids.erase(
+        std::remove_if(m_asteroids.begin(), m_asteroids.end(),
+                       [](const auto& a) { return a->wasShot(); }),
+        m_asteroids.end());
+}
+
+void AsteroidsGame::advanceWaveIfCleared(float dt) {
+    if (!m_asteroids.empty()) return;
+
+    if (m_waveTimer < 0.f)
+        m_waveTimer = WAVE_DELAY;
+
+    m_waveTimer -= dt;
+
+    if (m_waveTimer <= 0.f) {
+        m_waveTimer = -1.f;
+        spawnWave(++m_wave);
+    }
+}
+
+void AsteroidsGame::tryFireBullet() {
+    if (auto shot = m_ship->tryShoot()) {
+        m_bullets.push_back(std::make_unique<Bullet>(
+            shot->pos, shot->direction * Bullet::SPEED,
+            m_sheet->getFrameUVs(128), &m_sheet->texture()));
+    }
+}
+
+void AsteroidsGame::removeDeadBullets() {
+    m_bullets.erase(
+        std::remove_if(m_bullets.begin(), m_bullets.end(),
+                       [](const auto& b) { return !b->isAlive(); }),
+        m_bullets.end());
+}
+
+// ---- onRender helpers -------------------------------------------------------
 
 void AsteroidsGame::renderLivesHUD() {
     static constexpr float ICON_SIZE = 20.f;
@@ -97,23 +144,65 @@ void AsteroidsGame::renderLivesHUD() {
     }
 }
 
+void AsteroidsGame::renderWaveAnnouncement() {
+    if (m_waveTimer < 0.f) return;
+
+    static constexpr float LABEL_SCALE  = 7.f;
+    static constexpr float NUMBER_SCALE = 10.f;
+    static constexpr float GAP          = 15.f;
+    static constexpr glm::vec4 COLOR    = { 1.f, 1.f, 1.f, 1.f };
+
+    const float labelH  = 7.f * LABEL_SCALE;   // PixelFont glyphs are 7 rows tall
+    const float numberH = 5.f * NUMBER_SCALE;  // SegmentFont glyphs are 5 rows tall
+    const float totalH  = labelH + GAP + numberH;
+    const float topY    = H * 0.5f - totalH * 0.5f;
+
+    Engine::PixelFont::drawStringCentered  (m_renderer, "WAVE",     W * 0.5f, topY,                LABEL_SCALE,  COLOR);
+    Engine::SegmentFont::drawStringCentered(m_renderer, m_wave + 1, W * 0.5f, topY + labelH + GAP, NUMBER_SCALE, COLOR);
+}
+
+// ---- spawning ---------------------------------------------------------------
+
 void AsteroidsGame::spawnInitialAsteroidRing() {
-    std::mt19937 rng(42);
     const glm::vec2 playerStart(W * 0.5f, H * 0.5f);
 
     for (int i = 0; i < STARTING_ASTEROID_COUNT; ++i) {
         const float baseAngle   = (glm::two_pi<float>() / STARTING_ASTEROID_COUNT) * i;
         const float jitter      = std::uniform_real_distribution<float>(
                                       -glm::pi<float>() / 6.f,
-                                       glm::pi<float>() / 6.f)(rng);
+                                       glm::pi<float>() / 6.f)(m_rng);
         const float spawnRadius = STARTING_ASTEROID_MIN_DIST_FROM_PLAYER
-                                + std::uniform_real_distribution<float>(0.f, 120.f)(rng);
+                                + std::uniform_real_distribution<float>(0.f, 120.f)(m_rng);
 
         glm::vec2 pos = playerStart + glm::vec2(std::cos(baseAngle + jitter),
                                                 std::sin(baseAngle + jitter)) * spawnRadius;
         pos.x = std::clamp(pos.x, 32.f, static_cast<float>(W) - 32.f);
         pos.y = std::clamp(pos.y, 32.f, static_cast<float>(H) - 32.f);
 
-        m_asteroids.push_back(Asteroid::spawnLarge(pos, rng));
+        m_asteroids.push_back(Asteroid::spawnLarge(pos, m_rng));
+    }
+}
+
+void AsteroidsGame::spawnWave(int wave) {
+    const int count = std::min(STARTING_ASTEROID_COUNT + (wave - 1) * 2, MAX_ASTEROIDS_PER_WAVE);
+    const glm::vec2 shipPos = m_ship->pos();
+
+    for (int i = 0; i < count; ++i) {
+        glm::vec2 pos;
+        do { pos = randomEdgePosition(); }
+        while (glm::distance(pos, shipPos) < WAVE_SPAWN_MIN_DIST_FROM_SHIP);
+
+        m_asteroids.push_back(Asteroid::spawnLarge(pos, m_rng));
+    }
+}
+
+glm::vec2 AsteroidsGame::randomEdgePosition() {
+    const int   side = std::uniform_int_distribution<int>(0, 3)(m_rng);
+    const float u    = std::uniform_real_distribution<float>(0.f, 1.f)(m_rng);
+    switch (side) {
+        case 0:  return { u * W,      -16.f    };  // top
+        case 1:  return { u * W,       H + 16.f };  // bottom
+        case 2:  return { -16.f,       u * H    };  // left
+        default: return {  W + 16.f,   u * H    };  // right
     }
 }
