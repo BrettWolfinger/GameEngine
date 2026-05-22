@@ -49,6 +49,7 @@ private:
 
     Asteroid() = default;
     void registerCollider();
+    void playDestructionSound() const;
 
     static constexpr int MEDIUM_FRAMES[4]    = { 200, 202, 232, 234 };
     static constexpr int SMALL_FRAMES[4][4]  = {

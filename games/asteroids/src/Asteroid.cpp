@@ -1,5 +1,6 @@
 #include "Asteroid.h"
 #include "AsteroidsConfig.h"
+#include <engine/audio/AudioManager.h>
 #include <engine/core/Services.h>
 #include <engine/physics/CollisionWorld.h>
 #include <glm/gtc/constants.hpp>
@@ -19,6 +20,7 @@ void Asteroid::registerCollider() {
         Engine::ColliderDesc::makeCircle(kAsteroidLayer, kBulletLayer, pos.x, pos.y, radius()),
         [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
             m_wasShot = true;
+            playDestructionSound();
             Engine::Services::collision().remove(self);
             m_colliderHandle = Engine::NULL_COLLIDER;
         });
@@ -117,6 +119,25 @@ void Asteroid::update(float dt, int screenW, int screenH) {
 
     if (m_colliderHandle != Engine::NULL_COLLIDER)
         Engine::Services::collision().updateCircle(m_colliderHandle, pos.x, pos.y, radius());
+}
+
+// ---- audio ------------------------------------------------------------------
+
+void Asteroid::playDestructionSound() const {
+    // Decay factor computed as pow(0.001, 1 / (44100 * fadeTimeSec)) so amplitude
+    // reaches ~0.1% of original after fadeTimeSec seconds.
+    switch (size) {
+        case AsteroidSize::Large:
+            Engine::Services::audio().playNoise(0.6f,  0.5f, std::pow(0.001f, 1.f / (44100.f * 0.5f)));
+            break;
+        case AsteroidSize::Medium:
+            Engine::Services::audio().playNoise(0.35f, 0.4f, std::pow(0.001f, 1.f / (44100.f * 0.25f)));
+            break;
+        case AsteroidSize::Small:
+            Engine::Services::audio().playNoise(0.15f, 0.35f, std::pow(0.001f, 1.f / (44100.f * 0.12f)));
+            break;
+        default: break;
+    }
 }
 
 // ---- render -----------------------------------------------------------------

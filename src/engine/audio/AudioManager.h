@@ -1,15 +1,64 @@
 #pragma once
+#include <atomic>
+
+// Forward-declare miniaudio device type to avoid pulling the heavy header here.
+struct ma_device;
 
 namespace Engine {
 
 class AudioManager {
 public:
-    static void init();
-    static void shutdown();
+    AudioManager();
+    ~AudioManager();
+    AudioManager(const AudioManager&)            = delete;
+    AudioManager& operator=(const AudioManager&) = delete;
 
-    // Plays a sine-wave tone on the audio thread. Fire-and-forget; a new call
-    // interrupts any tone currently playing.
-    static void playTone(float frequencyHz, float durationSec, float amplitude = 0.4f);
+    void init();
+    void shutdown();
+
+    // Fire-and-forget sine tone. Picks a free voice from the pool.
+    void playTone(float frequencyHz, float durationSec, float amplitude = 0.4f);
+
+    // Fire-and-forget white noise burst. decayFactor is a per-sample amplitude
+    // multiplier — values slightly below 1.0 produce natural fade-outs.
+    // Use std::pow(0.001f, 1.f / (44100.f * fadeTimeSec)) to compute decayFactor.
+    void playNoise(float durationSec, float amplitude = 0.4f, float decayFactor = 1.f);
+
+    // Sustained looping voices on dedicated slots (0..LOOPING_SLOT_COUNT-1).
+    // Game code assigns game-specific meaning to slot indices.
+    static constexpr int LOOPING_SLOT_COUNT = 2;
+    void playLoopingTone (int slot, float frequencyHz, float amplitude);
+    void playLoopingNoise(int slot, float amplitude);
+    void stopLoopingVoice(int slot);
+
+private:
+    static constexpr int SAMPLE_RATE      = 44100;
+    static constexpr int VOICE_COUNT      = 8;
+    static constexpr int FREE_VOICE_START = LOOPING_SLOT_COUNT;
+
+    enum class VoiceType : int { None = 0, Sine, Noise };
+
+    struct Voice {
+        std::atomic<int>   type      { static_cast<int>(VoiceType::None) };
+        std::atomic<float> freq      { 440.f };
+        std::atomic<float> amplitude { 0.f   };
+        std::atomic<float> decay     { 1.f   };
+        std::atomic<int>   framesLeft{ 0     };
+        float phase = 0.f; // audio thread only
+    };
+
+    ma_device* m_device       = nullptr;
+    bool       m_initialized  = false;
+    bool       m_loopingActive[LOOPING_SLOT_COUNT] = {};
+    Voice      m_voices[VOICE_COUNT];
+    uint32_t   m_noiseSeed = 12345; // audio thread only
+
+    void  dataCallback(void* pOutput, uint32_t frameCount);
+    float nextNoiseSample();
+    void  spawnVoice(int v, VoiceType type, float freq, float amp, float decay, float durationSec);
+    int   findFreeVoice();
+
+    static void dataCallbackThunk(ma_device*, void* pOutput, const void*, uint32_t frameCount);
 };
 
 } // namespace Engine

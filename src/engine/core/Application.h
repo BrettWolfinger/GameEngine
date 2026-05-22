@@ -10,7 +10,7 @@ namespace Engine {
 class Application {
 public:
     Application(const char* title, int width, int height);
-    virtual ~Application() { AudioManager::shutdown(); }
+    virtual ~Application() { m_audioManager.shutdown(); }
 
     void run();
     void quit() { m_running = false; }
@@ -28,6 +28,7 @@ protected:
 
 private:
     std::unique_ptr<Window> m_window;
+    AudioManager            m_audioManager;
     CollisionWorld          m_collisionWorld;
     bool                    m_running = true;
 };
