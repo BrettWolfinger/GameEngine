@@ -2,6 +2,7 @@
 #include "AsteroidsConfig.h"
 #include <engine/audio/AudioManager.h>
 #include <engine/core/Services.h>
+#include <engine/particles/ParticleSystem.h>
 #include <engine/physics/CollisionWorld.h>
 #include <glm/gtc/constants.hpp>
 #include <cmath>
@@ -21,6 +22,7 @@ void Asteroid::registerCollider() {
         [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
             m_wasShot = true;
             playDestructionSound();
+            emitDestructionParticles();
             Engine::Services::collision().remove(self);
             m_colliderHandle = Engine::NULL_COLLIDER;
         });
@@ -138,6 +140,44 @@ void Asteroid::playDestructionSound() const {
             break;
         default: break;
     }
+}
+
+void Asteroid::emitDestructionParticles() const {
+    static const glm::vec3 DEBRIS_COLOR = { 0.9f, 0.88f, 0.82f };
+
+    Engine::ParticleEmitParams params;
+    params.origin = pos;
+    params.color  = DEBRIS_COLOR;
+
+    switch (size) {
+        case AsteroidSize::Large:
+            params.count            = 20;
+            params.speed            = 130.f;
+            params.speedVariance    = 70.f;
+            params.lifetime         = 1.2f;
+            params.lifetimeVariance = 0.3f;
+            params.startSize        = 4.f * SCALE;
+            break;
+        case AsteroidSize::Medium:
+            params.count            = 12;
+            params.speed            = 100.f;
+            params.speedVariance    = 50.f;
+            params.lifetime         = 0.8f;
+            params.lifetimeVariance = 0.2f;
+            params.startSize        = 3.f * SCALE;
+            break;
+        case AsteroidSize::Small:
+            params.count            = 6;
+            params.speed            = 80.f;
+            params.speedVariance    = 40.f;
+            params.lifetime         = 0.5f;
+            params.lifetimeVariance = 0.15f;
+            params.startSize        = 2.f * SCALE;
+            break;
+        default: return;
+    }
+
+    Engine::Services::particles().emit(params);
 }
 
 // ---- render -----------------------------------------------------------------

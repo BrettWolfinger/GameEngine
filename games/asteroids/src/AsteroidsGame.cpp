@@ -1,5 +1,7 @@
 #include "AsteroidsGame.h"
 #include "AsteroidsConfig.h"
+#include <engine/core/Services.h>
+#include <engine/particles/ParticleSystem.h>
 #include <engine/renderer/Texture.h>
 
 static GameContext makeContext(
@@ -65,6 +67,8 @@ void AsteroidsGame::onUpdate(float dt) {
         default: break;
     }
     if (next != m_screen) transitionTo(next);
+
+    Engine::Services::particles().update(dt);
 }
 
 void AsteroidsGame::onRender() {
@@ -72,8 +76,10 @@ void AsteroidsGame::onRender() {
     switch (m_screen) {
         case Screen::Title:      m_titleScreen.render();      break;
         case Screen::ShipSelect: m_shipSelectScreen.render(); break;
-        case Screen::Playing:    m_playingScreen.render();    break;
+        case Screen::Playing:    m_playingScreen.render();
+                                 Engine::Services::particles().render(m_renderer); break;
         case Screen::GameOver:   m_playingScreen.render();    // game world stays visible
+                                 Engine::Services::particles().render(m_renderer);
                                  m_gameOverScreen.render();   break;
         default: break;
     }
@@ -97,6 +103,7 @@ void AsteroidsGame::resetForRestart() {
     m_asteroids.clear();
     m_bullets.clear();
     m_ship.reset();
+    Engine::Services::particles().clear();
     m_score        = 0;
     m_lives        = 3;
     m_wave         = 1;

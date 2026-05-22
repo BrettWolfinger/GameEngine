@@ -12,6 +12,7 @@ add_library(engine STATIC
     renderer/SegmentFont.cpp
     renderer/PixelFont.cpp
     audio/AudioManager.cpp
+    particles/ParticleSystem.cpp
     physics/CollisionWorld.cpp
     core/Services.cpp
 )

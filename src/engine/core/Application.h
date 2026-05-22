@@ -3,6 +3,7 @@
 #include "Window.h"
 #include "Services.h"
 #include "../audio/AudioManager.h"
+#include "../particles/ParticleSystem.h"
 #include "../physics/CollisionWorld.h"
 
 namespace Engine {
@@ -29,6 +30,7 @@ protected:
 private:
     std::unique_ptr<Window> m_window;
     AudioManager            m_audioManager;
+    ParticleSystem          m_particleSystem;
     CollisionWorld          m_collisionWorld;
     bool                    m_running = true;
 };

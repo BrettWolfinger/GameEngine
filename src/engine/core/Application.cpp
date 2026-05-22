@@ -10,6 +10,7 @@ Application::Application(const char* title, int width, int height) {
     Input::init(m_window->getNativeWindow());
     m_audioManager.init();
     Services::setAudio(&m_audioManager);
+    Services::setParticles(&m_particleSystem);
     Services::setCollision(&m_collisionWorld);
 }
 
