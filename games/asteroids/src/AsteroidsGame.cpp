@@ -38,7 +38,10 @@ void AsteroidsGame::preStep(float dt) {
 
 void AsteroidsGame::onUpdate(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q)) quit();
-    if (m_gameOver) return;
+    if (m_gameOver) {
+        if (Engine::Input::isKeyPressed(GLFW_KEY_R)) restartGame();
+        return;
+    }
 
 #ifdef ENABLE_DEV_KEYS
     handleDevInput();
@@ -64,8 +67,10 @@ void AsteroidsGame::onRender() {
     for (const auto& b : m_bullets)
         b->render(m_renderer);
 
+    renderScore();
     renderLivesHUD();
     renderWaveAnnouncement();
+    if (m_gameOver) renderGameOver();
 }
 
 // ---- onUpdate helpers -------------------------------------------------------
@@ -95,6 +100,9 @@ void AsteroidsGame::spawnAsteroidFragments() {
 }
 
 void AsteroidsGame::removeDeadAsteroids() {
+    for (const auto& a : m_asteroids)
+        if (a->wasShot()) m_score += scoreForSize(a->size);
+
     m_asteroids.erase(
         std::remove_if(m_asteroids.begin(), m_asteroids.end(),
                        [](const auto& a) { return a->wasShot(); }),
@@ -144,6 +152,33 @@ void AsteroidsGame::renderLivesHUD() {
     }
 }
 
+void AsteroidsGame::renderScore() {
+    static constexpr float      s     = 3.f;
+    static constexpr float      PAD   = 8.f;
+    static constexpr glm::vec4  COLOR = { 1.f, 1.f, 1.f, 1.f };
+    const std::string text = std::to_string(m_score);
+    const float x = W - PAD - Engine::PixelFont::stringWidth(text, s);
+    Engine::PixelFont::drawString(m_renderer, text, x, PAD, s, COLOR);
+}
+
+void AsteroidsGame::renderGameOver() {
+    static constexpr float     TITLE_SCALE = 6.f;
+    static constexpr float     SCORE_SCALE = 4.f;
+    static constexpr float     HINT_SCALE  = 2.f;
+    static constexpr float     GAP         = 20.f;
+    static constexpr glm::vec4 COLOR       = { 1.f, 1.f, 1.f, 1.f };
+
+    const float titleH = 7.f * TITLE_SCALE;
+    const float scoreH = 7.f * SCORE_SCALE;
+    const float hintH  = 7.f * HINT_SCALE;
+    const float totalH = titleH + GAP + scoreH + GAP + hintH;
+    const float topY   = H * 0.5f - totalH * 0.5f;
+
+    Engine::PixelFont::drawStringCentered(m_renderer, "GAME OVER",         W * 0.5f, topY,                              TITLE_SCALE, COLOR);
+    Engine::PixelFont::drawStringCentered(m_renderer, m_score,             W * 0.5f, topY + titleH + GAP,               SCORE_SCALE, COLOR);
+    Engine::PixelFont::drawStringCentered(m_renderer, "PRESS R TO RESTART",W * 0.5f, topY + titleH + GAP + scoreH + GAP, HINT_SCALE,  COLOR);
+}
+
 void AsteroidsGame::renderWaveAnnouncement() {
     if (m_waveTimer < 0.f) return;
 
@@ -159,6 +194,27 @@ void AsteroidsGame::renderWaveAnnouncement() {
 
     Engine::PixelFont::drawStringCentered  (m_renderer, "WAVE",     W * 0.5f, topY,                LABEL_SCALE,  COLOR);
     Engine::SegmentFont::drawStringCentered(m_renderer, m_wave + 1, W * 0.5f, topY + labelH + GAP, NUMBER_SCALE, COLOR);
+}
+
+void AsteroidsGame::restartGame() {
+    m_asteroids.clear();
+    m_bullets.clear();
+    m_lives     = STARTING_LIVES;
+    m_score     = 0;
+    m_wave      = 1;
+    m_waveTimer = -1.f;
+    m_gameOver  = false;
+    m_ship->reset();
+    spawnInitialAsteroidRing();
+}
+
+int AsteroidsGame::scoreForSize(AsteroidSize size) const {
+    switch (size) {
+        case AsteroidSize::Large:  return SCORE_LARGE;
+        case AsteroidSize::Medium: return SCORE_MEDIUM;
+        case AsteroidSize::Small:  return SCORE_SMALL;
+        default: return 0;
+    }
 }
 
 // ---- spawning ---------------------------------------------------------------
