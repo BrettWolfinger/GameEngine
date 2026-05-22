@@ -1,7 +1,7 @@
 #include "PongGame.h"
 #include <engine/renderer/SegmentFont.h>
 #include <engine/core/Input.h>
-#include <engine/audio/AudioManager.h>
+#include <engine/core/Services.h>
 #include <GLFW/glfw3.h>
 #include <algorithm>
 #include <cmath>
@@ -195,8 +195,8 @@ void PongGame::updateBall(float dt) {
     m_ball.x += m_ball.vx * dt;
     m_ball.y += m_ball.vy * dt;
 
-    if (m_ball.y < 0.f)             { m_ball.y = 0.f;             m_ball.vy = -m_ball.vy; Engine::AudioManager::playTone(240.f, 0.04f); }
-    if (m_ball.y + m_ball.size > H) { m_ball.y = H - m_ball.size; m_ball.vy = -m_ball.vy; Engine::AudioManager::playTone(240.f, 0.04f); }
+    if (m_ball.y < 0.f)             { m_ball.y = 0.f;             m_ball.vy = -m_ball.vy; Engine::Services::audio().playTone(240.f, 0.04f); }
+    if (m_ball.y + m_ball.size > H) { m_ball.y = H - m_ball.size; m_ball.vy = -m_ball.vy; Engine::Services::audio().playTone(240.f, 0.04f); }
 
     if (m_ball.x <= m_left.x + m_left.width &&
         m_ball.x + m_ball.size >= m_left.x  &&
@@ -205,7 +205,7 @@ void PongGame::updateBall(float dt) {
     {
         m_ball.x  = m_left.x + m_left.width;
         m_ball.vx = std::min(std::abs(m_ball.vx) * 1.05f, MAX_SPEED);
-        Engine::AudioManager::playTone(480.f, 0.05f);
+        Engine::Services::audio().playTone(480.f, 0.05f);
     }
 
     bool rightHit =
@@ -218,17 +218,17 @@ void PongGame::updateBall(float dt) {
         m_ball.x  = m_right.x - m_ball.size;
         m_ball.vx = -std::min(std::abs(m_ball.vx) * 1.05f, MAX_SPEED);
         if (m_singlePlayer) newAITargetOffset();
-        Engine::AudioManager::playTone(480.f, 0.05f);
+        Engine::Services::audio().playTone(480.f, 0.05f);
     }
 
     if (m_ball.x + m_ball.size < 0.f) {
         ++m_scoreRight;
-        Engine::AudioManager::playTone(120.f, 0.3f);
+        Engine::Services::audio().playTone(120.f, 0.3f);
         if (m_scoreRight >= WIN_SCORE) { m_winner = 2; m_state = GameState::WinScreen; }
         else resetBall();
     } else if (m_ball.x > W) {
         ++m_scoreLeft;
-        Engine::AudioManager::playTone(120.f, 0.3f);
+        Engine::Services::audio().playTone(120.f, 0.3f);
         if (m_scoreLeft >= WIN_SCORE) { m_winner = 1; m_state = GameState::WinScreen; }
         else resetBall();
     }
