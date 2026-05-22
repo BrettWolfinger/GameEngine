@@ -3,6 +3,7 @@
 #include <engine/audio/AudioManager.h>
 #include <engine/core/Input.h>
 #include <engine/core/Services.h>
+#include <engine/particles/ParticleSystem.h>
 #include <engine/physics/CollisionWorld.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -43,6 +44,7 @@ Ship::Ship(std::shared_ptr<Engine::SpriteSheet> sheet, const ShipConfig& config)
         [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
             if (m_invincibleTimer > 0.f) return;
             m_wasHit = true;
+            emitHitParticles();
             Engine::Services::collision().remove(self);
             m_colliderHandle = Engine::NULL_COLLIDER;
         });
@@ -71,6 +73,7 @@ void Ship::reset() {
         [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
             if (m_invincibleTimer > 0.f) return;
             m_wasHit = true;
+            emitHitParticles();
             Engine::Services::collision().remove(self);
             m_colliderHandle = Engine::NULL_COLLIDER;
         });
@@ -171,4 +174,18 @@ void Ship::render(Engine::Renderer2D& renderer) const {
                                   FLASH_SIZE, FLASH_SIZE,
                                   tex, uv.u0, uv.v0, uv.u1, uv.v1, m_angle);
     }
+}
+
+void Ship::emitHitParticles() const {
+    Engine::ParticleEmitParams params;
+    params.origin            = m_pos;
+    params.color             = { 1.f, 0.85f, 0.4f }; // warm orange flash
+    params.count             = 16;
+    params.speed             = 160.f;
+    params.speedVariance     = 80.f;
+    params.lifetime          = 0.7f;
+    params.lifetimeVariance  = 0.2f;
+    params.startSize         = 4.f * SCALE;
+    params.endSize           = 0.f;
+    Engine::Services::particles().emit(params);
 }
