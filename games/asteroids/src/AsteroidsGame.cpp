@@ -19,6 +19,9 @@ AsteroidsGame::AsteroidsGame()
     m_sheet      = std::make_shared<Engine::SpriteSheet>(texture, 16, 16);
     m_ship.emplace(m_sheet);
 
+    m_saveData  = Engine::SaveData::load("asteroids");
+    m_highScore = m_saveData.getInt("high_score", 0);
+
     spawnInitialAsteroidRing();
 }
 
@@ -100,8 +103,16 @@ void AsteroidsGame::spawnAsteroidFragments() {
 }
 
 void AsteroidsGame::removeDeadAsteroids() {
-    for (const auto& a : m_asteroids)
-        if (a->wasShot()) m_score += scoreForSize(a->size);
+    for (const auto& a : m_asteroids) {
+        if (!a->wasShot()) continue;
+        m_score += scoreForSize(a->size);
+        if (m_score > m_highScore) {
+            m_highScore    = m_score;
+            m_newHighScore = true;
+            m_saveData.setInt("high_score", m_highScore);
+            m_saveData.save();
+        }
+    }
 
     m_asteroids.erase(
         std::remove_if(m_asteroids.begin(), m_asteroids.end(),
@@ -153,30 +164,43 @@ void AsteroidsGame::renderLivesHUD() {
 }
 
 void AsteroidsGame::renderScore() {
-    static constexpr float      s     = 3.f;
-    static constexpr float      PAD   = 8.f;
-    static constexpr glm::vec4  COLOR = { 1.f, 1.f, 1.f, 1.f };
-    const std::string text = std::to_string(m_score);
-    const float x = W - PAD - Engine::PixelFont::stringWidth(text, s);
-    Engine::PixelFont::drawString(m_renderer, text, x, PAD, s, COLOR);
+    static constexpr float     s     = 3.f;
+    static constexpr float     PAD   = 8.f;
+    static constexpr glm::vec4 WHITE = { 1.f, 1.f, 1.f, 1.f };
+    static constexpr glm::vec4 GOLD  = { 1.f, 0.85f, 0.1f, 1.f };
+
+    const std::string scoreText = std::to_string(m_score);
+    const float scoreX = W - PAD - Engine::PixelFont::stringWidth(scoreText, s);
+    Engine::PixelFont::drawString(m_renderer, scoreText, scoreX, PAD, s, WHITE);
+
+    const std::string hiText = std::to_string(m_highScore);
+    const float hiX = W * 0.5f - Engine::PixelFont::stringWidth(hiText, s) * 0.5f;
+    Engine::PixelFont::drawString(m_renderer, hiText, hiX, PAD, s, GOLD);
 }
 
 void AsteroidsGame::renderGameOver() {
     static constexpr float     TITLE_SCALE = 6.f;
     static constexpr float     SCORE_SCALE = 4.f;
+    static constexpr float     NEW_HS_SCALE = 3.f;
     static constexpr float     HINT_SCALE  = 2.f;
     static constexpr float     GAP         = 20.f;
-    static constexpr glm::vec4 COLOR       = { 1.f, 1.f, 1.f, 1.f };
+    static constexpr glm::vec4 WHITE       = { 1.f, 1.f, 1.f, 1.f };
+    static constexpr glm::vec4 GOLD        = { 1.f, 0.85f, 0.1f, 1.f };
 
-    const float titleH = 7.f * TITLE_SCALE;
-    const float scoreH = 7.f * SCORE_SCALE;
-    const float hintH  = 7.f * HINT_SCALE;
-    const float totalH = titleH + GAP + scoreH + GAP + hintH;
-    const float topY   = H * 0.5f - totalH * 0.5f;
+    const float titleH  = 7.f * TITLE_SCALE;
+    const float scoreH  = 7.f * SCORE_SCALE;
+    const float newHsH  = m_newHighScore ? 7.f * NEW_HS_SCALE + GAP : 0.f;
+    const float hintH   = 7.f * HINT_SCALE;
+    const float totalH  = titleH + GAP + scoreH + newHsH + GAP + hintH;
+    const float topY    = H * 0.5f - totalH * 0.5f;
 
-    Engine::PixelFont::drawStringCentered(m_renderer, "GAME OVER",         W * 0.5f, topY,                              TITLE_SCALE, COLOR);
-    Engine::PixelFont::drawStringCentered(m_renderer, m_score,             W * 0.5f, topY + titleH + GAP,               SCORE_SCALE, COLOR);
-    Engine::PixelFont::drawStringCentered(m_renderer, "PRESS R TO RESTART",W * 0.5f, topY + titleH + GAP + scoreH + GAP, HINT_SCALE,  COLOR);
+    Engine::PixelFont::drawStringCentered(m_renderer, "GAME OVER",          W * 0.5f, topY,                    TITLE_SCALE, WHITE);
+    Engine::PixelFont::drawStringCentered(m_renderer, m_score,              W * 0.5f, topY + titleH + GAP,     SCORE_SCALE, WHITE);
+
+    if (m_newHighScore)
+        Engine::PixelFont::drawStringCentered(m_renderer, "NEW HIGH SCORE", W * 0.5f, topY + titleH + GAP + scoreH + GAP, NEW_HS_SCALE, GOLD);
+
+    Engine::PixelFont::drawStringCentered(m_renderer, "PRESS R TO RESTART", W * 0.5f, topY + titleH + GAP + scoreH + newHsH + GAP, HINT_SCALE, WHITE);
 }
 
 void AsteroidsGame::renderWaveAnnouncement() {
@@ -199,11 +223,12 @@ void AsteroidsGame::renderWaveAnnouncement() {
 void AsteroidsGame::restartGame() {
     m_asteroids.clear();
     m_bullets.clear();
-    m_lives     = STARTING_LIVES;
-    m_score     = 0;
-    m_wave      = 1;
-    m_waveTimer = -1.f;
-    m_gameOver  = false;
+    m_lives        = STARTING_LIVES;
+    m_score        = 0;
+    m_wave         = 1;
+    m_waveTimer    = -1.f;
+    m_gameOver     = false;
+    m_newHighScore = false;
     m_ship->reset();
     spawnInitialAsteroidRing();
 }

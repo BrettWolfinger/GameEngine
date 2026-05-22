@@ -1,5 +1,6 @@
 #pragma once
 #include <engine/core/Application.h>
+#include <engine/core/SaveData.h>
 #include <engine/renderer/Renderer2D.h>
 #include <engine/renderer/SpriteSheet.h>
 #include <engine/renderer/Texture.h>
@@ -37,11 +38,14 @@ private:
     std::vector<std::unique_ptr<Bullet>>      m_bullets;
     std::vector<std::unique_ptr<Asteroid>>    m_asteroids;
     std::mt19937                              m_rng;
-    int                                       m_lives     = STARTING_LIVES;
-    int                                       m_score     = 0;
-    int                                       m_wave      = 1;
-    float                                     m_waveTimer = -1.f;
-    bool                                      m_gameOver  = false;
+    Engine::SaveData                          m_saveData;
+    int                                       m_lives        = STARTING_LIVES;
+    int                                       m_score        = 0;
+    int                                       m_highScore    = 0;
+    int                                       m_wave         = 1;
+    float                                     m_waveTimer    = -1.f;
+    bool                                      m_gameOver     = false;
+    bool                                      m_newHighScore = false;
 
     // onUpdate helpers
 #ifdef ENABLE_DEV_KEYS
