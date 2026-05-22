@@ -26,6 +26,7 @@ public:
     float     angle()        const { return m_angle; }
     bool      wasHit()       const { return m_wasHit; }
     bool      isInvincible() const { return m_invincibleTimer > 0.f; }
+    bool      isThrusting()  const { return m_thrusting; }
     void      clearHit()           { m_wasHit = false; }
     int       frameIndex()   const { return m_config.shipFrame; }
     int       frameCells()   const { return m_frameCells; }

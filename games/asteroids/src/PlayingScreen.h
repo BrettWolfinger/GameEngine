@@ -20,6 +20,7 @@ private:
     static constexpr int   SCORE_LARGE                            = 20;
     static constexpr int   SCORE_MEDIUM                           = 50;
     static constexpr int   SCORE_SMALL                            = 100;
+    static constexpr int   THRUST_AUDIO_SLOT                      = 0;
 
     GameContext& m_ctx;
 
@@ -41,4 +42,5 @@ private:
     void      spawnWave(int wave);
     glm::vec2 randomEdgePosition();
     int       scoreForSize(AsteroidSize size) const;
+    void      playExplosionSound(AsteroidSize size) const;
 };

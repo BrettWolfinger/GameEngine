@@ -1,6 +1,7 @@
 #include "PlayingScreen.h"
 #include "AsteroidsConfig.h"
 #include "ShipConfig.h"
+#include <engine/audio/AudioManager.h>
 #include <engine/core/Input.h>
 #include <engine/renderer/PixelFont.h>
 #include <engine/renderer/SegmentFont.h>
@@ -53,13 +54,21 @@ Screen PlayingScreen::update(float dt) {
 
     if (m_ctx.ship && m_ctx.ship->wasHit()) handleShipHit();
 
+    if (m_ctx.ship && m_ctx.ship->isThrusting())
+        Engine::AudioManager::playLoopingNoise(THRUST_AUDIO_SLOT, 0.08f);
+    else
+        Engine::AudioManager::stopLoopingVoice(THRUST_AUDIO_SLOT);
+
     spawnAsteroidFragments();
     removeDeadAsteroids();
     advanceWaveIfCleared(dt);
     tryFireBullet();
     removeDeadBullets();
 
-    if (m_ctx.lives <= 0) return Screen::GameOver;
+    if (m_ctx.lives <= 0) {
+        Engine::AudioManager::stopLoopingVoice(THRUST_AUDIO_SLOT);
+        return Screen::GameOver;
+    }
     return Screen::Playing;
 }
 
@@ -83,6 +92,7 @@ void PlayingScreen::handleDevInput() {
 #endif
 
 void PlayingScreen::handleShipHit() {
+    Engine::AudioManager::stopLoopingVoice(THRUST_AUDIO_SLOT);
     m_ctx.bullets.clear();
     if (--m_ctx.lives > 0)
         m_ctx.ship->reset();
@@ -101,6 +111,7 @@ void PlayingScreen::removeDeadAsteroids() {
     for (const auto& a : m_ctx.asteroids) {
         if (!a->wasShot()) continue;
         m_ctx.score += scoreForSize(a->size);
+        playExplosionSound(a->size);
         if (m_ctx.score > m_ctx.highScore) {
             m_ctx.highScore    = m_ctx.score;
             m_ctx.newHighScore = true;
@@ -135,6 +146,7 @@ void PlayingScreen::tryFireBullet() {
         m_ctx.bullets.push_back(std::make_unique<Bullet>(
             shot->pos, shot->direction * Bullet::SPEED,
             m_ctx.sheet->getFrameUVs(128), &m_ctx.sheet->texture()));
+        Engine::AudioManager::playTone(800.f, 0.08f, 0.25f);
     }
 }
 
@@ -223,5 +235,22 @@ int PlayingScreen::scoreForSize(AsteroidSize size) const {
         case AsteroidSize::Medium: return SCORE_MEDIUM;
         case AsteroidSize::Small:  return SCORE_SMALL;
         default: return 0;
+    }
+}
+
+void PlayingScreen::playExplosionSound(AsteroidSize size) const {
+    // Decay factors computed as pow(0.001f, 1 / (44100 * fadeTimeSec))
+    // so amplitude reaches ~0.1% of original after fadeTimeSec seconds.
+    switch (size) {
+        case AsteroidSize::Large:
+            Engine::AudioManager::playNoise(0.6f, 0.5f, std::pow(0.001f, 1.f / (44100.f * 0.5f)));
+            break;
+        case AsteroidSize::Medium:
+            Engine::AudioManager::playNoise(0.35f, 0.4f, std::pow(0.001f, 1.f / (44100.f * 0.25f)));
+            break;
+        case AsteroidSize::Small:
+            Engine::AudioManager::playNoise(0.15f, 0.35f, std::pow(0.001f, 1.f / (44100.f * 0.12f)));
+            break;
+        default: break;
     }
 }
