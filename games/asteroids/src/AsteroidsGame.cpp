@@ -14,6 +14,7 @@
 AsteroidsGame::AsteroidsGame()
     : Engine::Application("Asteroids", W, H)
     , m_rng(std::random_device{}())
+    , m_titleMenu({"PLAY", "EXIT"}, 3.f)
 {
     auto texture = std::make_shared<Engine::Texture>("games/asteroids/assets/asteroids-arcade.png");
     m_sheet      = std::make_shared<Engine::SpriteSheet>(texture, 16, 16);
@@ -22,13 +23,16 @@ AsteroidsGame::AsteroidsGame()
     m_saveData  = Engine::SaveData::load("asteroids");
     m_highScore = m_saveData.getInt("high_score", 0);
 
-    spawnInitialAsteroidRing();
+    spawnBgAsteroids();
 }
 
 // ---- core loop --------------------------------------------------------------
 
 void AsteroidsGame::preStep(float dt) {
-    if (m_gameOver) return;
+    for (auto& a : m_bgAsteroids)
+        a->update(dt, W, H);
+
+    if (m_screen != Screen::Playing) return;
 
     m_ship->update(dt, W, H);
 
@@ -41,7 +45,13 @@ void AsteroidsGame::preStep(float dt) {
 
 void AsteroidsGame::onUpdate(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q)) quit();
-    if (m_gameOver) {
+
+    if (m_screen == Screen::Title) {
+        updateTitleScreen(dt);
+        return;
+    }
+
+    if (m_screen == Screen::GameOver) {
         if (Engine::Input::isKeyPressed(GLFW_KEY_R)) restartGame();
         return;
     }
@@ -62,6 +72,11 @@ void AsteroidsGame::onUpdate(float dt) {
 void AsteroidsGame::onRender() {
     m_renderer.beginScene(W, H);
 
+    if (m_screen == Screen::Title) {
+        renderTitleScreen();
+        return;
+    }
+
     for (const auto& a : m_asteroids)
         a->render(m_renderer, *m_sheet);
 
@@ -73,7 +88,7 @@ void AsteroidsGame::onRender() {
     renderScore();
     renderLivesHUD();
     renderWaveAnnouncement();
-    if (m_gameOver) renderGameOver();
+    if (m_screen == Screen::GameOver) renderGameOver();
 }
 
 // ---- onUpdate helpers -------------------------------------------------------
@@ -90,7 +105,7 @@ void AsteroidsGame::handleShipHit() {
     if (--m_lives > 0)
         m_ship->reset();
     else
-        m_gameOver = true;
+        m_screen = Screen::GameOver;
 }
 
 void AsteroidsGame::spawnAsteroidFragments() {
@@ -227,7 +242,7 @@ void AsteroidsGame::restartGame() {
     m_score        = 0;
     m_wave         = 1;
     m_waveTimer    = -1.f;
-    m_gameOver     = false;
+    m_screen       = Screen::Playing;
     m_newHighScore = false;
     m_ship->reset();
     spawnInitialAsteroidRing();
@@ -240,6 +255,57 @@ int AsteroidsGame::scoreForSize(AsteroidSize size) const {
         case AsteroidSize::Small:  return SCORE_SMALL;
         default: return 0;
     }
+}
+
+// ---- title screen -----------------------------------------------------------
+
+void AsteroidsGame::spawnBgAsteroids() {
+    static constexpr int BG_ASTEROID_COUNT = 8;
+    for (int i = 0; i < BG_ASTEROID_COUNT; ++i) {
+        glm::vec2 pos = {
+            std::uniform_real_distribution<float>(0.f, static_cast<float>(W))(m_rng),
+            std::uniform_real_distribution<float>(0.f, static_cast<float>(H))(m_rng)
+        };
+        m_bgAsteroids.push_back(Asteroid::spawnLarge(pos, m_rng));
+    }
+}
+
+void AsteroidsGame::updateTitleScreen(float dt) {
+    (void)dt;
+    m_titleMenu.update();
+    if (m_titleMenu.confirmed()) {
+        if (m_titleMenu.selectedIndex() == 0) {
+            m_screen = Screen::Playing;
+            spawnInitialAsteroidRing();
+        } else {
+            quit();
+        }
+    }
+}
+
+void AsteroidsGame::renderTitleScreen() {
+    for (const auto& a : m_bgAsteroids)
+        a->render(m_renderer, *m_sheet);
+
+    static constexpr float     TITLE_SCALE = 8.f;
+    static constexpr glm::vec4 WHITE       = { 1.f, 1.f, 1.f, 1.f };
+    static constexpr glm::vec4 GOLD        = { 1.f, 0.85f, 0.1f, 1.f };
+
+    const float titleH = 7.f * TITLE_SCALE;
+    const float titleY = H * 0.28f;
+    Engine::PixelFont::drawStringCentered(m_renderer, "ASTEROIDS", W * 0.5f, titleY, TITLE_SCALE, WHITE);
+
+    if (m_highScore > 0) {
+        static constexpr float HS_SCALE = 2.f;
+        const float hsY = titleY + titleH + 12.f;
+        Engine::PixelFont::drawStringCentered(m_renderer, "BEST", W * 0.5f - 40.f, hsY, HS_SCALE, GOLD);
+        Engine::PixelFont::drawStringCentered(m_renderer, m_highScore,  W * 0.5f + 40.f, hsY, HS_SCALE, GOLD);
+    }
+
+    const float menuW  = Engine::PixelFont::stringWidth("  EXIT", 3.f);
+    const float menuX  = W * 0.5f - menuW * 0.5f;
+    const float menuY  = H * 0.58f;
+    m_titleMenu.draw(m_renderer, menuX, menuY);
 }
 
 // ---- spawning ---------------------------------------------------------------
