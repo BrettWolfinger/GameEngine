@@ -14,7 +14,7 @@ UFO::UFO(UfoSize size, glm::vec2 pos, glm::vec2 vel, std::mt19937& rng)
             m_wasDestroyed = true;
             emitDestructionParticles();
             const float decay = std::pow(0.001f, 1.f / (44100.f * UfoConfigs::NOISE_FADE_TIME));
-            Engine::playNoise(UfoConfigs::NOISE_DURATION, UfoConfigs::NOISE_AMPLITUDE, decay);
+            Engine::Audio::playNoise(UfoConfigs::NOISE_DURATION, UfoConfigs::NOISE_AMPLITUDE, decay);
             Engine::Services::collision().remove(self);
             m_colliderHandle = Engine::NULL_COLLIDER;
         });
@@ -48,7 +48,7 @@ void UFO::update(float dt, int screenW, int screenH, glm::vec2 /*shipPos*/) {
     if (m_beepTimer <= 0.f) {
         m_beepTimer = UfoConfigs::BEEP_INTERVAL;
         const float freq = m_beepHigh ? UfoConfigs::BEEP_FREQUENCY_HI : UfoConfigs::BEEP_FREQUENCY_LO;
-        Engine::playTone(freq, UfoConfigs::BEEP_DURATION, UfoConfigs::BEEP_AMPLITUDE);
+        Engine::Audio::playTone(freq, UfoConfigs::BEEP_DURATION, UfoConfigs::BEEP_AMPLITUDE);
         m_beepHigh = !m_beepHigh;
     }
 

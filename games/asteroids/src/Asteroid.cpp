@@ -126,7 +126,7 @@ void Asteroid::playDestructionSound() const {
     const AsteroidSizeConfig& cfg = AsteroidSizeConfigs::All[static_cast<int>(size)];
     // Decay factor: amplitude reaches ~0.1% of original after noiseFadeTime seconds.
     const float decay = std::pow(0.001f, 1.f / (44100.f * cfg.noiseFadeTime));
-    Engine::playNoise(cfg.noiseDuration, cfg.noiseAmplitude, decay);
+    Engine::Audio::playNoise(cfg.noiseDuration, cfg.noiseAmplitude, decay);
 }
 
 void Asteroid::emitDestructionParticles() const {

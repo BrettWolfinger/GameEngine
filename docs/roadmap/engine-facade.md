@@ -26,33 +26,38 @@ and Breakout when `AudioManager` changed from static to instance methods.
 
 ## Design
 
-### Stable free functions in the `Engine` namespace
+### Stable free functions in `Engine::<Subsystem>` namespaces
 
-Games call free functions. The facade owns the mapping to whatever the current
-internal implementation is.
+Games call free functions grouped by subsystem namespace. The facade owns the
+mapping to whatever the current internal implementation is.
 
 ```cpp
 // Game code — stable across engine refactors
-Engine::playTone(480.f, 0.05f);
-Engine::emitParticles(params);
+Engine::Audio::playTone(480.f, 0.05f);
+Engine::Particles::emit(params);
+Engine::Collision::add(desc, callback);
 ```
 
 ```cpp
 // Facade implementation — changes here, not in game code
-namespace Engine {
+namespace Engine::Audio {
     inline void playTone(float hz, float dur, float amp = 0.4f) {
         Services::audio().playTone(hz, dur, amp);
     }
 }
 ```
 
+Sub-namespaces keep the flat `Engine` namespace from getting crowded as more
+subsystems are added, and make call sites self-documenting without exposing any
+internal implementation detail.
+
 ### One file per subsystem, one aggregating header
 
 ```
 src/engine/facade/
-    Audio.h
-    Collision.h
-    Particles.h
+    Audio.h       → Engine::Audio::playTone, playNoise
+    Particles.h   → Engine::Particles::emit
+    Collision.h   → Engine::Collision::add, remove, updateCircle
 
 src/engine/Engine.h   ← games include this
 ```
@@ -116,8 +121,9 @@ Smallest surface, clearest need — Pong and Breakout already needed fixing here
 ```cpp
 #pragma once
 #include <engine/core/Services.h>
+#include <engine/audio/AudioManager.h>
 
-namespace Engine {
+namespace Engine::Audio {
 
 inline void playTone(float frequencyHz, float durationSec, float amplitude = 0.4f) {
     Services::audio().playTone(frequencyHz, durationSec, amplitude);
@@ -127,10 +133,10 @@ inline void playNoise(float durationSec, float amplitude = 0.4f, float decayFact
     Services::audio().playNoise(durationSec, amplitude, decayFactor);
 }
 
-} // namespace Engine
+} // namespace Engine::Audio
 ```
 
-**Files to update:** `PongGame.cpp`, `BreakoutGame.cpp`, `Asteroid.cpp`, `UFO.cpp`
+**Files to update:** `PongGame.cpp`, `BreakoutGame.cpp`, `Asteroid.cpp`, `UFO.cpp` ✓ Done
 
 ---
 
@@ -146,13 +152,13 @@ games construct it.
 #include <engine/core/Services.h>
 #include <engine/particles/ParticleSystem.h>
 
-namespace Engine {
+namespace Engine::Particles {
 
-inline void emitParticles(const ParticleEmitParams& params) {
+inline void emit(const ParticleEmitParams& params) {
     Services::particles().emit(params);
 }
 
-} // namespace Engine
+} // namespace Engine::Particles
 ```
 
 **Files to update:** `Asteroid.cpp`, `UFO.cpp`, any future game using particles
@@ -172,21 +178,21 @@ them — often storing `ColliderHandle` as a member. `ColliderHandle` and
 #include <engine/core/Services.h>
 #include <engine/physics/Collider.h>
 
-namespace Engine {
+namespace Engine::Collision {
 
-inline ColliderHandle addCollider(const ColliderDesc& desc, CollisionCallback callback) {
+inline ColliderHandle add(const ColliderDesc& desc, CollisionCallback callback) {
     return Services::collision().add(desc, std::move(callback));
 }
 
-inline void removeCollider(ColliderHandle handle) {
+inline void remove(ColliderHandle handle) {
     Services::collision().remove(handle);
 }
 
-inline void updateColliderCircle(ColliderHandle handle, float x, float y, float radius) {
+inline void updateCircle(ColliderHandle handle, float x, float y, float radius) {
     Services::collision().updateCircle(handle, x, y, radius);
 }
 
-} // namespace Engine
+} // namespace Engine::Collision
 ```
 
 **Files to update:** `Asteroid.cpp`, `UFO.cpp`, `Ship.cpp`
@@ -228,3 +234,21 @@ private headers) and should be done deliberately, not alongside other work.
 | "What can a game do?" | Implicit, scattered | Explicit, one place |
 | Breaking change detection | Build failure | Build failure (same) |
 | Breaking change *blast radius* | All games | Zero games |
+
+---
+
+## Call site reference
+
+```cpp
+// Audio
+Engine::Audio::playTone(480.f, 0.05f);
+Engine::Audio::playNoise(0.40f, 0.40f, decay);
+
+// Particles
+Engine::Particles::emit(params);
+
+// Collision
+Engine::Collision::add(desc, callback);
+Engine::Collision::remove(handle);
+Engine::Collision::updateCircle(handle, x, y, radius);
+```
