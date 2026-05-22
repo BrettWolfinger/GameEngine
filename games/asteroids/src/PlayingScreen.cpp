@@ -13,6 +13,9 @@ PlayingScreen::PlayingScreen(GameContext& ctx) : m_ctx(ctx) {}
 
 void PlayingScreen::onEnter() {
     m_ctx.bgAsteroids.clear();
+    m_ctx.ufo.reset();
+    m_ctx.ufoBullets.clear();
+    m_ctx.ufoSpawnTimer = UFO_INITIAL_SPAWN_DELAY;
     m_ctx.ship.emplace(m_ctx.sheet, ShipConfigs::All[m_ctx.selectedShip]);
     spawnInitialAsteroidRing();
 }
@@ -41,8 +44,13 @@ void PlayingScreen::spawnInitialAsteroidRing() {
 
 void PlayingScreen::preStep(float dt) {
     if (m_ctx.ship) m_ctx.ship->update(dt, W, H);
-    for (auto& b : m_ctx.bullets)  b->update(dt);
-    for (auto& a : m_ctx.asteroids) a->update(dt, W, H);
+    if (m_ctx.ufo) {
+        const glm::vec2 shipPos = m_ctx.ship ? m_ctx.ship->pos() : glm::vec2(W * 0.5f, H * 0.5f);
+        m_ctx.ufo->update(dt, W, H, shipPos);
+    }
+    for (auto& b : m_ctx.bullets)    b->update(dt);
+    for (auto& b : m_ctx.ufoBullets) b->update(dt);
+    for (auto& a : m_ctx.asteroids)  a->update(dt, W, H);
 }
 
 Screen PlayingScreen::update(float dt) {
@@ -59,6 +67,9 @@ Screen PlayingScreen::update(float dt) {
     advanceWaveIfCleared(dt);
     tryFireBullet();
     removeDeadBullets();
+    handleUfoState(dt);
+    trySpawnUfoBullet();
+    removeDeadUfoBullets();
 
     if (m_ctx.lives <= 0) return Screen::GameOver;
     return Screen::Playing;
@@ -66,8 +77,10 @@ Screen PlayingScreen::update(float dt) {
 
 void PlayingScreen::render() {
     for (const auto& a : m_ctx.asteroids) a->render(m_ctx.renderer, *m_ctx.sheet);
+    if (m_ctx.ufo) m_ctx.ufo->render(m_ctx.renderer);
     if (m_ctx.ship) m_ctx.ship->render(m_ctx.renderer);
-    for (const auto& b : m_ctx.bullets)  b->render(m_ctx.renderer);
+    for (const auto& b : m_ctx.bullets)    b->render(m_ctx.renderer);
+    for (const auto& b : m_ctx.ufoBullets) b->render(m_ctx.renderer);
 
     renderScore();
     renderLivesHUD();
@@ -85,6 +98,7 @@ void PlayingScreen::handleDevInput() {
 
 void PlayingScreen::handleShipHit() {
     m_ctx.bullets.clear();
+    m_ctx.ufoBullets.clear();
     if (--m_ctx.lives > 0)
         m_ctx.ship->reset();
 }
@@ -98,20 +112,24 @@ void PlayingScreen::spawnAsteroidFragments() {
     }
 }
 
+void PlayingScreen::awardScore(int pts) {
+    m_ctx.score += pts;
+    if (m_ctx.score >= m_ctx.nextLifeScore) {
+        ++m_ctx.lives;
+        m_ctx.nextLifeScore += 1000;
+    }
+    if (m_ctx.score > m_ctx.highScore) {
+        m_ctx.highScore    = m_ctx.score;
+        m_ctx.newHighScore = true;
+        m_ctx.saveData.setInt("high_score", m_ctx.highScore);
+        m_ctx.saveData.save();
+    }
+}
+
 void PlayingScreen::removeDeadAsteroids() {
     for (const auto& a : m_ctx.asteroids) {
         if (!a->wasShot()) continue;
-        m_ctx.score += scoreForSize(a->size);
-        if (m_ctx.score >= m_ctx.nextLifeScore) {
-            ++m_ctx.lives;
-            m_ctx.nextLifeScore += 1000;
-        }
-        if (m_ctx.score > m_ctx.highScore) {
-            m_ctx.highScore    = m_ctx.score;
-            m_ctx.newHighScore = true;
-            m_ctx.saveData.setInt("high_score", m_ctx.highScore);
-            m_ctx.saveData.save();
-        }
+        awardScore(a->scoreValue());
     }
 
     m_ctx.asteroids.erase(
@@ -148,6 +166,57 @@ void PlayingScreen::removeDeadBullets() {
         std::remove_if(m_ctx.bullets.begin(), m_ctx.bullets.end(),
                        [](const auto& b) { return !b->isAlive(); }),
         m_ctx.bullets.end());
+}
+
+void PlayingScreen::handleUfoState(float dt) {
+    if (!m_ctx.ufo) {
+        m_ctx.ufoSpawnTimer -= dt;
+        if (m_ctx.ufoSpawnTimer <= 0.f) spawnUfo();
+        return;
+    }
+
+    if (m_ctx.ufo->wasDestroyed()) {
+        awardScore((m_ctx.ufo->ufoSize() == UfoSize::Large) ? UFO::SCORE_LARGE : UFO::SCORE_SMALL);
+        m_ctx.ufo.reset();
+        m_ctx.ufoBullets.clear();
+        m_ctx.ufoSpawnTimer = UFO_RESPAWN_DELAY;
+        return;
+    }
+
+    if (m_ctx.ufo->hasExited(W, H)) {
+        m_ctx.ufo.reset();
+        m_ctx.ufoBullets.clear();
+        m_ctx.ufoSpawnTimer = UFO_RESPAWN_DELAY;
+    }
+}
+
+void PlayingScreen::spawnUfo() {
+    const bool fromLeft = std::uniform_int_distribution<int>(0, 1)(m_ctx.rng) == 0;
+    const float y = std::uniform_real_distribution<float>(50.f, H - 50.f)(m_ctx.rng);
+    const UfoSize size = (m_ctx.wave <= 2 || std::uniform_int_distribution<int>(0, 1)(m_ctx.rng) == 0)
+                         ? UfoSize::Large : UfoSize::Small;
+    const float speed = (size == UfoSize::Large) ? UFO::LARGE_SPEED : UFO::SMALL_SPEED;
+    const glm::vec2 pos = fromLeft ? glm::vec2(-20.f, y) : glm::vec2(W + 20.f, y);
+    const glm::vec2 vel = { fromLeft ? speed : -speed, 0.f };
+    m_ctx.ufo.emplace(size, pos, vel, m_ctx.rng);
+}
+
+void PlayingScreen::trySpawnUfoBullet() {
+    if (!m_ctx.ufo) return;
+    const glm::vec2 shipPos = m_ctx.ship ? m_ctx.ship->pos() : glm::vec2(W * 0.5f, H * 0.5f);
+    if (auto shot = m_ctx.ufo->tryFire(shipPos)) {
+        m_ctx.ufoBullets.push_back(std::make_unique<Bullet>(
+            shot->pos, shot->direction * Bullet::SPEED,
+            m_ctx.sheet->getFrameUVs(128), &m_ctx.sheet->texture(),
+            kUfoBulletLayer, kShipLayer));
+    }
+}
+
+void PlayingScreen::removeDeadUfoBullets() {
+    m_ctx.ufoBullets.erase(
+        std::remove_if(m_ctx.ufoBullets.begin(), m_ctx.ufoBullets.end(),
+                       [](const auto& b) { return !b->isAlive(); }),
+        m_ctx.ufoBullets.end());
 }
 
 // ---- render helpers ---------------------------------------------------------
@@ -222,11 +291,3 @@ glm::vec2 PlayingScreen::randomEdgePosition() {
     }
 }
 
-int PlayingScreen::scoreForSize(AsteroidSize size) const {
-    switch (size) {
-        case AsteroidSize::Large:  return SCORE_LARGE;
-        case AsteroidSize::Medium: return SCORE_MEDIUM;
-        case AsteroidSize::Small:  return SCORE_SMALL;
-        default: return 0;
-    }
-}

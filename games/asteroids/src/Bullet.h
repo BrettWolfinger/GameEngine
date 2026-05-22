@@ -18,7 +18,8 @@ public:
     static constexpr float LIFETIME = 1.5f;
     static constexpr float SIZE     = 16.f * SCALE;
 
-    Bullet(glm::vec2 pos, glm::vec2 vel, Engine::UVRect uv, const Engine::Texture* tex);
+    Bullet(glm::vec2 pos, glm::vec2 vel, Engine::UVRect uv, const Engine::Texture* tex,
+           uint32_t selfLayer = kBulletLayer, uint32_t targetLayer = kAsteroidLayer | kUfoLayer);
     ~Bullet();
     Bullet(const Bullet&)            = delete;
     Bullet& operator=(const Bullet&) = delete;

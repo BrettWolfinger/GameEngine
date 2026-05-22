@@ -13,6 +13,7 @@
 #include "Ship.h"
 #include "Bullet.h"
 #include "Asteroid.h"
+#include "UFO.h"
 #include <memory>
 #include <optional>
 #include <random>
@@ -40,6 +41,9 @@ private:
     std::optional<Ship>                    m_ship;
     std::vector<std::unique_ptr<Bullet>>   m_bullets;
     std::vector<std::unique_ptr<Asteroid>> m_asteroids;
+    std::optional<UFO>                     m_ufo;
+    std::vector<std::unique_ptr<Bullet>>   m_ufoBullets;
+    float                                  m_ufoSpawnTimer = 0.f;
 
     // ---- game state ----
     int   m_score        = 0;

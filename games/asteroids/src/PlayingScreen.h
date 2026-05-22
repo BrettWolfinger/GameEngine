@@ -17,9 +17,8 @@ private:
     static constexpr int   MAX_ASTEROIDS_PER_WAVE                 = 12;
     static constexpr float WAVE_DELAY                             = 2.f;
     static constexpr float WAVE_SPAWN_MIN_DIST_FROM_SHIP          = 150.f;
-    static constexpr int   SCORE_LARGE                            = 20;
-    static constexpr int   SCORE_MEDIUM                           = 50;
-    static constexpr int   SCORE_SMALL                            = 100;
+    static constexpr float UFO_INITIAL_SPAWN_DELAY                = 15.f;
+    static constexpr float UFO_RESPAWN_DELAY                      = 20.f;
 
     GameContext& m_ctx;
 
@@ -32,13 +31,17 @@ private:
     void advanceWaveIfCleared(float dt);
     void tryFireBullet();
     void removeDeadBullets();
+    void handleUfoState(float dt);
+    void spawnUfo();
+    void trySpawnUfoBullet();
+    void removeDeadUfoBullets();
 
     void renderScore();
     void renderLivesHUD();
     void renderWaveAnnouncement();
 
+    void      awardScore(int pts);
     void      spawnInitialAsteroidRing();
     void      spawnWave(int wave);
     glm::vec2 randomEdgePosition();
-    int       scoreForSize(AsteroidSize size) const;
 };

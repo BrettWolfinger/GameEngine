@@ -2,6 +2,7 @@
 #include "Asteroid.h"
 #include "Bullet.h"
 #include "Ship.h"
+#include "UFO.h"
 #include <engine/renderer/Renderer2D.h>
 #include <engine/renderer/SpriteSheet.h>
 #include <engine/core/SaveData.h>
@@ -24,6 +25,9 @@ struct GameContext {
     std::optional<Ship>&                    ship;
     std::vector<std::unique_ptr<Bullet>>&   bullets;
     std::vector<std::unique_ptr<Asteroid>>& asteroids;
+    std::optional<UFO>&                     ufo;
+    std::vector<std::unique_ptr<Bullet>>&   ufoBullets;
+    float&                                  ufoSpawnTimer;
 
     int&   score;
     int&   highScore;

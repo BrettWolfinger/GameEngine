@@ -26,8 +26,13 @@ public:
     Asteroid(const Asteroid&)            = delete;
     Asteroid& operator=(const Asteroid&) = delete;
 
-    bool  wasShot() const { return m_wasShot; }
-    float radius()  const { return cellCount * 8.f * SCALE; }
+    bool  wasShot()    const { return m_wasShot; }
+    float radius()     const { return cellCount * 8.f * SCALE; }
+    int   scoreValue() const;
+
+    static constexpr int SCORE_LARGE  = 20;
+    static constexpr int SCORE_MEDIUM = 50;
+    static constexpr int SCORE_SMALL  = 100;
 
     // Returns the fragments this asteroid splits into when destroyed.
     // Empty for Small asteroids. Safe to call from onUpdate (not from a callback).
