@@ -1,11 +1,6 @@
 #include "AsteroidsGame.h"
 #include "AsteroidsConfig.h"
-#include "ShipConfig.h"
 #include <engine/renderer/Texture.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
-#include <algorithm>
-#include <cmath>
 
 static GameContext makeContext(
     Engine::Renderer2D& renderer,
@@ -46,7 +41,7 @@ AsteroidsGame::AsteroidsGame()
     m_saveData  = Engine::SaveData::load("asteroids");
     m_highScore = m_saveData.getInt("high_score", 0);
 
-    spawnBgAsteroids();
+    m_titleScreen.onEnter();
 }
 
 // ---- core loop --------------------------------------------------------------
@@ -90,17 +85,12 @@ void AsteroidsGame::transitionTo(Screen next) {
     if (next == Screen::Quit) { quit(); return; }
 
     if (next == Screen::Playing && m_screen == Screen::ShipSelect)
-        startGame();
+        m_playingScreen.onEnter();
 
     if (next == Screen::ShipSelect && m_screen == Screen::GameOver)
         resetForRestart();
 
     m_screen = next;
-}
-
-void AsteroidsGame::startGame() {
-    m_ship.emplace(m_sheet, ShipConfigs::All[m_selectedShip]);
-    spawnInitialAsteroidRing();
 }
 
 void AsteroidsGame::resetForRestart() {
@@ -114,35 +104,3 @@ void AsteroidsGame::resetForRestart() {
     m_newHighScore = false;
 }
 
-// ---- spawning ---------------------------------------------------------------
-
-void AsteroidsGame::spawnBgAsteroids() {
-    static constexpr int COUNT = 8;
-    for (int i = 0; i < COUNT; ++i) {
-        glm::vec2 pos = {
-            std::uniform_real_distribution<float>(0.f, static_cast<float>(W))(m_rng),
-            std::uniform_real_distribution<float>(0.f, static_cast<float>(H))(m_rng)
-        };
-        m_bgAsteroids.push_back(Asteroid::spawnLarge(pos, m_rng));
-    }
-}
-
-void AsteroidsGame::spawnInitialAsteroidRing() {
-    const glm::vec2 playerStart(W * 0.5f, H * 0.5f);
-
-    for (int i = 0; i < STARTING_ASTEROID_COUNT; ++i) {
-        const float baseAngle   = (glm::two_pi<float>() / STARTING_ASTEROID_COUNT) * i;
-        const float jitter      = std::uniform_real_distribution<float>(
-                                      -glm::pi<float>() / 6.f,
-                                       glm::pi<float>() / 6.f)(m_rng);
-        const float spawnRadius = STARTING_ASTEROID_MIN_DIST_FROM_PLAYER
-                                + std::uniform_real_distribution<float>(0.f, 120.f)(m_rng);
-
-        glm::vec2 pos = playerStart + glm::vec2(std::cos(baseAngle + jitter),
-                                                std::sin(baseAngle + jitter)) * spawnRadius;
-        pos.x = std::clamp(pos.x, 32.f, static_cast<float>(W) - 32.f);
-        pos.y = std::clamp(pos.y, 32.f, static_cast<float>(H) - 32.f);
-
-        m_asteroids.push_back(Asteroid::spawnLarge(pos, m_rng));
-    }
-}

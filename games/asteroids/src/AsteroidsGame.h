@@ -59,11 +59,5 @@ private:
     GameOverScreen  m_gameOverScreen;
 
     void transitionTo(Screen next);
-    void spawnBgAsteroids();
-    void startGame();
     void resetForRestart();
-
-    static constexpr float STARTING_ASTEROID_MIN_DIST_FROM_PLAYER = 150.f;
-    static constexpr int   STARTING_ASTEROID_COUNT                = 4;
-    void spawnInitialAsteroidRing();
 };

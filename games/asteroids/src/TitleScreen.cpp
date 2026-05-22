@@ -1,10 +1,23 @@
 #include "TitleScreen.h"
 #include "AsteroidsConfig.h"
+#include "Asteroid.h"
 #include <engine/core/Input.h>
 #include <engine/renderer/PixelFont.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 TitleScreen::TitleScreen(GameContext& ctx) : m_ctx(ctx) {}
+
+void TitleScreen::onEnter() {
+    static constexpr int COUNT = 8;
+    for (int i = 0; i < COUNT; ++i) {
+        glm::vec2 pos = {
+            std::uniform_real_distribution<float>(0.f, static_cast<float>(W))(m_ctx.rng),
+            std::uniform_real_distribution<float>(0.f, static_cast<float>(H))(m_ctx.rng)
+        };
+        m_ctx.bgAsteroids.push_back(Asteroid::spawnLarge(pos, m_ctx.rng));
+    }
+}
 
 void TitleScreen::preStep(float dt) {
     for (auto& a : m_ctx.bgAsteroids)

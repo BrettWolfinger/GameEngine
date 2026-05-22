@@ -7,8 +7,34 @@
 #include <GLFW/glfw3.h>
 #include <glm/gtc/constants.hpp>
 #include <algorithm>
+#include <cmath>
 
 PlayingScreen::PlayingScreen(GameContext& ctx) : m_ctx(ctx) {}
+
+void PlayingScreen::onEnter() {
+    m_ctx.ship.emplace(m_ctx.sheet, ShipConfigs::All[m_ctx.selectedShip]);
+    spawnInitialAsteroidRing();
+}
+
+void PlayingScreen::spawnInitialAsteroidRing() {
+    const glm::vec2 playerStart(W * 0.5f, H * 0.5f);
+
+    for (int i = 0; i < STARTING_ASTEROID_COUNT; ++i) {
+        const float baseAngle   = (glm::two_pi<float>() / STARTING_ASTEROID_COUNT) * i;
+        const float jitter      = std::uniform_real_distribution<float>(
+                                      -glm::pi<float>() / 6.f,
+                                       glm::pi<float>() / 6.f)(m_ctx.rng);
+        const float spawnRadius = STARTING_ASTEROID_MIN_DIST_FROM_PLAYER
+                                + std::uniform_real_distribution<float>(0.f, 120.f)(m_ctx.rng);
+
+        glm::vec2 pos = playerStart + glm::vec2(std::cos(baseAngle + jitter),
+                                                std::sin(baseAngle + jitter)) * spawnRadius;
+        pos.x = std::clamp(pos.x, 32.f, static_cast<float>(W) - 32.f);
+        pos.y = std::clamp(pos.y, 32.f, static_cast<float>(H) - 32.f);
+
+        m_ctx.asteroids.push_back(Asteroid::spawnLarge(pos, m_ctx.rng));
+    }
+}
 
 // ---- core loop --------------------------------------------------------------
 

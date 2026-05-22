@@ -5,11 +5,14 @@ class PlayingScreen {
 public:
     explicit PlayingScreen(GameContext& ctx);
 
+    void   onEnter();
     void   preStep(float dt);
     Screen update(float dt);
     void   render();
 
 private:
+    static constexpr int   STARTING_ASTEROID_COUNT                = 4;
+    static constexpr float STARTING_ASTEROID_MIN_DIST_FROM_PLAYER = 150.f;
     static constexpr int   STARTING_LIVES                         = 3;
     static constexpr int   MAX_ASTEROIDS_PER_WAVE                 = 12;
     static constexpr float WAVE_DELAY                             = 2.f;
@@ -34,6 +37,7 @@ private:
     void renderLivesHUD();
     void renderWaveAnnouncement();
 
+    void      spawnInitialAsteroidRing();
     void      spawnWave(int wave);
     glm::vec2 randomEdgePosition();
     int       scoreForSize(AsteroidSize size) const;
