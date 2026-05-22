@@ -135,57 +135,25 @@ int Asteroid::scoreValue() const {
 // ---- audio ------------------------------------------------------------------
 
 void Asteroid::playDestructionSound() const {
-    // Decay factor computed as pow(0.001, 1 / (44100 * fadeTimeSec)) so amplitude
-    // reaches ~0.1% of original after fadeTimeSec seconds.
-    switch (size) {
-        case AsteroidSize::Large:
-            Engine::Services::audio().playNoise(0.6f,  0.5f, std::pow(0.001f, 1.f / (44100.f * 0.5f)));
-            break;
-        case AsteroidSize::Medium:
-            Engine::Services::audio().playNoise(0.35f, 0.4f, std::pow(0.001f, 1.f / (44100.f * 0.25f)));
-            break;
-        case AsteroidSize::Small:
-            Engine::Services::audio().playNoise(0.15f, 0.35f, std::pow(0.001f, 1.f / (44100.f * 0.12f)));
-            break;
-        default: break;
-    }
+    const AsteroidSizeConfig& cfg = AsteroidSizeConfigs::All[static_cast<int>(size)];
+    // Decay factor: amplitude reaches ~0.1% of original after noiseFadeTime seconds.
+    const float decay = std::pow(0.001f, 1.f / (44100.f * cfg.noiseFadeTime));
+    Engine::Services::audio().playNoise(cfg.noiseDuration, cfg.noiseAmplitude, decay);
 }
 
 void Asteroid::emitDestructionParticles() const {
     static const glm::vec3 DEBRIS_COLOR = { 0.9f, 0.88f, 0.82f };
+    const AsteroidSizeConfig& cfg = AsteroidSizeConfigs::All[static_cast<int>(size)];
 
     Engine::ParticleEmitParams params;
-    params.origin = pos;
-    params.color  = DEBRIS_COLOR;
-
-    switch (size) {
-        case AsteroidSize::Large:
-            params.count            = 20;
-            params.speed            = 130.f;
-            params.speedVariance    = 70.f;
-            params.lifetime         = 1.2f;
-            params.lifetimeVariance = 0.3f;
-            params.startSize        = 4.f * SCALE;
-            break;
-        case AsteroidSize::Medium:
-            params.count            = 12;
-            params.speed            = 100.f;
-            params.speedVariance    = 50.f;
-            params.lifetime         = 0.8f;
-            params.lifetimeVariance = 0.2f;
-            params.startSize        = 3.f * SCALE;
-            break;
-        case AsteroidSize::Small:
-            params.count            = 6;
-            params.speed            = 80.f;
-            params.speedVariance    = 40.f;
-            params.lifetime         = 0.5f;
-            params.lifetimeVariance = 0.15f;
-            params.startSize        = 2.f * SCALE;
-            break;
-        default: return;
-    }
-
+    params.origin           = pos;
+    params.color            = DEBRIS_COLOR;
+    params.count            = cfg.particleCount;
+    params.speed            = cfg.particleSpeed;
+    params.speedVariance    = cfg.particleSpeedVariance;
+    params.lifetime         = cfg.particleLifetime;
+    params.lifetimeVariance = cfg.particleLifetimeVariance;
+    params.startSize        = cfg.particleSize;
     Engine::Services::particles().emit(params);
 }
 

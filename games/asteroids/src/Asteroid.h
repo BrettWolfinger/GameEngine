@@ -1,5 +1,6 @@
 #pragma once
 #include "AsteroidsConfig.h"
+#include "AsteroidConfig.h"
 #include <engine/core/Services.h>
 #include <engine/physics/Collider.h>
 #include <engine/renderer/Renderer2D.h>
