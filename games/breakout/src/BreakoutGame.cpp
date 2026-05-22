@@ -2,7 +2,7 @@
 #include <engine/renderer/SegmentFont.h>
 #include <engine/renderer/PixelFont.h>
 #include <engine/core/Input.h>
-#include <engine/core/Services.h>
+#include <engine/Engine.h>
 #include <GLFW/glfw3.h>
 #include <algorithm>
 #include <cmath>
@@ -167,17 +167,17 @@ void BreakoutGame::updatePlaying(float dt) {
     if (m_ball.x < 0.f) {
         m_ball.x  = 0.f;
         m_ball.vx = std::abs(m_ball.vx);
-        Engine::Services::audio().playTone(240.f, 0.04f);
+        Engine::playTone(240.f, 0.04f);
     }
     if (m_ball.x + m_ball.size > W) {
         m_ball.x  = W - m_ball.size;
         m_ball.vx = -std::abs(m_ball.vx);
-        Engine::Services::audio().playTone(240.f, 0.04f);
+        Engine::playTone(240.f, 0.04f);
     }
     if (m_ball.y < 0.f) {
         m_ball.y  = 0.f;
         m_ball.vy = std::abs(m_ball.vy);
-        Engine::Services::audio().playTone(240.f, 0.04f);
+        Engine::playTone(240.f, 0.04f);
         if (!m_ceilingHit) {
             m_ceilingHit    = true;
             float cx        = m_paddle.x + m_paddle.w * 0.5f;
@@ -189,7 +189,7 @@ void BreakoutGame::updatePlaying(float dt) {
     // Ball lost off bottom
     if (m_ball.y > H) {
         --m_lives;
-        Engine::Services::audio().playTone(120.f, 0.3f);
+        Engine::playTone(120.f, 0.3f);
         if (m_lives <= 0) {
             m_state = GameState::GameOver;
         } else {
@@ -227,7 +227,7 @@ void BreakoutGame::updatePlaying(float dt) {
 
         // Push ball above paddle to avoid repeated hits
         m_ball.y = m_paddle.y - m_ball.size;
-        Engine::Services::audio().playTone(480.f, 0.05f);
+        Engine::playTone(480.f, 0.05f);
     }
 
     // Brick collision — find deepest-overlap brick, resolve only that one
@@ -266,7 +266,7 @@ void BreakoutGame::updatePlaying(float dt) {
 
         // Determine which row this brick belongs to for pitch calculation
         int row = bestIdx / COLS;
-        Engine::Services::audio().playTone(600.f + row * 40.f, 0.04f);
+        Engine::playTone(600.f + row * 40.f, 0.04f);
 
         b.alive = false;
         m_score += b.points;
