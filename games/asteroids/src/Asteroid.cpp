@@ -7,9 +7,6 @@
 #include <glm/gtc/constants.hpp>
 #include <cmath>
 
-constexpr int Asteroid::MEDIUM_FRAMES[4];
-constexpr int Asteroid::SMALL_FRAMES[4][4];
-
 // ---- lifecycle --------------------------------------------------------------
 
 Asteroid::~Asteroid() {
@@ -43,39 +40,39 @@ std::unique_ptr<Asteroid> Asteroid::spawnLarge(glm::vec2 pos, std::mt19937& rng)
 // ---- factories --------------------------------------------------------------
 
 std::unique_ptr<Asteroid> Asteroid::makeLarge(glm::vec2 pos, glm::vec2 vel, float rotSpeed) {
+    const auto& cfg = AsteroidSizeConfigs::All[static_cast<int>(AsteroidSize::Large)];
     auto a = std::unique_ptr<Asteroid>(new Asteroid());
     a->pos        = pos;
     a->vel        = vel;
     a->rotSpeed   = rotSpeed;
-    a->size       = AsteroidSize::Large;
-    a->frameIndex = 196;
-    a->cellCount  = 4;
+    a->size         = AsteroidSize::Large;
+    a->m_frameIndex = cfg.frames[0][0];
     a->registerCollider();
     return a;
 }
 
 std::unique_ptr<Asteroid> Asteroid::makeMedium(int variant, glm::vec2 pos, glm::vec2 vel, float rotSpeed) {
+    const auto& cfg = AsteroidSizeConfigs::All[static_cast<int>(AsteroidSize::Medium)];
     auto a = std::unique_ptr<Asteroid>(new Asteroid());
     a->pos        = pos;
     a->vel        = vel;
     a->rotSpeed   = rotSpeed;
-    a->size       = AsteroidSize::Medium;
-    a->variant    = variant & 3;
-    a->frameIndex = MEDIUM_FRAMES[a->variant];
-    a->cellCount  = 2;
+    a->size         = AsteroidSize::Medium;
+    a->variant      = variant & 3;
+    a->m_frameIndex = cfg.frames[a->variant][0];
     a->registerCollider();
     return a;
 }
 
 std::unique_ptr<Asteroid> Asteroid::makeSmall(int group, int idx, glm::vec2 pos, glm::vec2 vel, float rotSpeed) {
+    const auto& cfg = AsteroidSizeConfigs::All[static_cast<int>(AsteroidSize::Small)];
     auto a = std::unique_ptr<Asteroid>(new Asteroid());
     a->pos        = pos;
     a->vel        = vel;
     a->rotSpeed   = rotSpeed;
-    a->size       = AsteroidSize::Small;
-    a->variant    = group & 3;
-    a->frameIndex = SMALL_FRAMES[a->variant][idx & 3];
-    a->cellCount  = 1;
+    a->size         = AsteroidSize::Small;
+    a->variant      = group & 3;
+    a->m_frameIndex = cfg.frames[a->variant][idx & 3];
     a->registerCollider();
     return a;
 }
@@ -123,15 +120,6 @@ void Asteroid::update(float dt, int screenW, int screenH) {
         Engine::Services::collision().updateCircle(m_colliderHandle, pos.x, pos.y, radius());
 }
 
-int Asteroid::scoreValue() const {
-    switch (size) {
-        case AsteroidSize::Large:  return SCORE_LARGE;
-        case AsteroidSize::Medium: return SCORE_MEDIUM;
-        case AsteroidSize::Small:  return SCORE_SMALL;
-        default: return 0;
-    }
-}
-
 // ---- audio ------------------------------------------------------------------
 
 void Asteroid::playDestructionSound() const {
@@ -160,10 +148,11 @@ void Asteroid::emitDestructionParticles() const {
 // ---- render -----------------------------------------------------------------
 
 void Asteroid::render(Engine::Renderer2D& renderer, const Engine::SpriteSheet& sheet) const {
-    const float renderSize = cellCount * 16.f * SCALE;
+    const int   cells      = AsteroidSizeConfigs::All[static_cast<int>(size)].cellCount;
+    const float renderSize = cells * 16.f * SCALE;
     const float half       = renderSize * 0.5f;
 
-    const Engine::UVRect uv = sheet.getFrameUVs(frameIndex, cellCount, cellCount);
+    const Engine::UVRect uv = sheet.getFrameUVs(m_frameIndex, cells, cells);
     renderer.drawTexturedRect(pos.x - half, pos.y - half, renderSize, renderSize,
                               sheet.texture(),
                               uv.u0, uv.v0, uv.u1, uv.v1,
