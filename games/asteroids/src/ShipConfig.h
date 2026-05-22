@@ -21,6 +21,6 @@ inline constexpr ShipConfig All[] = {
     { "RACER",   520.f, 280.f, 0.985f, 3.4f, 0.20f, 34, 38, 42 },  // well-rounded
 };
 
-inline constexpr int Count = 4;
+inline constexpr int Count = static_cast<int>(sizeof(All) / sizeof(All[0]));
 
 } // namespace ShipConfigs

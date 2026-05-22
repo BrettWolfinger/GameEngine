@@ -177,17 +177,18 @@ void PlayingScreen::handleUfoState(float dt) {
 
     if (m_ctx.ufo->wasDestroyed()) {
         awardScore((m_ctx.ufo->ufoSize() == UfoSize::Large) ? UFO::SCORE_LARGE : UFO::SCORE_SMALL);
-        m_ctx.ufo.reset();
-        m_ctx.ufoBullets.clear();
-        m_ctx.ufoSpawnTimer = UFO_RESPAWN_DELAY;
+        clearUfo(UFO_RESPAWN_DELAY);
         return;
     }
 
-    if (m_ctx.ufo->hasExited(W, H)) {
-        m_ctx.ufo.reset();
-        m_ctx.ufoBullets.clear();
-        m_ctx.ufoSpawnTimer = UFO_RESPAWN_DELAY;
-    }
+    if (m_ctx.ufo->hasExited(W, H))
+        clearUfo(UFO_RESPAWN_DELAY);
+}
+
+void PlayingScreen::clearUfo(float respawnDelay) {
+    m_ctx.ufo.reset();
+    m_ctx.ufoBullets.clear();
+    m_ctx.ufoSpawnTimer = respawnDelay;
 }
 
 void PlayingScreen::spawnUfo() {

@@ -32,11 +32,11 @@ public:
     static constexpr float SMALL_RENDER_SIZE = 16.f * SCALE;
     static constexpr float LARGE_SPEED       = 80.f;
     static constexpr float SMALL_SPEED       = 120.f;
-    static constexpr int   SCORE_LARGE       = 200;
-    static constexpr int   SCORE_SMALL       = 1000;
-    static constexpr int   SMALL_FRAME       = 12;
-    static constexpr int   LARGE_FRAME       = 44;
-    static constexpr int   SPRITE_CELLS      = 2;
+    static constexpr int   SCORE_LARGE  = 200;
+    static constexpr int   SCORE_SMALL  = 1000;
+    static constexpr int   SMALL_FRAME  = 12;
+    static constexpr int   LARGE_FRAME  = 44;
+    static constexpr int   SPRITE_CELLS = 2;
 
 private:
     static constexpr float ZIGZAG_INTERVAL    = 1.5f;

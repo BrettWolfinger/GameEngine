@@ -13,7 +13,6 @@ public:
 private:
     static constexpr int   STARTING_ASTEROID_COUNT                = 4;
     static constexpr float STARTING_ASTEROID_MIN_DIST_FROM_PLAYER = 150.f;
-    static constexpr int   STARTING_LIVES                         = 3;
     static constexpr int   MAX_ASTEROIDS_PER_WAVE                 = 12;
     static constexpr float WAVE_DELAY                             = 2.f;
     static constexpr float WAVE_SPAWN_MIN_DIST_FROM_SHIP          = 150.f;
@@ -32,6 +31,7 @@ private:
     void tryFireBullet();
     void removeDeadBullets();
     void handleUfoState(float dt);
+    void clearUfo(float respawnDelay);
     void spawnUfo();
     void trySpawnUfoBullet();
     void removeDeadUfoBullets();
