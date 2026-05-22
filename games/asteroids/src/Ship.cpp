@@ -49,6 +49,7 @@ Ship::Ship(std::shared_ptr<Engine::SpriteSheet> sheet, const ShipConfig& config)
 }
 
 Ship::~Ship() {
+    Engine::Services::audio().stopLoopingVoice(THRUST_AUDIO_SLOT);
     Engine::Services::collision().remove(m_colliderHandle);
 }
 

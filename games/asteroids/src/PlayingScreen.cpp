@@ -102,6 +102,10 @@ void PlayingScreen::removeDeadAsteroids() {
     for (const auto& a : m_ctx.asteroids) {
         if (!a->wasShot()) continue;
         m_ctx.score += scoreForSize(a->size);
+        if (m_ctx.score >= m_ctx.nextLifeScore) {
+            ++m_ctx.lives;
+            m_ctx.nextLifeScore += 1000;
+        }
         if (m_ctx.score > m_ctx.highScore) {
             m_ctx.highScore    = m_ctx.score;
             m_ctx.newHighScore = true;
