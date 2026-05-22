@@ -21,12 +21,15 @@ protected:
     void onRender()         override;
 
 private:
-    static constexpr int   STARTING_ASTEROID_COUNT               = 4;
+    static constexpr int   STARTING_ASTEROID_COUNT                = 4;
     static constexpr float STARTING_ASTEROID_MIN_DIST_FROM_PLAYER = 150.f;
     static constexpr int   STARTING_LIVES                         = 3;
     static constexpr int   MAX_ASTEROIDS_PER_WAVE                 = 12;
     static constexpr float WAVE_DELAY                             = 2.f;
     static constexpr float WAVE_SPAWN_MIN_DIST_FROM_SHIP          = 150.f;
+    static constexpr int   SCORE_LARGE                            = 20;
+    static constexpr int   SCORE_MEDIUM                           = 50;
+    static constexpr int   SCORE_SMALL                            = 100;
 
     Engine::Renderer2D                        m_renderer;
     std::shared_ptr<Engine::SpriteSheet>      m_sheet;
@@ -35,6 +38,7 @@ private:
     std::vector<std::unique_ptr<Asteroid>>    m_asteroids;
     std::mt19937                              m_rng;
     int                                       m_lives     = STARTING_LIVES;
+    int                                       m_score     = 0;
     int                                       m_wave      = 1;
     float                                     m_waveTimer = -1.f;
     bool                                      m_gameOver  = false;
@@ -49,13 +53,18 @@ private:
     void advanceWaveIfCleared(float dt);
     void tryFireBullet();
     void removeDeadBullets();
+    void restartGame();
 
     // onRender helpers
+    void renderScore();
     void renderLivesHUD();
     void renderWaveAnnouncement();
+    void renderGameOver();
 
     // Spawning
     void      spawnInitialAsteroidRing();
     void      spawnWave(int wave);
     glm::vec2 randomEdgePosition();
+
+    int scoreForSize(AsteroidSize size) const;
 };
