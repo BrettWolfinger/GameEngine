@@ -1,20 +1,44 @@
 #include "AsteroidsGame.h"
 #include "AsteroidsConfig.h"
+#include "ShipConfig.h"
 #include <engine/renderer/Texture.h>
-#include <engine/renderer/SegmentFont.h>
-#include <engine/renderer/PixelFont.h>
-#include <engine/core/Input.h>
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <algorithm>
-#include <random>
 #include <cmath>
+
+static GameContext makeContext(
+    Engine::Renderer2D& renderer,
+    std::shared_ptr<Engine::SpriteSheet>& sheet,
+    std::mt19937& rng,
+    Engine::SaveData& saveData,
+    Engine::Menu& titleMenu,
+    std::vector<std::unique_ptr<Asteroid>>& bgAsteroids,
+    std::optional<Ship>& ship,
+    std::vector<std::unique_ptr<Bullet>>& bullets,
+    std::vector<std::unique_ptr<Asteroid>>& asteroids,
+    int& score, int& highScore, int& lives, int& wave,
+    float& waveTimer, bool& newHighScore, int& selectedShip)
+{
+    return GameContext{
+        renderer, sheet, rng, saveData, titleMenu,
+        bgAsteroids, ship, bullets, asteroids,
+        score, highScore, lives, wave, waveTimer, newHighScore, selectedShip
+    };
+}
 
 AsteroidsGame::AsteroidsGame()
     : Engine::Application("Asteroids", W, H)
     , m_rng(std::random_device{}())
     , m_titleMenu({"PLAY", "EXIT"}, 3.f)
+    , m_ctx(makeContext(m_renderer, m_sheet, m_rng, m_saveData, m_titleMenu,
+                        m_bgAsteroids, m_ship, m_bullets, m_asteroids,
+                        m_score, m_highScore, m_lives, m_wave,
+                        m_waveTimer, m_newHighScore, m_selectedShip))
+    , m_titleScreen(m_ctx)
+    , m_shipSelectScreen(m_ctx)
+    , m_playingScreen(m_ctx)
+    , m_gameOverScreen(m_ctx)
 {
     auto texture = std::make_shared<Engine::Texture>("games/asteroids/assets/asteroids-arcade.png");
     m_sheet      = std::make_shared<Engine::SpriteSheet>(texture, 16, 16);
@@ -28,247 +52,73 @@ AsteroidsGame::AsteroidsGame()
 // ---- core loop --------------------------------------------------------------
 
 void AsteroidsGame::preStep(float dt) {
-    for (auto& a : m_bgAsteroids)
-        a->update(dt, W, H);
-
-    if (m_screen != Screen::Playing || !m_ship) return;
-
-    m_ship->update(dt, W, H);
-
-    for (auto& b : m_bullets)
-        b->update(dt);
-
-    for (auto& a : m_asteroids)
-        a->update(dt, W, H);
+    switch (m_screen) {
+        case Screen::Title:      m_titleScreen.preStep(dt);      break;
+        case Screen::ShipSelect: m_shipSelectScreen.preStep(dt); break;
+        case Screen::Playing:    m_playingScreen.preStep(dt);    break;
+        default: break;
+    }
 }
 
 void AsteroidsGame::onUpdate(float dt) {
-    if (Engine::Input::isKeyPressed(GLFW_KEY_Q)) quit();
-
-    if (m_screen == Screen::Title) {
-        updateTitleScreen(dt);
-        return;
+    Screen next = m_screen;
+    switch (m_screen) {
+        case Screen::Title:      next = m_titleScreen.update(dt);      break;
+        case Screen::ShipSelect: next = m_shipSelectScreen.update(dt); break;
+        case Screen::Playing:    next = m_playingScreen.update(dt);    break;
+        case Screen::GameOver:   next = m_gameOverScreen.update(dt);   break;
+        default: break;
     }
-
-    if (m_screen == Screen::ShipSelect) {
-        updateShipSelect();
-        return;
-    }
-
-    if (m_screen == Screen::GameOver) {
-        if (Engine::Input::isKeyPressed(GLFW_KEY_R)) restartGame();
-        return;
-    }
-
-#ifdef ENABLE_DEV_KEYS
-    handleDevInput();
-#endif
-
-    if (m_ship->wasHit()) handleShipHit();
-
-    spawnAsteroidFragments();
-    removeDeadAsteroids();
-    advanceWaveIfCleared(dt);
-    tryFireBullet();
-    removeDeadBullets();
+    if (next != m_screen) transitionTo(next);
 }
 
 void AsteroidsGame::onRender() {
     m_renderer.beginScene(W, H);
-
-    if (m_screen == Screen::Title) {
-        renderTitleScreen();
-        return;
-    }
-
-    if (m_screen == Screen::ShipSelect) {
-        renderShipSelect();
-        return;
-    }
-
-    for (const auto& a : m_asteroids)
-        a->render(m_renderer, *m_sheet);
-
-    m_ship->render(m_renderer);
-
-    for (const auto& b : m_bullets)
-        b->render(m_renderer);
-
-    renderScore();
-    renderLivesHUD();
-    renderWaveAnnouncement();
-    if (m_screen == Screen::GameOver) renderGameOver();
-}
-
-// ---- onUpdate helpers -------------------------------------------------------
-
-#ifdef ENABLE_DEV_KEYS
-void AsteroidsGame::handleDevInput() {
-    if (Engine::Input::isKeyPressed(GLFW_KEY_C))
-        m_asteroids.clear();
-}
-#endif
-
-void AsteroidsGame::handleShipHit() {
-    m_bullets.clear();
-    if (--m_lives > 0)
-        m_ship->reset();
-    else
-        m_screen = Screen::GameOver;
-}
-
-void AsteroidsGame::spawnAsteroidFragments() {
-    const size_t n = m_asteroids.size();
-    for (size_t i = 0; i < n; ++i) {
-        if (!m_asteroids[i]->wasShot()) continue;
-        for (auto& f : m_asteroids[i]->split())
-            m_asteroids.push_back(std::move(f));
+    switch (m_screen) {
+        case Screen::Title:      m_titleScreen.render();      break;
+        case Screen::ShipSelect: m_shipSelectScreen.render(); break;
+        case Screen::Playing:    m_playingScreen.render();    break;
+        case Screen::GameOver:   m_playingScreen.render();    // game world stays visible
+                                 m_gameOverScreen.render();   break;
+        default: break;
     }
 }
 
-void AsteroidsGame::removeDeadAsteroids() {
-    for (const auto& a : m_asteroids) {
-        if (!a->wasShot()) continue;
-        m_score += scoreForSize(a->size);
-        if (m_score > m_highScore) {
-            m_highScore    = m_score;
-            m_newHighScore = true;
-            m_saveData.setInt("high_score", m_highScore);
-            m_saveData.save();
-        }
-    }
+// ---- transitions ------------------------------------------------------------
 
-    m_asteroids.erase(
-        std::remove_if(m_asteroids.begin(), m_asteroids.end(),
-                       [](const auto& a) { return a->wasShot(); }),
-        m_asteroids.end());
+void AsteroidsGame::transitionTo(Screen next) {
+    if (next == Screen::Quit) { quit(); return; }
+
+    if (next == Screen::Playing && m_screen == Screen::ShipSelect)
+        startGame();
+
+    if (next == Screen::ShipSelect && m_screen == Screen::GameOver)
+        resetForRestart();
+
+    m_screen = next;
 }
 
-void AsteroidsGame::advanceWaveIfCleared(float dt) {
-    if (!m_asteroids.empty()) return;
-
-    if (m_waveTimer < 0.f)
-        m_waveTimer = WAVE_DELAY;
-
-    m_waveTimer -= dt;
-
-    if (m_waveTimer <= 0.f) {
-        m_waveTimer = -1.f;
-        spawnWave(++m_wave);
-    }
+void AsteroidsGame::startGame() {
+    m_ship.emplace(m_sheet, ShipConfigs::All[m_selectedShip]);
+    spawnInitialAsteroidRing();
 }
 
-void AsteroidsGame::tryFireBullet() {
-    if (auto shot = m_ship->tryShoot()) {
-        m_bullets.push_back(std::make_unique<Bullet>(
-            shot->pos, shot->direction * Bullet::SPEED,
-            m_sheet->getFrameUVs(128), &m_sheet->texture()));
-    }
-}
-
-void AsteroidsGame::removeDeadBullets() {
-    m_bullets.erase(
-        std::remove_if(m_bullets.begin(), m_bullets.end(),
-                       [](const auto& b) { return !b->isAlive(); }),
-        m_bullets.end());
-}
-
-// ---- onRender helpers -------------------------------------------------------
-
-void AsteroidsGame::renderLivesHUD() {
-    static constexpr float ICON_SIZE = 20.f;
-    static constexpr float ICON_PAD  = 6.f;
-    const Engine::UVRect iconUV = m_sheet->getFrameUVs(m_ship->frameIndex(), m_ship->frameCells(), m_ship->frameCells());
-    for (int i = 0; i < m_lives; ++i) {
-        const float x = ICON_PAD + i * (ICON_SIZE + ICON_PAD);
-        m_renderer.drawTexturedRect(x, ICON_PAD, ICON_SIZE, ICON_SIZE,
-                                    m_sheet->texture(),
-                                    iconUV.u0, iconUV.v0, iconUV.u1, iconUV.v1);
-    }
-}
-
-void AsteroidsGame::renderScore() {
-    static constexpr float     s     = 3.f;
-    static constexpr float     PAD   = 8.f;
-    static constexpr glm::vec4 WHITE = { 1.f, 1.f, 1.f, 1.f };
-    static constexpr glm::vec4 GOLD  = { 1.f, 0.85f, 0.1f, 1.f };
-
-    const std::string scoreText = std::to_string(m_score);
-    const float scoreX = W - PAD - Engine::PixelFont::stringWidth(scoreText, s);
-    Engine::PixelFont::drawString(m_renderer, scoreText, scoreX, PAD, s, WHITE);
-
-    const std::string hiText = std::to_string(m_highScore);
-    const float hiX = W * 0.5f - Engine::PixelFont::stringWidth(hiText, s) * 0.5f;
-    Engine::PixelFont::drawString(m_renderer, hiText, hiX, PAD, s, GOLD);
-}
-
-void AsteroidsGame::renderGameOver() {
-    static constexpr float     TITLE_SCALE = 6.f;
-    static constexpr float     SCORE_SCALE = 4.f;
-    static constexpr float     NEW_HS_SCALE = 3.f;
-    static constexpr float     HINT_SCALE  = 2.f;
-    static constexpr float     GAP         = 20.f;
-    static constexpr glm::vec4 WHITE       = { 1.f, 1.f, 1.f, 1.f };
-    static constexpr glm::vec4 GOLD        = { 1.f, 0.85f, 0.1f, 1.f };
-
-    const float titleH  = 7.f * TITLE_SCALE;
-    const float scoreH  = 7.f * SCORE_SCALE;
-    const float newHsH  = m_newHighScore ? 7.f * NEW_HS_SCALE + GAP : 0.f;
-    const float hintH   = 7.f * HINT_SCALE;
-    const float totalH  = titleH + GAP + scoreH + newHsH + GAP + hintH;
-    const float topY    = H * 0.5f - totalH * 0.5f;
-
-    Engine::PixelFont::drawStringCentered(m_renderer, "GAME OVER",          W * 0.5f, topY,                    TITLE_SCALE, WHITE);
-    Engine::PixelFont::drawStringCentered(m_renderer, m_score,              W * 0.5f, topY + titleH + GAP,     SCORE_SCALE, WHITE);
-
-    if (m_newHighScore)
-        Engine::PixelFont::drawStringCentered(m_renderer, "NEW HIGH SCORE", W * 0.5f, topY + titleH + GAP + scoreH + GAP, NEW_HS_SCALE, GOLD);
-
-    Engine::PixelFont::drawStringCentered(m_renderer, "PRESS R TO RESTART", W * 0.5f, topY + titleH + GAP + scoreH + newHsH + GAP, HINT_SCALE, WHITE);
-}
-
-void AsteroidsGame::renderWaveAnnouncement() {
-    if (m_waveTimer < 0.f) return;
-
-    static constexpr float LABEL_SCALE  = 7.f;
-    static constexpr float NUMBER_SCALE = 10.f;
-    static constexpr float GAP          = 15.f;
-    static constexpr glm::vec4 COLOR    = { 1.f, 1.f, 1.f, 1.f };
-
-    const float labelH  = 7.f * LABEL_SCALE;   // PixelFont glyphs are 7 rows tall
-    const float numberH = 5.f * NUMBER_SCALE;  // SegmentFont glyphs are 5 rows tall
-    const float totalH  = labelH + GAP + numberH;
-    const float topY    = H * 0.5f - totalH * 0.5f;
-
-    Engine::PixelFont::drawStringCentered  (m_renderer, "WAVE",     W * 0.5f, topY,                LABEL_SCALE,  COLOR);
-    Engine::SegmentFont::drawStringCentered(m_renderer, m_wave + 1, W * 0.5f, topY + labelH + GAP, NUMBER_SCALE, COLOR);
-}
-
-void AsteroidsGame::restartGame() {
+void AsteroidsGame::resetForRestart() {
     m_asteroids.clear();
     m_bullets.clear();
-    m_lives        = STARTING_LIVES;
+    m_ship.reset();
     m_score        = 0;
+    m_lives        = 3;
     m_wave         = 1;
     m_waveTimer    = -1.f;
     m_newHighScore = false;
-    m_screen       = Screen::ShipSelect;
 }
 
-int AsteroidsGame::scoreForSize(AsteroidSize size) const {
-    switch (size) {
-        case AsteroidSize::Large:  return SCORE_LARGE;
-        case AsteroidSize::Medium: return SCORE_MEDIUM;
-        case AsteroidSize::Small:  return SCORE_SMALL;
-        default: return 0;
-    }
-}
-
-// ---- title screen -----------------------------------------------------------
+// ---- spawning ---------------------------------------------------------------
 
 void AsteroidsGame::spawnBgAsteroids() {
-    static constexpr int BG_ASTEROID_COUNT = 8;
-    for (int i = 0; i < BG_ASTEROID_COUNT; ++i) {
+    static constexpr int COUNT = 8;
+    for (int i = 0; i < COUNT; ++i) {
         glm::vec2 pos = {
             std::uniform_real_distribution<float>(0.f, static_cast<float>(W))(m_rng),
             std::uniform_real_distribution<float>(0.f, static_cast<float>(H))(m_rng)
@@ -276,102 +126,6 @@ void AsteroidsGame::spawnBgAsteroids() {
         m_bgAsteroids.push_back(Asteroid::spawnLarge(pos, m_rng));
     }
 }
-
-void AsteroidsGame::updateTitleScreen(float dt) {
-    (void)dt;
-    m_titleMenu.update();
-    if (m_titleMenu.confirmed()) {
-        if (m_titleMenu.selectedIndex() == 0)
-            m_screen = Screen::ShipSelect;
-        else
-            quit();
-    }
-}
-
-void AsteroidsGame::updateShipSelect() {
-    if (Engine::Input::isKeyPressed(GLFW_KEY_LEFT) || Engine::Input::isKeyPressed(GLFW_KEY_A))
-        m_selectedShip = (m_selectedShip - 1 + ShipConfigs::Count) % ShipConfigs::Count;
-    if (Engine::Input::isKeyPressed(GLFW_KEY_RIGHT) || Engine::Input::isKeyPressed(GLFW_KEY_D))
-        m_selectedShip = (m_selectedShip + 1) % ShipConfigs::Count;
-    if (Engine::Input::isKeyPressed(GLFW_KEY_ENTER) || Engine::Input::isKeyPressed(GLFW_KEY_KP_ENTER))
-        startGame();
-    if (Engine::Input::isKeyPressed(GLFW_KEY_ESCAPE))
-        m_screen = Screen::Title;
-}
-
-void AsteroidsGame::startGame() {
-    m_ship.emplace(m_sheet, ShipConfigs::All[m_selectedShip]);
-    m_screen = Screen::Playing;
-    spawnInitialAsteroidRing();
-}
-
-void AsteroidsGame::renderShipSelect() {
-    for (const auto& a : m_bgAsteroids)
-        a->render(m_renderer, *m_sheet);
-
-    static constexpr float     HEADER_SCALE = 4.f;
-    static constexpr float     PREVIEW_SIZE = 96.f;
-    static constexpr float     GAP          = 32.f;
-    static constexpr float     HINT_SCALE   = 2.f;
-    static constexpr glm::vec4 WHITE        = { 1.f, 1.f, 1.f, 1.f };
-    static constexpr glm::vec4 GOLD         = { 1.f, 0.85f, 0.1f, 1.f };
-
-    Engine::PixelFont::drawStringCentered(m_renderer, "SELECT SHIP", W * 0.5f, H * 0.12f, HEADER_SCALE, WHITE);
-
-    const float totalW = ShipConfigs::Count * PREVIEW_SIZE + (ShipConfigs::Count - 1) * GAP;
-    const float startX = W * 0.5f - totalW * 0.5f;
-    const float previewY = H * 0.35f;
-
-    const Engine::Texture& tex = m_sheet->texture();
-    const float nameY = previewY + PREVIEW_SIZE + 16.f;
-
-    for (int i = 0; i < ShipConfigs::Count; ++i) {
-        const bool       selected = (i == m_selectedShip);
-        const float      x        = startX + i * (PREVIEW_SIZE + GAP);
-        const float      cx       = x + PREVIEW_SIZE * 0.5f;
-        const Engine::UVRect uv   = m_sheet->getFrameUVs(ShipConfigs::All[i].shipFrame, 2, 2);
-
-        const glm::vec4 spriteTint = selected ? glm::vec4{1.f, 1.f, 1.f, 1.f} : glm::vec4{0.35f, 0.35f, 0.35f, 1.f};
-        m_renderer.drawTexturedRect(x, previewY, PREVIEW_SIZE, PREVIEW_SIZE,
-                                    tex, uv.u0, uv.v0, uv.u1, uv.v1, 0.f, spriteTint);
-
-        const glm::vec4& nameColor = selected ? GOLD : WHITE;
-        Engine::PixelFont::drawStringCentered(m_renderer, ShipConfigs::All[i].name, cx, nameY, 2.f, nameColor);
-
-        if (selected)
-            Engine::PixelFont::drawStringCentered(m_renderer, "^", cx, previewY - 16.f, 2.f, GOLD);
-    }
-
-    Engine::PixelFont::drawStringCentered(m_renderer, "< >  ENTER TO START",
-                                          W * 0.5f, H * 0.72f, HINT_SCALE, WHITE);
-}
-
-void AsteroidsGame::renderTitleScreen() {
-    for (const auto& a : m_bgAsteroids)
-        a->render(m_renderer, *m_sheet);
-
-    static constexpr float     TITLE_SCALE = 8.f;
-    static constexpr glm::vec4 WHITE       = { 1.f, 1.f, 1.f, 1.f };
-    static constexpr glm::vec4 GOLD        = { 1.f, 0.85f, 0.1f, 1.f };
-
-    const float titleH = 7.f * TITLE_SCALE;
-    const float titleY = H * 0.28f;
-    Engine::PixelFont::drawStringCentered(m_renderer, "ASTEROIDS", W * 0.5f, titleY, TITLE_SCALE, WHITE);
-
-    if (m_highScore > 0) {
-        static constexpr float HS_SCALE = 2.f;
-        const float hsY = titleY + titleH + 12.f;
-        Engine::PixelFont::drawStringCentered(m_renderer, "BEST", W * 0.5f - 40.f, hsY, HS_SCALE, GOLD);
-        Engine::PixelFont::drawStringCentered(m_renderer, m_highScore,  W * 0.5f + 40.f, hsY, HS_SCALE, GOLD);
-    }
-
-    const float menuW  = Engine::PixelFont::stringWidth("  EXIT", 3.f);
-    const float menuX  = W * 0.5f - menuW * 0.5f;
-    const float menuY  = H * 0.58f;
-    m_titleMenu.draw(m_renderer, menuX, menuY);
-}
-
-// ---- spawning ---------------------------------------------------------------
 
 void AsteroidsGame::spawnInitialAsteroidRing() {
     const glm::vec2 playerStart(W * 0.5f, H * 0.5f);
@@ -390,29 +144,5 @@ void AsteroidsGame::spawnInitialAsteroidRing() {
         pos.y = std::clamp(pos.y, 32.f, static_cast<float>(H) - 32.f);
 
         m_asteroids.push_back(Asteroid::spawnLarge(pos, m_rng));
-    }
-}
-
-void AsteroidsGame::spawnWave(int wave) {
-    const int count = std::min(STARTING_ASTEROID_COUNT + (wave - 1) * 2, MAX_ASTEROIDS_PER_WAVE);
-    const glm::vec2 shipPos = m_ship->pos();
-
-    for (int i = 0; i < count; ++i) {
-        glm::vec2 pos;
-        do { pos = randomEdgePosition(); }
-        while (glm::distance(pos, shipPos) < WAVE_SPAWN_MIN_DIST_FROM_SHIP);
-
-        m_asteroids.push_back(Asteroid::spawnLarge(pos, m_rng));
-    }
-}
-
-glm::vec2 AsteroidsGame::randomEdgePosition() {
-    const int   side = std::uniform_int_distribution<int>(0, 3)(m_rng);
-    const float u    = std::uniform_real_distribution<float>(0.f, 1.f)(m_rng);
-    switch (side) {
-        case 0:  return { u * W,      -16.f    };  // top
-        case 1:  return { u * W,       H + 16.f };  // bottom
-        case 2:  return { -16.f,       u * H    };  // left
-        default: return {  W + 16.f,   u * H    };  // right
     }
 }
