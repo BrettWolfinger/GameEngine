@@ -3,7 +3,6 @@
 #include <engine/core/Services.h>
 #include <engine/particles/ParticleSystem.h>
 #include <engine/physics/CollisionWorld.h>
-#include <glm/gtc/constants.hpp>
 #include <cmath>
 
 UFO::UFO(UfoSize size, glm::vec2 pos, glm::vec2 vel, std::mt19937& rng)
@@ -14,7 +13,8 @@ UFO::UFO(UfoSize size, glm::vec2 pos, glm::vec2 vel, std::mt19937& rng)
         [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
             m_wasDestroyed = true;
             emitDestructionParticles();
-            Engine::Services::audio().playNoise(0.4f, 0.4f, std::pow(0.001f, 1.f / (44100.f * 0.35f)));
+            const float decay = std::pow(0.001f, 1.f / (44100.f * UfoConfigs::NOISE_FADE_TIME));
+            Engine::Services::audio().playNoise(UfoConfigs::NOISE_DURATION, UfoConfigs::NOISE_AMPLITUDE, decay);
             Engine::Services::collision().remove(self);
             m_colliderHandle = Engine::NULL_COLLIDER;
         });
@@ -22,14 +22,6 @@ UFO::UFO(UfoSize size, glm::vec2 pos, glm::vec2 vel, std::mt19937& rng)
 
 UFO::~UFO() {
     Engine::Services::collision().remove(m_colliderHandle);
-}
-
-float UFO::renderSize() const {
-    return (m_size == UfoSize::Large) ? LARGE_RENDER_SIZE : SMALL_RENDER_SIZE;
-}
-
-float UFO::collisionRadius() const {
-    return renderSize() * 0.45f;
 }
 
 bool UFO::hasExited(int screenW, int /*screenH*/) const {
@@ -40,8 +32,9 @@ bool UFO::hasExited(int screenW, int /*screenH*/) const {
 void UFO::update(float dt, int screenW, int screenH, glm::vec2 /*shipPos*/) {
     m_zigzagTimer -= dt;
     if (m_zigzagTimer <= 0.f) {
-        m_zigzagTimer = ZIGZAG_INTERVAL;
-        const float ySpeed = std::uniform_real_distribution<float>(20.f, ZIGZAG_MAX_YSPEED)(m_rng);
+        m_zigzagTimer = UfoConfigs::ZIGZAG_INTERVAL;
+        const float ySpeed = std::uniform_real_distribution<float>(
+            UfoConfigs::ZIGZAG_MIN_YSPEED, UfoConfigs::ZIGZAG_MAX_YSPEED)(m_rng);
         m_vel.y = (m_vel.y >= 0.f) ? -ySpeed : ySpeed;
     }
 
@@ -53,8 +46,9 @@ void UFO::update(float dt, int screenW, int screenH, glm::vec2 /*shipPos*/) {
 
     m_beepTimer -= dt;
     if (m_beepTimer <= 0.f) {
-        m_beepTimer = BEEP_INTERVAL;
-        Engine::Services::audio().playTone(m_beepHigh ? 550.f : 400.f, 0.25f, 0.18f);
+        m_beepTimer = UfoConfigs::BEEP_INTERVAL;
+        const float freq = m_beepHigh ? UfoConfigs::BEEP_FREQUENCY_HI : UfoConfigs::BEEP_FREQUENCY_LO;
+        Engine::Services::audio().playTone(freq, UfoConfigs::BEEP_DURATION, UfoConfigs::BEEP_AMPLITUDE);
         m_beepHigh = !m_beepHigh;
     }
 
@@ -65,42 +59,41 @@ void UFO::update(float dt, int screenW, int screenH, glm::vec2 /*shipPos*/) {
 }
 
 std::optional<UFO::BulletSpawn> UFO::tryFire(glm::vec2 shipPos) {
+    const UfoConfig& cfg = UfoConfigs::All[static_cast<int>(m_size)];
     if (m_fireTimer > 0.f || m_wasDestroyed) return std::nullopt;
-    m_fireTimer = (m_size == UfoSize::Large) ? LARGE_FIRE_RATE : SMALL_FIRE_RATE;
+    m_fireTimer = cfg.fireRate;
 
-    glm::vec2 dir;
-    if (m_size == UfoSize::Large) {
-        const float angle = std::uniform_real_distribution<float>(0.f, glm::two_pi<float>())(m_rng);
-        dir = { std::cos(angle), std::sin(angle) };
-    } else {
-        const glm::vec2 toShip = glm::normalize(shipPos - m_pos);
-        const float variance = std::uniform_real_distribution<float>(-SMALL_AIM_VARIANCE, SMALL_AIM_VARIANCE)(m_rng);
-        const float c = std::cos(variance), s = std::sin(variance);
-        dir = { c * toShip.x - s * toShip.y, s * toShip.x + c * toShip.y };
-    }
+    // Rotating toShip by a uniform angle in [-aimVariance, +aimVariance] produces
+    // a direction in a cone around the ship. When aimVariance ~= pi the result is
+    // a fully random direction regardless of ship position (Large UFO behaviour).
+    const glm::vec2 toShip   = glm::normalize(shipPos - m_pos);
+    const float     variance = std::uniform_real_distribution<float>(-cfg.aimVariance, cfg.aimVariance)(m_rng);
+    const float     c = std::cos(variance), s = std::sin(variance);
+    const glm::vec2 dir = { c * toShip.x - s * toShip.y, s * toShip.x + c * toShip.y };
 
     return BulletSpawn{ m_pos, dir };
 }
 
 void UFO::render(Engine::Renderer2D& renderer, const Engine::SpriteSheet& sheet) const {
-    const float rs   = renderSize();
-    const float half = rs * 0.5f;
-    const int   frame = (m_size == UfoSize::Small) ? SMALL_FRAME : LARGE_FRAME;
-    const Engine::UVRect uv = sheet.getFrameUVs(frame, SPRITE_CELLS, SPRITE_CELLS);
+    const UfoConfig& cfg  = UfoConfigs::All[static_cast<int>(m_size)];
+    const float      rs   = renderSize();
+    const float      half = rs * 0.5f;
+    const Engine::UVRect uv = sheet.getFrameUVs(cfg.spriteFrame, UfoConfigs::SPRITE_CELLS, UfoConfigs::SPRITE_CELLS);
     renderer.drawTexturedRect(m_pos.x - half, m_pos.y - half, rs, rs,
                               sheet.texture(), uv.u0, uv.v0, uv.u1, uv.v1);
 }
 
 void UFO::emitDestructionParticles() const {
+    const UfoConfig& cfg = UfoConfigs::All[static_cast<int>(m_size)];
     Engine::ParticleEmitParams params;
     params.origin           = m_pos;
     params.color            = { 0.3f, 0.95f, 0.95f };
-    params.count            = (m_size == UfoSize::Large) ? 18 : 10;
-    params.speed            = (m_size == UfoSize::Large) ? 150.f : 110.f;
-    params.speedVariance    = 70.f;
-    params.lifetime         = (m_size == UfoSize::Large) ? 1.0f : 0.7f;
-    params.lifetimeVariance = 0.25f;
-    params.startSize        = (m_size == UfoSize::Large) ? 4.f * SCALE : 3.f * SCALE;
+    params.count            = cfg.particleCount;
+    params.speed            = cfg.particleSpeed;
+    params.speedVariance    = cfg.particleSpeedVariance;
+    params.lifetime         = cfg.particleLifetime;
+    params.lifetimeVariance = cfg.particleLifetimeVariance;
+    params.startSize        = cfg.particleSize;
     params.endSize          = 0.f;
     Engine::Services::particles().emit(params);
 }

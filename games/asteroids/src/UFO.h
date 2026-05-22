@@ -1,5 +1,6 @@
 #pragma once
 #include "AsteroidsConfig.h"
+#include "UfoConfig.h"
 #include <engine/physics/Collider.h>
 #include <engine/renderer/Renderer2D.h>
 #include <engine/renderer/SpriteSheet.h>
@@ -27,33 +28,17 @@ public:
     bool      wasDestroyed() const { return m_wasDestroyed; }
     bool      hasExited(int screenW, int screenH) const;
     UfoSize   ufoSize()      const { return m_size; }
-
-    static constexpr float LARGE_RENDER_SIZE = 32.f * SCALE;
-    static constexpr float SMALL_RENDER_SIZE = 16.f * SCALE;
-    static constexpr float LARGE_SPEED       = 80.f;
-    static constexpr float SMALL_SPEED       = 120.f;
-    static constexpr int   SCORE_LARGE  = 200;
-    static constexpr int   SCORE_SMALL  = 1000;
-    static constexpr int   SMALL_FRAME  = 12;
-    static constexpr int   LARGE_FRAME  = 44;
-    static constexpr int   SPRITE_CELLS = 2;
+    int       scoreValue()   const { return UfoConfigs::All[static_cast<int>(m_size)].score; }
 
 private:
-    static constexpr float ZIGZAG_INTERVAL    = 1.5f;
-    static constexpr float ZIGZAG_MAX_YSPEED  = 60.f;
-    static constexpr float LARGE_FIRE_RATE    = 2.0f;
-    static constexpr float SMALL_FIRE_RATE    = 1.2f;
-    static constexpr float BEEP_INTERVAL      = 0.45f;
-    static constexpr float SMALL_AIM_VARIANCE = 0.15f;
-
-    float renderSize()      const;
-    float collisionRadius() const;
+    float renderSize()      const { return UfoConfigs::All[static_cast<int>(m_size)].renderSize; }
+    float collisionRadius() const { return renderSize() * 0.45f; }
     void  emitDestructionParticles() const;
 
     UfoSize       m_size;
     glm::vec2     m_pos;
     glm::vec2     m_vel;
-    float         m_zigzagTimer  = ZIGZAG_INTERVAL;
+    float         m_zigzagTimer  = UfoConfigs::ZIGZAG_INTERVAL;
     float         m_fireTimer    = 1.0f;
     float         m_beepTimer    = 0.f;
     bool          m_beepHigh     = false;

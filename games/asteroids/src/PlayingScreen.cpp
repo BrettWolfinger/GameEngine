@@ -176,7 +176,7 @@ void PlayingScreen::handleUfoState(float dt) {
     }
 
     if (m_ctx.ufo->wasDestroyed()) {
-        awardScore((m_ctx.ufo->ufoSize() == UfoSize::Large) ? UFO::SCORE_LARGE : UFO::SCORE_SMALL);
+        awardScore(m_ctx.ufo->scoreValue());
         clearUfo(UFO_RESPAWN_DELAY);
         return;
     }
@@ -196,7 +196,7 @@ void PlayingScreen::spawnUfo() {
     const float y = std::uniform_real_distribution<float>(50.f, H - 50.f)(m_ctx.rng);
     const UfoSize size = (m_ctx.wave <= 2 || std::uniform_int_distribution<int>(0, 1)(m_ctx.rng) == 0)
                          ? UfoSize::Large : UfoSize::Small;
-    const float speed = (size == UfoSize::Large) ? UFO::LARGE_SPEED : UFO::SMALL_SPEED;
+    const float speed = UfoConfigs::All[static_cast<int>(size)].speed;
     const glm::vec2 pos = fromLeft ? glm::vec2(-20.f, y) : glm::vec2(W + 20.f, y);
     const glm::vec2 vel = { fromLeft ? speed : -speed, 0.f };
     m_ctx.ufo.emplace(size, pos, vel, m_ctx.rng);
