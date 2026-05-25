@@ -12,4 +12,16 @@ inline void playNoise(float durationSec, float amplitude = 0.4f, float decayFact
     Services::audio().playNoise(durationSec, amplitude, decayFactor);
 }
 
+inline void playLoopingTone(int slot, float frequencyHz, float amplitude) {
+    Services::audio().playLoopingTone(slot, frequencyHz, amplitude);
+}
+
+inline void playLoopingNoise(int slot, float amplitude) {
+    Services::audio().playLoopingNoise(slot, amplitude);
+}
+
+inline void stopLoopingVoice(int slot) {
+    Services::audio().stopLoopingVoice(slot);
+}
+
 } // namespace Engine::Audio

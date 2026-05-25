@@ -1,7 +1,6 @@
 #include "UFO.h"
 #include <engine/Engine.h>
 #include <engine/core/Services.h>
-#include <engine/particles/ParticleSystem.h>
 #include <engine/physics/CollisionWorld.h>
 #include <cmath>
 
@@ -95,5 +94,5 @@ void UFO::emitDestructionParticles() const {
     params.lifetimeVariance = cfg.particleLifetimeVariance;
     params.startSize        = cfg.particleSize;
     params.endSize          = 0.f;
-    Engine::Services::particles().emit(params);
+    Engine::Particles::emit(params);
 }

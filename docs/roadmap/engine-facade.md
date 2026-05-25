@@ -136,7 +136,9 @@ inline void playNoise(float durationSec, float amplitude = 0.4f, float decayFact
 } // namespace Engine::Audio
 ```
 
-**Files to update:** `PongGame.cpp`, `BreakoutGame.cpp`, `Asteroid.cpp`, `UFO.cpp` ✓ Done
+**Files to update:** `PongGame.cpp`, `BreakoutGame.cpp`, `Asteroid.cpp`, `UFO.cpp`, `Ship.cpp` ✓ Done
+
+Also includes `playLoopingTone`, `playLoopingNoise`, and `stopLoopingVoice` discovered during Phase 2.
 
 ---
 
@@ -161,7 +163,7 @@ inline void emit(const ParticleEmitParams& params) {
 } // namespace Engine::Particles
 ```
 
-**Files to update:** `Asteroid.cpp`, `UFO.cpp`, any future game using particles
+**Files to update:** `Asteroid.cpp`, `UFO.cpp`, `Ship.cpp`, `AsteroidsGame.cpp` ✓ Done
 
 ---
 

@@ -2,7 +2,6 @@
 #include "AsteroidsConfig.h"
 #include <engine/Engine.h>
 #include <engine/core/Services.h>
-#include <engine/particles/ParticleSystem.h>
 #include <engine/physics/CollisionWorld.h>
 #include <glm/gtc/constants.hpp>
 #include <cmath>
@@ -142,7 +141,7 @@ void Asteroid::emitDestructionParticles() const {
     params.lifetime         = cfg.particleLifetime;
     params.lifetimeVariance = cfg.particleLifetimeVariance;
     params.startSize        = cfg.particleSize;
-    Engine::Services::particles().emit(params);
+    Engine::Particles::emit(params);
 }
 
 // ---- render -----------------------------------------------------------------
