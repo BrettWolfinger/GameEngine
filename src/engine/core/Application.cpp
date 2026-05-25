@@ -9,6 +9,13 @@
 #include <GLFW/glfw3.h>
 #include <algorithm>
 
+#ifdef ENABLE_TOOLS
+#include <glad/gl.h>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+#endif
+
 namespace Engine {
 
 struct Application::Impl {
@@ -16,6 +23,10 @@ struct Application::Impl {
     ConfigWatcher  configWatcher;
     ParticleSystem particleSystem;
     CollisionWorld collisionWorld;
+#ifdef ENABLE_TOOLS
+    bool showImGui = false;
+    bool f1Prev    = false;
+#endif
 };
 
 Application::Application(const char* title, int width, int height)
@@ -28,10 +39,22 @@ Application::Application(const char* title, int width, int height)
     Services::setConfigWatcher(&m_impl->configWatcher);
     Services::setParticles(&m_impl->particleSystem);
     Services::setCollision(&m_impl->collisionWorld);
+#ifdef ENABLE_TOOLS
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(m_window->getNativeWindow(), true);
+    ImGui_ImplOpenGL3_Init("#version 410");
+#endif
 }
 
 Application::~Application() {
     m_impl->audioManager.shutdown();
+#ifdef ENABLE_TOOLS
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+#endif
 }
 
 void Application::run() {
@@ -43,13 +66,21 @@ void Application::run() {
 
     while (m_running && !m_window->shouldClose()) {
         double now       = glfwGetTime();
-        double frameTime = std::min(now - prevTime, 0.25); // clamp spiral-of-death
+        double frameTime = std::min(now - prevTime, 0.25);
         prevTime         = now;
         accum           += frameTime;
 
         m_window->pollEvents();
 
 #ifdef ENABLE_TOOLS
+        {
+            const bool f1 = glfwGetKey(m_window->getNativeWindow(), GLFW_KEY_F1) == GLFW_PRESS;
+            if (f1 && !m_impl->f1Prev) m_impl->showImGui = !m_impl->showImGui;
+            m_impl->f1Prev = f1;
+        }
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
         m_impl->configWatcher.poll();
 #endif
 
@@ -66,6 +97,13 @@ void Application::run() {
         if (Renderer2D* r = getRenderer())
             m_impl->particleSystem.render(*r);
         onOverlayRender();
+
+#ifdef ENABLE_TOOLS
+        if (m_impl->showImGui) onImGuiRender();
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#endif
+
         m_window->swapBuffers();
     }
 

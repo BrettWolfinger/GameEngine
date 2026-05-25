@@ -93,6 +93,12 @@ void AsteroidsGame::onOverlayRender() {
         m_gameOverScreen.render();
 }
 
+void AsteroidsGame::onImGuiRender() {
+#ifdef ENABLE_TOOLS
+    renderConfigEditor();
+#endif
+}
+
 // ---- transitions ------------------------------------------------------------
 
 void AsteroidsGame::transitionTo(Screen next) {

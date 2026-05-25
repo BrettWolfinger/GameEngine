@@ -33,7 +33,7 @@ target_compile_definitions(engine PRIVATE $<$<NOT:$<CONFIG:Release>>:ENABLE_TOOL
 target_include_directories(engine PRIVATE ${miniaudio_SOURCE_DIR})
 target_include_directories(engine PRIVATE ${stb_image_SOURCE_DIR})
 
-target_link_libraries(engine PUBLIC glad_gl glfw glm::glm tomlplusplus::tomlplusplus)
+target_link_libraries(engine PUBLIC glad_gl glfw glm::glm tomlplusplus::tomlplusplus imgui)
 
 if(APPLE)
     target_link_libraries(engine PUBLIC

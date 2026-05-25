@@ -63,6 +63,7 @@ compile_commands.json
 
 # Runtime-generated data
 saves/
+imgui.ini
 
 # Claude Code memory
 .claude/
