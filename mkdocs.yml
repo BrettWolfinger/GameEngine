@@ -1,5 +1,6 @@
 site_name: Engine
 site_description: A C++ 2D game engine built on OpenGL 4.1 / GLFW / GLM
+site_url: https://brettwolfinger.github.io/GameEngine/
 repo_url: https://github.com/BrettWolfinger/GameEngine
 repo_name: BrettWolfinger/GameEngine
 
