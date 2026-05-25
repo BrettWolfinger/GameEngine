@@ -1,0 +1,23 @@
+PROJECT_NAME            = "Engine"
+PROJECT_BRIEF           = "C++ 2D game engine — public API reference"
+
+INPUT                   = src/engine
+RECURSIVE               = YES
+FILE_PATTERNS           = *.h
+
+# Exclude engine-internal headers (not part of the public API)
+EXCLUDE                 = src/engine/audio/AudioManager.h \
+                          src/engine/particles/ParticleSystem.h \
+                          src/engine/physics/CollisionWorld.h
+
+EXTRACT_ALL             = NO
+JAVADOC_AUTOBRIEF       = NO
+
+GENERATE_HTML           = YES
+HTML_OUTPUT             = html
+OUTPUT_DIRECTORY        = doxygen-out
+
+GENERATE_LATEX          = NO
+
+QUIET                   = YES
+WARN_IF_UNDOCUMENTED    = NO

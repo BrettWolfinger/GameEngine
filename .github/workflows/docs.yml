@@ -6,6 +6,8 @@ on:
     paths:
       - 'docs/**'
       - 'mkdocs.yml'
+      - 'Doxyfile'
+      - 'src/engine/**'
       - '.github/workflows/docs.yml'
 
 permissions:
@@ -24,5 +26,20 @@ jobs:
       - name: Install MkDocs Material
         run: pip install mkdocs-material
 
+      - name: Build MkDocs site
+        run: mkdocs build
+
+      - name: Install Doxygen
+        run: sudo apt-get install -y doxygen
+
+      - name: Generate API docs
+        run: doxygen Doxyfile
+
+      - name: Copy API docs into site
+        run: mv doxygen-out/html site/api
+
       - name: Deploy to GitHub Pages
-        run: mkdocs gh-deploy --force
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
