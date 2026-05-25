@@ -1,4 +1,7 @@
 #pragma once
+#ifndef ENGINE_INTERNAL
+#  error "engine/particles/ParticleSystem.h is an engine-internal header. Include <engine/Engine.h> instead."
+#endif
 #include "Particle.h"
 #include "ParticleEmitParams.h"
 #include <vector>

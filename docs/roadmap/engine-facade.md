@@ -208,7 +208,7 @@ update games to include it.
 
 ---
 
-### Phase 5 — Hide internal headers (partial)
+### Phase 5 — Hide internal headers ✓ Done
 
 Enforce the facade convention at the compiler level so game code cannot
 accidentally reach into engine internals.
@@ -217,16 +217,16 @@ accidentally reach into engine internals.
 - Facade headers converted from inline wrappers to proper declared functions
   with `.cpp` implementations — `Services.h` is no longer included by any
   public header
-- `ENGINE_INTERNAL` preprocessor guard added to `Services.h`; the engine
-  CMake target defines it privately so only engine code can include it
+- `ENGINE_INTERNAL` preprocessor guard added to `Services.h`, `AudioManager.h`,
+  `ParticleSystem.h`, and `CollisionWorld.h`; the engine CMake target defines
+  `ENGINE_INTERNAL` privately so only engine code can include these headers
+- `Application` refactored to pimpl: `AudioManager`, `ParticleSystem`, and
+  `CollisionWorld` moved into `struct Application::Impl` in `Application.cpp`,
+  replacing the three by-value members with `std::unique_ptr<Impl>`. This allows
+  `Application.h` to use forward declarations only, removing all internal header
+  includes from the public header
 - `Services.h` removed from `Application.h` (was leaking transitively into
   all game code)
-
-**Remaining — requires pimpl refactor of `Application`:**
-`Application.h` still includes `AudioManager.h`, `ParticleSystem.h`, and
-`CollisionWorld.h` to store members by value. Adding guards to those headers
-requires converting the members to `std::unique_ptr` (pimpl) so only forward
-declarations are needed in the public header. Track in a separate issue.
 
 ---
 

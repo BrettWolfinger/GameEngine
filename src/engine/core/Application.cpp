@@ -1,18 +1,33 @@
 #include "Application.h"
 #include "Services.h"
 #include "Input.h"
+#include "../audio/AudioManager.h"
+#include "../particles/ParticleSystem.h"
+#include "../physics/CollisionWorld.h"
 #include <GLFW/glfw3.h>
 #include <algorithm>
 
 namespace Engine {
 
-Application::Application(const char* title, int width, int height) {
+struct Application::Impl {
+    AudioManager   audioManager;
+    ParticleSystem particleSystem;
+    CollisionWorld collisionWorld;
+};
+
+Application::Application(const char* title, int width, int height)
+    : m_impl(std::make_unique<Impl>())
+{
     m_window = std::make_unique<Window>(title, width, height);
     Input::init(m_window->getNativeWindow());
-    m_audioManager.init();
-    Services::setAudio(&m_audioManager);
-    Services::setParticles(&m_particleSystem);
-    Services::setCollision(&m_collisionWorld);
+    m_impl->audioManager.init();
+    Services::setAudio(&m_impl->audioManager);
+    Services::setParticles(&m_impl->particleSystem);
+    Services::setCollision(&m_impl->collisionWorld);
+}
+
+Application::~Application() {
+    m_impl->audioManager.shutdown();
 }
 
 void Application::run() {
@@ -33,7 +48,7 @@ void Application::run() {
         while (accum >= fixedDt) {
             Input::update();
             preStep(static_cast<float>(fixedDt));
-            m_collisionWorld.step();
+            m_impl->collisionWorld.step();
             onUpdate(static_cast<float>(fixedDt));
             accum -= fixedDt;
         }
