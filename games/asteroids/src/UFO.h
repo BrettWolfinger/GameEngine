@@ -1,7 +1,7 @@
 #pragma once
 #include "AsteroidsConfig.h"
 #include "UfoConfig.h"
-#include <engine/physics/Collider.h>
+#include <engine/facade/Collision.h>
 #include <engine/renderer/Renderer2D.h>
 #include <engine/renderer/SpriteSheet.h>
 #include <glm/glm.hpp>
@@ -45,5 +45,5 @@ private:
     bool          m_wasDestroyed = false;
     std::mt19937& m_rng;
 
-    Engine::ColliderHandle m_colliderHandle = Engine::NULL_COLLIDER;
+    Engine::Collision::ColliderHandle m_colliderHandle = Engine::Collision::NULL_COLLIDER;
 };

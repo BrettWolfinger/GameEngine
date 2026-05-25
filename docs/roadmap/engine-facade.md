@@ -197,7 +197,7 @@ inline void updateCircle(ColliderHandle handle, float x, float y, float radius) 
 } // namespace Engine::Collision
 ```
 
-**Files to update:** `Asteroid.cpp`, `UFO.cpp`, `Ship.cpp`
+**Files to update:** `Asteroid.cpp`, `UFO.cpp`, `Ship.cpp`, `Bullet.cpp` ✓ Done
 
 ---
 

@@ -2,8 +2,6 @@
 #include "AsteroidsConfig.h"
 #include <engine/Engine.h>
 #include <engine/core/Input.h>
-#include <engine/core/Services.h>
-#include <engine/physics/CollisionWorld.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
@@ -38,20 +36,20 @@ Ship::Ship(std::shared_ptr<Engine::SpriteSheet> sheet, const ShipConfig& config)
     m_currentClip = "idle";
     m_animator.setClip("idle");
 
-    m_colliderHandle = Engine::Services::collision().add(
-        Engine::ColliderDesc::makeCircle(kShipLayer, kAsteroidLayer | kUfoBulletLayer, m_pos.x, m_pos.y, COLLISION_RADIUS),
-        [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
+    m_colliderHandle = Engine::Collision::add(
+        Engine::Collision::ColliderDesc::makeCircle(kShipLayer, kAsteroidLayer | kUfoBulletLayer, m_pos.x, m_pos.y, COLLISION_RADIUS),
+        [this](Engine::Collision::ColliderHandle self, Engine::Collision::ColliderHandle) {
             if (m_invincibleTimer > 0.f) return;
             m_wasHit = true;
             emitHitParticles();
-            Engine::Services::collision().remove(self);
-            m_colliderHandle = Engine::NULL_COLLIDER;
+            Engine::Collision::remove(self);
+            m_colliderHandle = Engine::Collision::NULL_COLLIDER;
         });
 }
 
 Ship::~Ship() {
     Engine::Audio::stopLoopingVoice(THRUST_AUDIO_SLOT);
-    Engine::Services::collision().remove(m_colliderHandle);
+    Engine::Collision::remove(m_colliderHandle);
 }
 
 void Ship::reset() {
@@ -67,14 +65,14 @@ void Ship::reset() {
     m_currentClip     = "idle";
     m_animator.setClip("idle");
 
-    m_colliderHandle = Engine::Services::collision().add(
-        Engine::ColliderDesc::makeCircle(kShipLayer, kAsteroidLayer | kUfoBulletLayer, m_pos.x, m_pos.y, COLLISION_RADIUS),
-        [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
+    m_colliderHandle = Engine::Collision::add(
+        Engine::Collision::ColliderDesc::makeCircle(kShipLayer, kAsteroidLayer | kUfoBulletLayer, m_pos.x, m_pos.y, COLLISION_RADIUS),
+        [this](Engine::Collision::ColliderHandle self, Engine::Collision::ColliderHandle) {
             if (m_invincibleTimer > 0.f) return;
             m_wasHit = true;
             emitHitParticles();
-            Engine::Services::collision().remove(self);
-            m_colliderHandle = Engine::NULL_COLLIDER;
+            Engine::Collision::remove(self);
+            m_colliderHandle = Engine::Collision::NULL_COLLIDER;
         });
 }
 
@@ -133,8 +131,8 @@ void Ship::update(float dt, int screenW, int screenH) {
 
     m_animator.update(dt);
 
-    if (m_colliderHandle != Engine::NULL_COLLIDER)
-        Engine::Services::collision().updateCircle(m_colliderHandle, m_pos.x, m_pos.y, COLLISION_RADIUS);
+    if (m_colliderHandle != Engine::Collision::NULL_COLLIDER)
+        Engine::Collision::updateCircle(m_colliderHandle, m_pos.x, m_pos.y, COLLISION_RADIUS);
 }
 
 void Ship::render(Engine::Renderer2D& renderer) const {

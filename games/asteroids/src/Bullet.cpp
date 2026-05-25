@@ -1,31 +1,30 @@
 #include "Bullet.h"
 #include "AsteroidsConfig.h"
-#include <engine/core/Services.h>
-#include <engine/physics/CollisionWorld.h>
+#include <engine/Engine.h>
 
 Bullet::Bullet(glm::vec2 pos, glm::vec2 vel, Engine::UVRect uv, const Engine::Texture* tex,
                uint32_t selfLayer, uint32_t targetLayer)
     : pos(pos), vel(vel), lifetime(LIFETIME), uv(uv), tex(tex)
 {
-    m_colliderHandle = Engine::Services::collision().add(
-        Engine::ColliderDesc::makeCircle(selfLayer, targetLayer, pos.x, pos.y, SIZE * 0.5f),
-        [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
+    m_colliderHandle = Engine::Collision::add(
+        Engine::Collision::ColliderDesc::makeCircle(selfLayer, targetLayer, pos.x, pos.y, SIZE * 0.5f),
+        [this](Engine::Collision::ColliderHandle self, Engine::Collision::ColliderHandle) {
             lifetime = 0.f;
-            Engine::Services::collision().remove(self);
-            m_colliderHandle = Engine::NULL_COLLIDER;
+            Engine::Collision::remove(self);
+            m_colliderHandle = Engine::Collision::NULL_COLLIDER;
         });
 }
 
 Bullet::~Bullet() {
-    Engine::Services::collision().remove(m_colliderHandle);
+    Engine::Collision::remove(m_colliderHandle);
 }
 
 void Bullet::update(float dt) {
     pos      += vel * dt;
     lifetime -= dt;
 
-    if (m_colliderHandle != Engine::NULL_COLLIDER)
-        Engine::Services::collision().updateCircle(m_colliderHandle, pos.x, pos.y, SIZE * 0.5f);
+    if (m_colliderHandle != Engine::Collision::NULL_COLLIDER)
+        Engine::Collision::updateCircle(m_colliderHandle, pos.x, pos.y, SIZE * 0.5f);
 }
 
 void Bullet::render(Engine::Renderer2D& renderer) const {

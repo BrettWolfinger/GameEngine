@@ -1,6 +1,6 @@
 #pragma once
 #include "AsteroidsConfig.h"
-#include <engine/physics/Collider.h>
+#include <engine/facade/Collision.h>
 #include <engine/renderer/Renderer2D.h>
 #include <engine/renderer/SpriteSheet.h>
 #include <engine/renderer/Texture.h>
@@ -30,5 +30,5 @@ public:
     void render(Engine::Renderer2D& renderer) const;
 
 private:
-    Engine::ColliderHandle m_colliderHandle = Engine::NULL_COLLIDER;
+    Engine::Collision::ColliderHandle m_colliderHandle = Engine::Collision::NULL_COLLIDER;
 };
