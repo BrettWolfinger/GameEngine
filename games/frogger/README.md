@@ -41,3 +41,8 @@ cmake --build build --target frogger
 - **Home row** — hop into one of the 5 marked slots to fill it. Landing anywhere else on the home row = death.
 - Fill all 5 slots to win the round.
 - A skull marks the tile where the frog last died, displayed briefly before the next attempt.
+
+## Credits
+
+Sprites from [Frogger Sprite Sheet](https://www.deviantart.com/sketchbattleart/art/Frogger-Sprite-sheet-701348142)
+by SketchBattleArt on DeviantArt.

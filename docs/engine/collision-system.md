@@ -53,36 +53,23 @@ Game objects register their own colliders in the constructor and deregister in t
 
 ```cpp
 void Asteroid::registerCollider() {
-    m_colliderHandle = Engine::Services::collision().add(
-        Engine::ColliderDesc::makeCircle(kAsteroidLayer, kBulletLayer, pos.x, pos.y, radius()),
-        [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
+    m_colliderHandle = Engine::Collision::add(
+        Engine::Collision::ColliderDesc::makeCircle(kAsteroidLayer, kBulletLayer, pos.x, pos.y, radius()),
+        [this](Engine::Collision::ColliderHandle self, Engine::Collision::ColliderHandle) {
             m_wasShot = true;
-            Engine::Services::collision().remove(self);
-            m_colliderHandle = Engine::NULL_COLLIDER;
+            Engine::Collision::remove(self);
+            m_colliderHandle = Engine::Collision::NULL_COLLIDER;
         });
 }
 
 Asteroid::~Asteroid() {
-    Engine::Services::collision().remove(m_colliderHandle);
+    Engine::Collision::remove(m_colliderHandle);
 }
 ```
 
 The destructor call is always safe — `remove(NULL_COLLIDER)` is a no-op. If the callback already removed the collider, the destructor does nothing.
 
----
-
-## Services Locator
-
-`Engine::Services::collision()` gives any object access to the `CollisionWorld` without threading a reference through constructors. `Application` owns the `CollisionWorld` instance and registers it with `Services` on startup:
-
-```cpp
-// Application.cpp
-Application::Application(...) {
-    Services::setCollision(&m_collisionWorld);
-}
-```
-
-Game objects include `<engine/core/Services.h>` and call `Services::collision()` directly — no pointer to the game or `Application` needed.
+Include `<engine/facade/Collision.h>` (or `<engine/Engine.h>`) to access these — never include `<engine/core/Services.h>` or `<engine/physics/CollisionWorld.h>` directly from game code.
 
 ---
 
@@ -111,8 +98,8 @@ void Asteroid::update(float dt, int screenW, int screenH) {
     pos   += vel * dt;
     // ... wrapping ...
 
-    if (m_colliderHandle != Engine::NULL_COLLIDER)
-        Engine::Services::collision().updateCircle(m_colliderHandle, pos.x, pos.y, radius());
+    if (m_colliderHandle != Engine::Collision::NULL_COLLIDER)
+        Engine::Collision::updateCircle(m_colliderHandle, pos.x, pos.y, radius());
 }
 ```
 
@@ -133,8 +120,8 @@ Two rules keep `this`-capturing callbacks safe:
 ## Adding a New Collideable Object
 
 1. Add a layer constant to the game's config header
-2. Store a `ColliderHandle m_colliderHandle = Engine::NULL_COLLIDER` member
-3. Call `Services::collision().add(...)` in the constructor with a `this`-capturing callback
-4. Call `Services::collision().remove(m_colliderHandle)` in the destructor
-5. Call `updateCircle/updateAABB` at the end of `update()`, guarded by `!= NULL_COLLIDER`
+2. Store a `Engine::Collision::ColliderHandle m_colliderHandle = Engine::Collision::NULL_COLLIDER` member
+3. Call `Engine::Collision::add(...)` in the constructor with a `this`-capturing callback
+4. Call `Engine::Collision::remove(m_colliderHandle)` in the destructor
+5. Call `Engine::Collision::updateCircle/updateAABB` at the end of `update()`, guarded by `!= Engine::Collision::NULL_COLLIDER`
 6. Call `object.update(dt)` from the game's `preStep()` override so positions sync before `step()` runs

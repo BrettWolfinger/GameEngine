@@ -92,20 +92,11 @@ onUpdate(dt)            — read collision results, spawn/erase objects, handle 
 
 ---
 
-## Services Initialization
+## Subsystem Initialization
 
-The `Application` constructor sets up subsystems before `onInit` or any game constructor body runs:
+The `Application` constructor sets up all engine subsystems before `onInit` or any game constructor body runs. By the time your game's constructor body executes, audio, particles, and collision are all ready — game objects can call `Engine::Collision::add()`, `Engine::Audio::playTone()`, etc. immediately, including from objects constructed in the game's constructor body.
 
-```cpp
-Application::Application(const char* title, int width, int height) {
-    m_window = std::make_unique<Window>(title, width, height);
-    Input::init(m_window->getNativeWindow());
-    AudioManager::init();
-    Services::setCollision(&m_collisionWorld);
-}
-```
-
-By the time your game's constructor body executes, `Services::collision()` is already valid. Game objects can self-register colliders immediately — including objects constructed in the game's constructor body.
+Game code accesses subsystems through the facade (`<engine/Engine.h>`), not through engine internals. See `docs/engine/engine-facade.md` for the full API.
 
 ---
 
