@@ -1,26 +1,24 @@
 #include "UFO.h"
 #include <engine/Engine.h>
-#include <engine/core/Services.h>
-#include <engine/physics/CollisionWorld.h>
 #include <cmath>
 
 UFO::UFO(UfoSize size, glm::vec2 pos, glm::vec2 vel, std::mt19937& rng)
     : m_size(size), m_pos(pos), m_vel(vel), m_rng(rng)
 {
-    m_colliderHandle = Engine::Services::collision().add(
+    m_colliderHandle = Engine::Collision::add(
         Engine::ColliderDesc::makeCircle(kUfoLayer, kBulletLayer, pos.x, pos.y, collisionRadius()),
         [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
             m_wasDestroyed = true;
             emitDestructionParticles();
             const float decay = std::pow(0.001f, 1.f / (44100.f * UfoConfigs::NOISE_FADE_TIME));
             Engine::Audio::playNoise(UfoConfigs::NOISE_DURATION, UfoConfigs::NOISE_AMPLITUDE, decay);
-            Engine::Services::collision().remove(self);
+            Engine::Collision::remove(self);
             m_colliderHandle = Engine::NULL_COLLIDER;
         });
 }
 
 UFO::~UFO() {
-    Engine::Services::collision().remove(m_colliderHandle);
+    Engine::Collision::remove(m_colliderHandle);
 }
 
 bool UFO::hasExited(int screenW, int /*screenH*/) const {
@@ -54,7 +52,7 @@ void UFO::update(float dt, int screenW, int screenH, glm::vec2 /*shipPos*/) {
     m_fireTimer -= dt;
 
     if (m_colliderHandle != Engine::NULL_COLLIDER)
-        Engine::Services::collision().updateCircle(m_colliderHandle, m_pos.x, m_pos.y, collisionRadius());
+        Engine::Collision::updateCircle(m_colliderHandle, m_pos.x, m_pos.y, collisionRadius());
 }
 
 std::optional<UFO::BulletSpawn> UFO::tryFire(glm::vec2 shipPos) {

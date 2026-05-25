@@ -1,25 +1,23 @@
 #include "Asteroid.h"
 #include "AsteroidsConfig.h"
 #include <engine/Engine.h>
-#include <engine/core/Services.h>
-#include <engine/physics/CollisionWorld.h>
 #include <glm/gtc/constants.hpp>
 #include <cmath>
 
 // ---- lifecycle --------------------------------------------------------------
 
 Asteroid::~Asteroid() {
-    Engine::Services::collision().remove(m_colliderHandle);
+    Engine::Collision::remove(m_colliderHandle);
 }
 
 void Asteroid::registerCollider() {
-    m_colliderHandle = Engine::Services::collision().add(
+    m_colliderHandle = Engine::Collision::add(
         Engine::ColliderDesc::makeCircle(kAsteroidLayer, kBulletLayer, pos.x, pos.y, radius()),
         [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
             m_wasShot = true;
             playDestructionSound();
             emitDestructionParticles();
-            Engine::Services::collision().remove(self);
+            Engine::Collision::remove(self);
             m_colliderHandle = Engine::NULL_COLLIDER;
         });
 }
@@ -116,7 +114,7 @@ void Asteroid::update(float dt, int screenW, int screenH) {
     if (pos.y > screenH + 16.f)  pos.y -= screenH + 32.f;
 
     if (m_colliderHandle != Engine::NULL_COLLIDER)
-        Engine::Services::collision().updateCircle(m_colliderHandle, pos.x, pos.y, radius());
+        Engine::Collision::updateCircle(m_colliderHandle, pos.x, pos.y, radius());
 }
 
 // ---- audio ------------------------------------------------------------------
