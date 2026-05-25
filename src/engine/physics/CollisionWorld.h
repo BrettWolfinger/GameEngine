@@ -10,9 +10,11 @@ namespace Engine {
 class CollisionWorld {
 public:
     // Register a collider. Returns an opaque handle used for updates and removal.
-    // Callbacks must not remove game objects from containers during dispatch;
-    // defer side effects (removal, spawning) until after step() returns.
-    ColliderHandle add(const ColliderDesc& desc, CollisionCallback callback);
+    // syncFn is called at the start of each step() to pull the owning object's
+    // current position into the collider before pair tests run. Pass nullptr for
+    // static colliders. callback must not remove game objects from containers
+    // during dispatch; defer side effects until after step() returns.
+    ColliderHandle add(const ColliderDesc& desc, SyncFn syncFn, CollisionCallback callback);
 
     // Deregister a collider. Safe to call with NULL_COLLIDER (no-op).
     void remove(ColliderHandle handle);
@@ -27,6 +29,7 @@ public:
 private:
     struct Entry {
         ColliderDesc      desc;
+        SyncFn            syncFn;
         CollisionCallback callback;
         ColliderHandle    handle = NULL_COLLIDER;
         bool              active = false;

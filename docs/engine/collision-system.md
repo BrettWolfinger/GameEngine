@@ -51,10 +51,15 @@ Mixed pairs (circle vs AABB) are supported — `CollisionWorld` normalizes the o
 
 Game objects register their own colliders in the constructor and deregister in the destructor. No game-level lifetime management is needed.
 
+`add()` takes three arguments: a shape descriptor, a **sync function**, and a **collision callback**. The sync function is called automatically by `step()` before pair tests each tick — it pushes the object's current position into its collider so games never call `updateCircle`/`updateAABB` manually. Pass `nullptr` for static colliders that never move.
+
 ```cpp
 void Asteroid::registerCollider() {
     m_colliderHandle = Engine::Collision::add(
         Engine::Collision::ColliderDesc::makeCircle(kAsteroidLayer, kBulletLayer, pos.x, pos.y, radius()),
+        [this]() {
+            Engine::Collision::updateCircle(m_colliderHandle, pos.x, pos.y, radius());
+        },
         [this](Engine::Collision::ColliderHandle self, Engine::Collision::ColliderHandle) {
             m_wasShot = true;
             Engine::Collision::remove(self);
@@ -91,19 +96,9 @@ onRender()
 
 ## Position Sync
 
-Collider positions must be kept in sync with game object positions inside each object's `update()` call:
+Collider positions are synced automatically. The sync function passed to `add()` is called at the start of each `step()` before pair tests, so positions always reflect the current tick. Games only need to move objects in `preStep()` — no manual `updateCircle`/`updateAABB` calls needed.
 
-```cpp
-void Asteroid::update(float dt, int screenW, int screenH) {
-    pos   += vel * dt;
-    // ... wrapping ...
-
-    if (m_colliderHandle != Engine::Collision::NULL_COLLIDER)
-        Engine::Collision::updateCircle(m_colliderHandle, pos.x, pos.y, radius());
-}
-```
-
-The `NULL_COLLIDER` guard matters — the collision callback nulls the handle after removing the collider. Without the guard, a dead asteroid would try to update a stale handle.
+`updateCircle` and `updateAABB` remain available for cases where a collider needs repositioning outside the normal tick flow (e.g. teleporting an object, or a one-shot placement on spawn).
 
 ---
 
@@ -121,7 +116,8 @@ Two rules keep `this`-capturing callbacks safe:
 
 1. Add a layer constant to the game's config header
 2. Store a `Engine::Collision::ColliderHandle m_colliderHandle = Engine::Collision::NULL_COLLIDER` member
-3. Call `Engine::Collision::add(...)` in the constructor with a `this`-capturing callback
+3. Call `Engine::Collision::add(desc, syncFn, callback)` in the constructor:
+   - `syncFn`: `[this]() { Engine::Collision::updateCircle(m_colliderHandle, x, y, r); }` — auto-called before each `step()`
+   - `callback`: `[this](Handle self, Handle other) { ... }` — fired on overlap
 4. Call `Engine::Collision::remove(m_colliderHandle)` in the destructor
-5. Call `Engine::Collision::updateCircle/updateAABB` at the end of `update()`, guarded by `!= Engine::Collision::NULL_COLLIDER`
-6. Call `object.update(dt)` from the game's `preStep()` override so positions sync before `step()` runs
+5. Call `object.update(dt)` from the game's `preStep()` override so positions are current before sync runs

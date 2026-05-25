@@ -4,8 +4,8 @@
 
 namespace Engine::Collision {
 
-ColliderHandle add(const ColliderDesc& desc, CollisionCallback callback) {
-    return Services::collision().add(desc, std::move(callback));
+ColliderHandle add(const ColliderDesc& desc, SyncFn syncFn, CollisionCallback callback) {
+    return Services::collision().add(desc, std::move(syncFn), std::move(callback));
 }
 
 void remove(ColliderHandle handle) {

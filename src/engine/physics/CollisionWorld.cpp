@@ -4,18 +4,18 @@
 
 namespace Engine {
 
-ColliderHandle CollisionWorld::add(const ColliderDesc& desc, CollisionCallback callback) {
+ColliderHandle CollisionWorld::add(const ColliderDesc& desc, SyncFn syncFn, CollisionCallback callback) {
     const ColliderHandle handle = m_nextHandle++;
 
     // Reuse an inactive slot before growing the vector.
     for (auto& e : m_entries) {
         if (!e.active) {
-            e = { desc, std::move(callback), handle, true };
+            e = { desc, std::move(syncFn), std::move(callback), handle, true };
             return handle;
         }
     }
 
-    m_entries.push_back({ desc, std::move(callback), handle, true });
+    m_entries.push_back({ desc, std::move(syncFn), std::move(callback), handle, true });
     return handle;
 }
 
@@ -36,6 +36,9 @@ void CollisionWorld::updateCircle(ColliderHandle handle, float cx, float cy, flo
 }
 
 void CollisionWorld::step() {
+    for (auto& e : m_entries)
+        if (e.active && e.syncFn) e.syncFn();
+
     for (size_t i = 0; i < m_entries.size(); ++i) {
         auto& a = m_entries[i];
         if (!a.active) continue;

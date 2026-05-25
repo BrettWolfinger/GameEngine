@@ -41,6 +41,7 @@ private:
     static constexpr float FLASH_DURATION = 0.15f;
 
     void emitHitParticles() const;
+    void registerCollider();
 
     ShipConfig  m_config;
     glm::vec2   m_pos;
