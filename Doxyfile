@@ -17,6 +17,12 @@ GENERATE_HTML           = YES
 HTML_OUTPUT             = html
 OUTPUT_DIRECTORY        = doxygen-out
 
+HTML_EXTRA_STYLESHEET   = doxygen/doxygen-awesome.css
+GENERATE_TREEVIEW       = YES
+DISABLE_INDEX           = NO
+FULL_SIDEBAR            = NO
+HTML_COLORSTYLE         = LIGHT
+
 GENERATE_LATEX          = NO
 
 QUIET                   = YES
