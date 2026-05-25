@@ -1,0 +1,35 @@
+site_name: Engine
+site_description: A C++ 2D game engine built on OpenGL 4.1 / GLFW / GLM
+repo_url: https://github.com/BrettWolfinger/GameEngine
+repo_name: BrettWolfinger/GameEngine
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: indigo
+    accent: indigo
+  features:
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - content.code.copy
+
+docs_dir: docs
+
+nav:
+  - Home: index.md
+  - Engine:
+    - Engine Facade: engine/engine-facade.md
+    - Application & Game Loop: engine/application-game-loop.md
+    - Collision System: engine/collision-system.md
+    - Input: engine/input.md
+    - Renderer2D: engine/renderer2d.md
+    - Sprite Rendering: engine/sprite-rendering-v2.md
+    - Adding a New Game: engine/adding-a-new-game.md
+  - Patterns:
+    - Screen System: patterns/screen-system.md
+  - Roadmap:
+    - Engine Facade: roadmap/engine-facade.md
+    - Runtime Config System: roadmap/runtime-config-system.md
+  - Devlog: devlog.md
