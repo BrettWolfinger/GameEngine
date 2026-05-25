@@ -227,6 +227,7 @@ void renderConfigEditor() {
     ImGui::Begin("Config Editor");
 
     if (ImGui::CollapsingHeader("UFOs")) {
+        ImGui::PushID("ufos");
         static const char* kLabels[] = {"Large", "Small"};
         for (int i = 0; i < static_cast<int>(UfoConfigs::All.size()); ++i) {
             auto& c = UfoConfigs::All[i];
@@ -248,10 +249,12 @@ void renderConfigEditor() {
             }
             ImGui::PopID();
         }
+        ImGui::PopID();
         if (ImGui::Button("Save UFO Configs")) saveUfoConfigs();
     }
 
     if (ImGui::CollapsingHeader("Asteroids")) {
+        ImGui::PushID("asteroids");
         static const char* kLabels[] = {"Large", "Medium", "Small"};
         for (int i = 0; i < static_cast<int>(AsteroidSizeConfigs::All.size()); ++i) {
             auto& c = AsteroidSizeConfigs::All[i];
@@ -272,10 +275,12 @@ void renderConfigEditor() {
             }
             ImGui::PopID();
         }
+        ImGui::PopID();
         if (ImGui::Button("Save Asteroid Configs")) saveAsteroidConfigs();
     }
 
     if (ImGui::CollapsingHeader("Ships")) {
+        ImGui::PushID("ships");
         for (int i = 0; i < static_cast<int>(ShipConfigs::All.size()); ++i) {
             auto& c = ShipConfigs::All[i];
             ImGui::PushID(i);
@@ -292,6 +297,7 @@ void renderConfigEditor() {
             }
             ImGui::PopID();
         }
+        ImGui::PopID();
         if (ImGui::Button("Save Ship Configs")) saveShipConfigs();
     }
 
