@@ -1,0 +1,1203 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A C++ 2D game engine built on OpenGL 4.1 / GLFW / GLM">
+      
+      
+      
+      
+        <link rel="prev" href="../renderer2d/">
+      
+      
+        <link rel="next" href="../adding-a-new-game/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Sprite Rendering - Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sprite-rendering" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Engine" class="md-header__button md-logo" aria-label="Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Sprite Rendering
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/BrettWolfinger/GameEngine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    BrettWolfinger/GameEngine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Engine" class="md-nav__button md-logo" aria-label="Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/BrettWolfinger/GameEngine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    BrettWolfinger/GameEngine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engine
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Engine
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../engine-facade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engine Facade
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../application-game-loop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application & Game Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../collision-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collision System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../input/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../renderer2d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Renderer2D
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprite Rendering
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprite Rendering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#texture-loading-pixels-onto-the-gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Texture — Loading Pixels onto the GPU
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uv-coordinates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UV Coordinates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spritesheet-dividing-the-texture-into-a-grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SpriteSheet — Dividing the Texture into a Grid
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#animclip-and-spriteanimator-advancing-frames-over-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AnimClip and SpriteAnimator — Advancing Frames Over Time
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#end-to-end-trace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        End-to-End Trace
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mental-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mental Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adding-a-new-game/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a New Game
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Patterns
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Patterns
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/screen-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Screen System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Roadmap
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roadmap/engine-facade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engine Facade
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roadmap/runtime-config-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime Config System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../devlog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Devlog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#texture-loading-pixels-onto-the-gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Texture — Loading Pixels onto the GPU
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uv-coordinates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UV Coordinates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spritesheet-dividing-the-texture-into-a-grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SpriteSheet — Dividing the Texture into a Grid
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#animclip-and-spriteanimator-advancing-frames-over-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AnimClip and SpriteAnimator — Advancing Frames Over Time
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#end-to-end-trace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        End-to-End Trace
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mental-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mental Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="sprite-rendering">Sprite Rendering</h1>
+<h2 id="overview">Overview</h2>
+<p>Sprite rendering is built from four layered concepts: a <code>Texture</code> that owns GPU memory, a <code>SpriteSheet</code> that divides it into a grid, an <code>AnimClip</code> that defines a named sequence of frames, and a <code>SpriteAnimator</code> that advances through clips over time. The renderer draws the same unit quad every frame — the only thing that changes per draw call is a four-float UV region uniform.</p>
+<hr />
+<h2 id="texture-loading-pixels-onto-the-gpu">Texture — Loading Pixels onto the GPU</h2>
+<p>A PNG on disk is just a grid of bytes. The GPU has its own memory (VRAM) and can't read from disk directly. <code>Texture</code> does a two-step process: load into RAM, then upload to VRAM.</p>
+<p><strong>Step 1 — Load from disk:</strong></p>
+<pre><code class="language-cpp">unsigned char* data = stbi_load(path.c_str(), &amp;m_width, &amp;m_height, &amp;channels, STBI_rgb_alpha);
+</code></pre>
+<p><code>stbi_load</code> decodes the PNG into raw bytes. <code>STBI_rgb_alpha</code> forces 4 channels (RGBA) regardless of the source format. A 128×32 sheet produces 128 × 32 × 4 = 16,384 bytes.</p>
+<p><strong>Step 2 — Upload to GPU:</strong></p>
+<pre><code class="language-cpp">glGenTextures(1, &amp;m_id);
+glBindTexture(GL_TEXTURE_2D, m_id);
+glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+stbi_image_free(data);
+</code></pre>
+<p><code>glGenTextures</code> reserves an integer handle. <code>glTexImage2D</code> pushes the bytes to VRAM. After this call the GPU has its own copy and the CPU-side memory is freed.</p>
+<p><strong>Filter parameters:</strong></p>
+<pre><code class="language-cpp">glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+</code></pre>
+<p><code>GL_NEAREST</code> picks the closest pixel when scaling with no blending. <code>GL_LINEAR</code> would average neighbors and produce a blurry result — wrong for pixel art.</p>
+<p>At draw time, <code>tex.bind(0)</code> points OpenGL at the texture on the GPU. The pixel data doesn't move.</p>
+<hr />
+<h2 id="uv-coordinates">UV Coordinates</h2>
+<p>OpenGL uses a normalized 0–1 coordinate space for textures called UV space: U is horizontal, V is vertical, both 0.0–1.0 regardless of the texture's pixel dimensions.</p>
+<p>The textured VAO in <code>Renderer2D</code> stores a unit quad where each vertex has both a position and a UV:</p>
+<pre><code class="language-cpp">float texVerts[] = {
+    0.f, 0.f,  0.f, 1.f,   // pos bottom-left  → uv top-left    (V flipped)
+    1.f, 0.f,  1.f, 1.f,   // pos bottom-right → uv top-right
+    1.f, 1.f,  1.f, 0.f,   // pos top-right    → uv bottom-right
+    0.f, 1.f,  0.f, 0.f,   // pos top-left     → uv bottom-left
+};
+</code></pre>
+<p>Position (0,0) — bottom-left of the quad — maps to UV (0,1), and position (0,1) — top-left — maps to UV (0,0). This V-flip reconciles the PNG's top-down row order with OpenGL's bottom-up convention. This vertex data never changes.</p>
+<p>What changes each draw call is the <code>u_uvRegion</code> uniform — a <code>vec4(u0, v0, u1, v1)</code> that tells the shader which sub-region of the texture to sample. The fragment shader remaps the base 0–1 UVs into that region:</p>
+<pre><code class="language-glsl">vec2 uv = vec2(
+    u_uvRegion.x + v_uv.x * (u_uvRegion.z - u_uvRegion.x),
+    u_uvRegion.y + v_uv.y * (u_uvRegion.w - u_uvRegion.y)
+);
+fragColor = texture(u_tex, uv);
+</code></pre>
+<p>This is linear interpolation. If <code>v_uv.x</code> is 0 the output is <code>u0</code>; if it's 1 the output is <code>u1</code>. One four-float uniform is all that's needed to select any frame — the geometry never changes.</p>
+<hr />
+<h2 id="spritesheet-dividing-the-texture-into-a-grid">SpriteSheet — Dividing the Texture into a Grid</h2>
+<p>A sprite sheet is one texture holding multiple frames packed in a grid. You load it once and select sub-regions rather than swapping whole textures.</p>
+<p><code>SpriteSheet::getFrameUVs</code> computes the UV rectangle for any frame index:</p>
+<pre><code class="language-cpp">const int col = frameIndex % m_cols;
+const int row = frameIndex / m_cols;
+const float fw = 1.f / m_cols;
+const float fh = 1.f / m_rows;
+return { col * fw, row * fh, (col + 1) * fw, (row + 1) * fh };
+</code></pre>
+<p>Example for a 4×1 sheet (128×32px, four 32×32 frames):</p>
+<table>
+<thead>
+<tr>
+<th>Frame</th>
+<th>col</th>
+<th>u0</th>
+<th>u1</th>
+<th>Pixels</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>0.00</td>
+<td>0.25</td>
+<td>0–31</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>0.25</td>
+<td>0.50</td>
+<td>32–63</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2</td>
+<td>0.50</td>
+<td>0.75</td>
+<td>64–95</td>
+</tr>
+<tr>
+<td>3</td>
+<td>3</td>
+<td>0.75</td>
+<td>1.00</td>
+<td>96–127</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>%</code> and <code>/</code> math generalizes automatically — a 4×2 sheet computes frame 5 as col=1, row=1, giving u0=0.25, v0=0.5, u1=0.5, v1=1.0.</p>
+<p>Multi-cell sprites (e.g. a 2×2 ship) use the overload <code>getFrameUVs(frameIndex, cellW, cellH)</code> which returns the UV rect spanning <code>cellW × cellH</code> cells starting at <code>frameIndex</code>.</p>
+<hr />
+<h2 id="animclip-and-spriteanimator-advancing-frames-over-time">AnimClip and SpriteAnimator — Advancing Frames Over Time</h2>
+<p>An <code>AnimClip</code> defines a named sequence:</p>
+<pre><code class="language-cpp">Engine::AnimClip thrustClip;
+thrustClip.frames        = { 4, 8 };      // sheet frame indices
+thrustClip.frameDuration = 0.08f;
+thrustClip.mode          = Engine::PlayMode::Loop;
+thrustClip.wFrames       = 2;
+thrustClip.hFrames       = 2;
+</code></pre>
+<p><code>frames</code> is a list of sheet indices, not required to be linear. <code>{4, 5, 4, 5}</code> plays a two-frame clip, <code>{3, 2, 1, 0}</code> reverses it. <code>wFrames</code>/<code>hFrames</code> describe the cell size for multi-cell sprites.</p>
+<p><code>SpriteAnimator</code> answers "which frame should I show right now?" using an accumulator:</p>
+<pre><code class="language-cpp">m_accumulated += dt;
+while (m_accumulated &gt;= m_current-&gt;frameDuration) {
+    m_accumulated -= m_current-&gt;frameDuration;
+    m_frameIdx++;
+}
+</code></pre>
+<p>The <code>while</code> (not <code>if</code>) handles the case where a large <code>dt</code> would span multiple frames. In <code>Loop</code> mode <code>m_frameIdx</code> wraps back to 0; in <code>OneShot</code> mode it clamps on the last frame.</p>
+<p><code>currentFrameUVs()</code> resolves the final UV rect:</p>
+<pre><code class="language-cpp">const int sheetFrame = m_current-&gt;frames[m_frameIdx];
+return m_sheet-&gt;getFrameUVs(sheetFrame, m_current-&gt;wFrames, m_current-&gt;hFrames);
+</code></pre>
+<hr />
+<h2 id="end-to-end-trace">End-to-End Trace</h2>
+<p><strong>onUpdate(dt)</strong> — time bookkeeping only, no drawing:</p>
+<pre><code class="language-cpp">m_animator.update(dt);
+</code></pre>
+<p>Advances <code>m_accumulated</code>, maybe increments <code>m_frameIdx</code>. Nothing is drawn.</p>
+<p><strong>onRender()</strong> — read the result and draw:</p>
+<pre><code class="language-cpp">const Engine::UVRect uvs = m_animator.currentFrameUVs();
+// e.g. m_frameIdx == 1 on a 4-frame sheet → {0.25, 0.0, 0.50, 1.0}
+
+renderer.drawTexturedRect(x, y, 128.f, 128.f,
+                          sheet.texture(),
+                          uvs.u0, uvs.v0, uvs.u1, uvs.v1);
+</code></pre>
+<p>Inside <code>drawTexturedRect</code>:
+1. Model matrix: translate to (x, y), scale by (128, 128) — unit quad becomes a 128×128 pixel square
+2. <code>tex.bind(0)</code> — points OpenGL at the sprite sheet texture
+3. Shader receives <code>u_mvp</code>, <code>u_uvRegion = (0.25, 0.0, 0.50, 1.0)</code>, <code>u_tex = 0</code>
+4. GPU draws 6 indices (two triangles); each fragment's base UV is remapped into the 0.25–0.50 horizontal band</p>
+<hr />
+<h2 id="mental-model">Mental Model</h2>
+<pre><code>PNG on disk
+  → stbi_load: raw bytes in RAM
+    → glTexImage2D: pixels on GPU (Texture owns the handle)
+      → SpriteSheet: divides texture into a grid via UV math
+        → AnimClip: named sequence of frame indices + timing
+          → SpriteAnimator: advances frame index as time passes
+            → currentFrameUVs(): returns {u0, v0, u1, v1} for the active frame
+              → drawTexturedRect: sets u_uvRegion uniform, draws unit quad
+                → fragment shader: remaps base UVs, samples texture
+                  → color on screen
+</code></pre>
+<p>The geometry never changes. It's always the same unit quad, the same two triangles. What changes each frame is one four-float uniform: <code>u_uvRegion</code>. The GPU does the rest.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "search.suggest", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

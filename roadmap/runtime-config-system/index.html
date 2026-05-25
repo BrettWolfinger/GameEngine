@@ -1,0 +1,1340 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A C++ 2D game engine built on OpenGL 4.1 / GLFW / GLM">
+      
+      
+      
+      
+        <link rel="prev" href="../engine-facade/">
+      
+      
+        <link rel="next" href="../../devlog/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Runtime Config System - Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#runtime-config-system" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Engine" class="md-header__button md-logo" aria-label="Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Runtime Config System
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/BrettWolfinger/GameEngine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    BrettWolfinger/GameEngine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Engine" class="md-nav__button md-logo" aria-label="Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/BrettWolfinger/GameEngine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    BrettWolfinger/GameEngine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engine
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Engine
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../engine/engine-facade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engine Facade
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../engine/application-game-loop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application & Game Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../engine/collision-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collision System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../engine/input/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../engine/renderer2d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Renderer2D
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../engine/sprite-rendering-v2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprite Rendering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../engine/adding-a-new-game/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a New Game
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Patterns
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Patterns
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/screen-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Screen System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Roadmap
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../engine-facade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engine Facade
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime Config System
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime Config System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#motivation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Motivation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#format-toml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Format: TOML
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-toml-foundation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1 — TOML Foundation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-hot-reload-enable_tools-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2 — Hot-Reload (ENABLE_TOOLS only)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-imgui-editor-enable_tools-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3 — ImGui Editor (ENABLE_TOOLS only)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#release-build-preventing-player-editing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release Build: Preventing Player Editing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Decisions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-stays-the-same" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Stays the Same
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../devlog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Devlog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#motivation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Motivation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#format-toml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Format: TOML
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-toml-foundation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1 — TOML Foundation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-hot-reload-enable_tools-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2 — Hot-Reload (ENABLE_TOOLS only)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-imgui-editor-enable_tools-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3 — ImGui Editor (ENABLE_TOOLS only)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#release-build-preventing-player-editing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release Build: Preventing Player Editing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Decisions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-stays-the-same" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Stays the Same
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="runtime-config-system">Runtime Config System</h1>
+<p>Upgrade the engine so that per-type tuning data (asteroid sizes, UFO behaviour,
+ship stats, etc.) loads from TOML files at runtime instead of being hardcoded as
+<code>constexpr</code> tables. Adds hot-reload in debug builds and an ImGui editor for
+designer iteration without recompiling.</p>
+<hr />
+<h2 id="motivation">Motivation</h2>
+<p>All games built on this engine follow a config file pattern (<code>AsteroidConfig.h</code>,
+<code>UfoConfig.h</code>, <code>ShipConfig.h</code>, …) that consolidates tuneable parameters in one
+place per entity type. The current <code>constexpr</code> tables are a good intermediate
+step — they established the right structure — but they require a recompile on
+every value change. Moving to runtime-loaded files removes that bottleneck and
+enables a live editing workflow.</p>
+<hr />
+<h2 id="format-toml">Format: TOML</h2>
+<p><strong>Chosen over JSON and YAML.</strong></p>
+<ul>
+<li><strong>JSON</strong> — no comment support. Config files without comments are hostile to
+  designers. <code>nlohmann/json</code> is the best C++ JSON library but the format itself
+  is a dealbreaker for hand-edited files.</li>
+<li><strong>YAML</strong> — indentation-sensitive syntax is a footgun for non-programmers.
+  Enormous spec with surprising edge cases. Good when tooling generates the
+  files; bad when humans edit them.</li>
+<li><strong>TOML</strong> — designed for config files. Supports comments, explicit types, clean
+  section syntax, no whitespace traps. Maps almost 1:1 to the existing config
+  struct layout. <code>toml++</code> is header-only and fits the existing FetchContent
+  pattern.</li>
+</ul>
+<p><strong>Switching later is low cost.</strong> The deserializer functions (<code>fromToml()</code>) are
+the only format-specific code. The store, call sites, and hot-reload watcher are
+all format-agnostic. Swapping the library and rewriting the deserializers is the
+full scope of a format change.</p>
+<hr />
+<h2 id="phases">Phases</h2>
+<h3 id="phase-1-toml-foundation">Phase 1 — TOML Foundation</h3>
+<p><strong>New dependency: <code>toml++</code></strong></p>
+<pre><code class="language-cmake">FetchContent_Declare(tomlplusplus
+    GIT_REPOSITORY https://github.com/marzer/tomlplusplus.git
+    GIT_TAG        v3.4.0
+)
+FetchContent_MakeAvailable(tomlplusplus)
+</code></pre>
+<p><strong>New engine module: <code>engine/config/</code></strong></p>
+<ul>
+<li><code>ConfigLoader.h/.cpp</code> — loads and parses a TOML file from disk (debug) or
+  from a compiled-in string literal (release). No knowledge of specific config
+  types. Resolves paths relative to an assets root set at engine init.</li>
+<li><code>ConfigStore.h</code> — typed registry. Games register their config arrays by name
+  with a deserializer function. The store owns the runtime data and is the
+  single point of access.</li>
+</ul>
+<pre><code class="language-cpp">namespace Engine {
+class ConfigStore {
+public:
+    template&lt;typename T&gt;
+    void registerConfig(std::string_view name,
+                        std::string_view tomlSource,
+                        std::function&lt;T(const toml::table&amp;)&gt; deserializer);
+
+    template&lt;typename T&gt;
+    const T&amp; get(std::string_view name, int index) const;
+};
+}
+</code></pre>
+<p><strong>Per-config deserializers (game-level)</strong></p>
+<p>Each config file gets a <code>fromToml()</code> free function alongside its struct. The
+<code>constexpr All[]</code> table is replaced by a <code>std::array</code> populated at game init.
+Call sites (<code>SomeConfigs::All[idx].field</code>) are unchanged.</p>
+<p><strong>TOML file layout</strong></p>
+<p>One file per config type under <code>assets/configs/&lt;game&gt;/</code>. Example
+<code>asteroid_sizes.toml</code>:</p>
+<pre><code class="language-toml">[large]
+cell_count = 4
+score = 20
+
+  [large.frames]
+  variant_0 = [196, 0, 0, 0]
+
+  [large.particles]
+  count = 20
+  speed = 130.0
+  speed_variance = 70.0
+  lifetime = 1.2
+  lifetime_variance = 0.30
+  size = 4.0            # raw value; engine multiplies by SCALE on load
+
+  [large.audio]
+  noise_duration = 0.60
+  noise_amplitude = 0.50
+  noise_fade_time = 0.50
+
+[medium]
+# ...
+
+[small]
+  [small.frames]
+  variant_0 = [204, 205, 220, 221]
+  variant_1 = [206, 207, 222, 223]
+  variant_2 = [236, 237, 252, 253]
+  variant_3 = [238, 239, 254, 255]
+</code></pre>
+<p>Note: the awkward <code>frames[4][4]</code> C++ encoding becomes named keys per variant in
+TOML, which is far more readable.</p>
+<p><strong>Migration order</strong></p>
+<ol>
+<li>Add <code>toml++</code>, wire into CMake</li>
+<li>Add <code>engine/config/ConfigLoader</code></li>
+<li>Migrate one config (e.g. <code>UfoConfig</code> — simplest shape) as proof of concept</li>
+<li>Migrate remaining configs one at a time</li>
+<li>Remove all <code>constexpr</code> tables</li>
+</ol>
+<hr />
+<h3 id="phase-2-hot-reload-enable_tools-only">Phase 2 — Hot-Reload (<code>ENABLE_TOOLS</code> only)</h3>
+<p><strong>New engine component: <code>engine/config/ConfigWatcher</code></strong></p>
+<p>Polls <code>std::filesystem::last_write_time</code> on the main thread at the start of
+each frame. No threading needed — polling is cheap at a 1–2 Hz check rate.</p>
+<pre><code class="language-cpp">class ConfigWatcher {
+public:
+    void watch(std::string_view path, std::function&lt;void()&gt; onChanged);
+    void poll(); // called once per frame before game logic
+};
+</code></pre>
+<p>When a change is detected the callback re-parses the file and updates the config
+array in the <code>ConfigStore</code>. Existing code indexes into the store each frame so
+new values are picked up immediately with no further propagation.</p>
+<p><strong>Gated behind <code>ENABLE_TOOLS</code></strong></p>
+<pre><code class="language-cpp">#ifdef ENABLE_TOOLS
+    m_configWatcher.poll();
+#endif
+</code></pre>
+<p>Set automatically by build type in CMake:</p>
+<pre><code class="language-cmake">if(CMAKE_BUILD_TYPE STREQUAL &quot;Debug&quot;)
+    target_compile_definitions(Engine PRIVATE ENABLE_TOOLS)
+endif()
+</code></pre>
+<p>Hot-reload is stripped entirely from release builds. Players run with embedded,
+immutable config data.</p>
+<hr />
+<h3 id="phase-3-imgui-editor-enable_tools-only">Phase 3 — ImGui Editor (<code>ENABLE_TOOLS</code> only)</h3>
+<p><strong>New dependency: Dear ImGui</strong></p>
+<p>Integrated via <code>imgui_impl_opengl3</code> and <code>imgui_impl_glfw</code> backends using
+FetchContent. Also gated behind <code>ENABLE_TOOLS</code>.</p>
+<p><strong>New engine module: <code>engine/tools/</code></strong></p>
+<ul>
+<li><code>ConfigEditor.h/.cpp</code> — renders an editor window. Iterates registered configs
+  in the <code>ConfigStore</code>, renders typed widgets per field (sliders for floats, int
+  inputs, color pickers for <code>glm::vec3</code>), writes back to TOML on save.</li>
+</ul>
+<p>Each config struct that opts in provides an <code>imguiEdit()</code> function alongside
+<code>fromToml()</code> and <code>toToml()</code>. Manual per-struct editor functions are the right
+starting point — less boilerplate machinery, explicit control.</p>
+<p><strong>Save path</strong></p>
+<p>Editor writes the modified struct back via <code>toToml()</code>, saves the file. The
+<code>ConfigWatcher</code> detects the change and hot-reloads it, closing the loop. No
+special save codepath needed.</p>
+<p><strong>Toggle:</strong> keybind (e.g. F1) in debug builds only.</p>
+<hr />
+<h2 id="release-build-preventing-player-editing">Release Build: Preventing Player Editing</h2>
+<p>Config files are <strong>not shipped on disk</strong> in release builds. They are embedded in
+the binary at compile time as string literals using CMake's <code>file(READ ...)</code>:</p>
+<pre><code class="language-cmake">file(READ &quot;assets/configs/asteroids/asteroid_sizes.toml&quot; ASTEROID_SIZES_TOML)
+configure_file(ConfigData.h.in ConfigData.h)
+</code></pre>
+<p><code>ConfigLoader</code> has two code paths:</p>
+<pre><code class="language-cpp">#ifdef ENABLE_TOOLS
+    // Debug: read from disk, supports hot-reload
+    return toml::parse_file(resolvePath(name));
+#else
+    // Release: read from compiled-in string
+    return toml::parse(getEmbeddedConfig(name));
+#endif
+</code></pre>
+<p>There are no TOML files in the release build directory. Casual editing is
+impossible; there is nothing to find.</p>
+<hr />
+<h2 id="key-decisions">Key Decisions</h2>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Choice</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File format</td>
+<td>TOML</td>
+<td>Comment support, designer-friendly, easy to switch</td>
+</tr>
+<tr>
+<td>C++ library</td>
+<td><code>toml++</code></td>
+<td>Header-only, C++17, fits FetchContent pattern</td>
+</tr>
+<tr>
+<td>Hot-reload mechanism</td>
+<td>Polling (<code>last_write_time</code>)</td>
+<td>Simple, no platform-specific file watchers needed</td>
+</tr>
+<tr>
+<td>Editor UI</td>
+<td>Dear ImGui</td>
+<td>Standard for game dev tools, integrates with existing OpenGL/GLFW</td>
+</tr>
+<tr>
+<td>Release distribution</td>
+<td>Embedded in binary</td>
+<td>No files on disk = no player editing, no path management</td>
+</tr>
+<tr>
+<td>Tools gate</td>
+<td><code>ENABLE_TOOLS</code> (Debug only)</td>
+<td>Consistent with existing <code>ENABLE_DEV_KEYS</code> pattern</td>
+</tr>
+<tr>
+<td>SCALE handling</td>
+<td>Applied by deserializer on load</td>
+<td>Call sites stay identical to current code</td>
+</tr>
+<tr>
+<td>Missing file fallback</td>
+<td><code>constexpr</code> defaults</td>
+<td>Keeps things working during incremental migration</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="what-stays-the-same">What Stays the Same</h2>
+<ul>
+<li>All call sites: <code>SomeConfigs::All[idx].field</code> — no changes across the codebase</li>
+<li>Config struct field definitions</li>
+<li>The one-file-per-entity-type pattern and discoverability for designers</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "search.suggest", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

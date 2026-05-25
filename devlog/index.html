@@ -1,0 +1,1542 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A C++ 2D game engine built on OpenGL 4.1 / GLFW / GLM">
+      
+      
+      
+      
+        <link rel="prev" href="../roadmap/runtime-config-system/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Devlog - Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#devlog" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Engine" class="md-header__button md-logo" aria-label="Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Devlog
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/BrettWolfinger/GameEngine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    BrettWolfinger/GameEngine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Engine" class="md-nav__button md-logo" aria-label="Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/BrettWolfinger/GameEngine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    BrettWolfinger/GameEngine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engine
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Engine
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../engine/engine-facade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engine Facade
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../engine/application-game-loop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application & Game Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../engine/collision-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collision System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../engine/input/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../engine/renderer2d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Renderer2D
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../engine/sprite-rendering-v2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprite Rendering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../engine/adding-a-new-game/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a New Game
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Patterns
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Patterns
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../patterns/screen-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Screen System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Roadmap
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/engine-facade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engine Facade
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/runtime-config-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime Config System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Devlog
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Devlog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#foundation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Foundation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pong
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pong">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#input-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input system
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#segmentfont" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SegmentFont
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dev-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dev keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#breakout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breakout
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Breakout">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pixelfont" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PixelFont
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#savedata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SaveData
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frogger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frogger
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Frogger">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sprite-rendering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sprite rendering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gameplay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gameplay
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#asteroids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asteroids
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Asteroids">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#collision-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Collision system
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ui-and-rendering-additions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UI and rendering additions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config tables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#game-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Game structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#engine-hardening-between-asteroids-and-next-game" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engine hardening (between Asteroids and next game)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Engine hardening (between Asteroids and next game)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#engine-facade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engine facade
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#foundation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Foundation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pong
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pong">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#input-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input system
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#segmentfont" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SegmentFont
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dev-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dev keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#breakout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breakout
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Breakout">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pixelfont" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PixelFont
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#savedata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SaveData
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frogger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frogger
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Frogger">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sprite-rendering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sprite rendering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gameplay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gameplay
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#asteroids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asteroids
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Asteroids">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#collision-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Collision system
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ui-and-rendering-additions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UI and rendering additions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config tables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#game-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Game structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#engine-hardening-between-asteroids-and-next-game" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engine hardening (between Asteroids and next game)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Engine hardening (between Asteroids and next game)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#engine-facade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engine facade
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="devlog">Devlog</h1>
+<p>Chronological record of development decisions and progress. Captures the <em>why</em>
+behind the work — context that doesn't fit in commit messages or architecture docs.</p>
+<p>Oldest entries at the top.</p>
+<hr />
+<h2 id="foundation">Foundation</h2>
+<p>The engine launched with the core systems needed to get anything on screen:
+<code>Application</code> (fixed-timestep game loop), <code>Window</code> (GLFW wrapper), <code>Renderer2D</code>
+(solid-color quad drawing), <code>Shader</code>, and <code>AudioManager</code>. These were the minimum
+to build Pong.</p>
+<p>The fixed-timestep loop was a deliberate early decision — update logic runs at a
+fixed 60Hz regardless of frame rate, with rendering uncapped. This keeps physics
+and input deterministic across machines and avoids the class of bugs where game
+speed scales with frame rate.</p>
+<hr />
+<h2 id="pong">Pong</h2>
+<h3 id="input-system">Input system</h3>
+<p>Pong's mode select exposed a bug: key presses were being dropped when the
+fixed-timestep loop skipped an <code>onUpdate</code>. The fix introduced a two-buffer
+callback pattern (<code>s_pending</code> → <code>s_justPressed</code>) and moved <code>Input::update()</code>
+inside the fixed-timestep inner loop, making "just pressed" detection reliable.</p>
+<h3 id="segmentfont">SegmentFont</h3>
+<p>Pong needed 7-segment style digits for scores and short labels. Rather than
+leave it as a game-specific helper it was promoted to an engine subsystem
+(<code>Engine::SegmentFont</code>) so any future game could use it without reimplementing
+it. This established an early pattern: if something is general-purpose and
+display-facing, it belongs in the engine.</p>
+<h3 id="dev-keys">Dev keys</h3>
+<p>As gameplay complexity grew, testing specific states (win screen, near-win score)
+by playing through became tedious. A compile-time gated system (<code>ENABLE_DEV_KEYS</code>,
+automatically on for non-Release builds) was added so games could expose F-key
+shortcuts without shipping them.</p>
+<hr />
+<h2 id="breakout">Breakout</h2>
+<h3 id="pixelfont">PixelFont</h3>
+<p>Breakout needed more text than Pong: titles, prompts, game-over messages. The
+7-segment style looked poor for words, so a 5×7 bitmask pixel font was built at
+the engine level. The convention that emerged: <code>SegmentFont</code> for numeric displays
+(scores, lives, countdowns), <code>PixelFont</code> for all word labels. Pong was
+intentionally left on <code>SegmentFont</code>-only to show the engine's progression across
+games.</p>
+<h3 id="savedata">SaveData</h3>
+<p>Breakout introduced the first need for state that survives between sessions (high
+score). A thin key/value save slot (<code>Engine::SaveData</code>) backed by a plain-text
+file was promoted to the engine so the pattern is available to every future game
+without duplicating file I/O plumbing.</p>
+<hr />
+<h2 id="frogger">Frogger</h2>
+<h3 id="sprite-rendering">Sprite rendering</h3>
+<p>Frogger was the first game to use sprites, which drove a significant expansion of
+the renderer. <code>Texture</code> was added as an RAII wrapper around an OpenGL texture
+object — loads any image via stb_image, uploads as GL_RGBA8 with nearest-neighbor
+filtering for pixel-art crispness. <code>SpriteSheet</code> wraps a texture and divides it
+into a uniform cell grid; <code>getFrameUVs</code> returns the UV rect for a single cell,
+<code>getSpanUVs</code> spans multiple consecutive cells horizontally for wide sprites like
+vehicles. <code>SpriteAnimator</code> drives frame-based animation from named clips
+(<code>AnimClip</code>), each with a frame list, per-frame duration, and a <code>PlayMode</code> of
+<code>Loop</code> or <code>OneShot</code>.</p>
+<p><code>Renderer2D</code> was extended to handle textured quads with UV region parameters and
+optional rotation — a second VAO/VBO/shader pair handles textured draws
+separately from solid-color ones. The fragment shader discards fragments below
+alpha 0.1 for transparency. A V-flip bug was also caught and fixed here: the
+engine's Y-down orthographic projection maps (0,0) to screen top-left, which must
+map to V=0 (image top). The original vertex data had this inverted, flipping all
+sprites upside-down.</p>
+<h3 id="gameplay">Gameplay</h3>
+<p>Frogger introduced the engine's first tile-based movement system — the frog hops
+on a fixed grid rather than moving continuously. The game is split into two zones:
+a road zone where vehicles must be avoided, and a river zone where the frog must
+ride moving platforms (logs, turtles, crocodiles) to cross. Falling in the water
+or being hit by a vehicle ends the life immediately.</p>
+<p>The turtles and crocodiles added per-entity behavioral state that wasn't needed in
+earlier games. Turtles periodically dive and become unsafe — the dive animation
+is the only visual warning. Crocodiles open their mouths periodically; landing on
+the head during this state is fatal, but the body and tail are always safe. A
+skull marker briefly appears on the tile where the frog last died before the next
+attempt begins. Filling all five home slots wins the round.</p>
+<hr />
+<h2 id="asteroids">Asteroids</h2>
+<h3 id="collision-system">Collision system</h3>
+<p>Asteroids was the first game complex enough to need general collision detection.
+<code>CollisionWorld</code> was added to the engine with <code>ColliderDesc</code> (circle and AABB
+shapes), layer/mask bitmask filtering, and opaque <code>ColliderHandle</code> for registration
+and removal. A <code>Services::collision()</code> service locator wired it into the
+application. Collision callbacks fire per-pair each fixed tick, with the constraint
+that game objects cannot be removed from containers during dispatch — side effects
+must be deferred until after <code>step()</code> returns.</p>
+<p>A <code>preStep</code> hook (<code>virtual void preStep(float dt)</code>) was added to <code>Application</code>,
+called between <code>Input::update()</code> and <code>CollisionWorld::step()</code>. This lets games
+sync collider positions before collision runs, so detections are against
+current-frame positions rather than last-frame.</p>
+<h3 id="ui-and-rendering-additions">UI and rendering additions</h3>
+<p><code>Engine::Menu</code> — a reusable cursor-driven menu widget with Up/Down navigation,
+Enter confirmation, and configurable colors, spacing, and cursor glyph — was
+added as the first entry in a new <code>ui/</code> subsystem. Alpha blending (<code>GL_BLEND</code>)
+was enabled in <code>Renderer2D::beginScene()</code>, and a tint parameter was added to
+<code>drawTexturedRect</code> (backed by a <code>u_tint</code> uniform), with white as default so all
+existing callers were unaffected.</p>
+<h3 id="config-tables">Config tables</h3>
+<p>Asteroids has three ship types, three asteroid sizes, and a UFO — each with
+distinct physics, audio, particle, and scoring parameters. Rather than scatter
+magic numbers through the game code, constexpr config tables were introduced
+(<code>ShipConfig</code>, <code>AsteroidSizeConfig</code>, <code>UfoConfig</code>) indexed by type. All
+game-specific behavior for a given entity derives from a single row in the
+appropriate table.</p>
+<h3 id="game-structure">Game structure</h3>
+<p>Asteroids introduced the most structured screen flow of any game so far: title,
+ship select, playing, and game over screens share state through a <code>GameContext</code>
+struct passed by reference. The ship select screen lets the player choose between
+four ships with meaningfully different handling profiles (Fighter, Scout, Gunship,
+Racer), persisting the selection across replays.</p>
+<p>The wave system starts with four large asteroids spawned at a safe distance from
+the ship. Clearing a wave triggers a brief delay before the next spawns with more
+asteroids. Large asteroids fragment into medium on destruction; medium fragment
+into small. A UFO appears roughly 15 seconds into each session, fires at the
+player, and respawns every 20 seconds. Player and UFO bullets use separate
+collision layers so UFO fire can't destroy asteroids. Lives, score, and a
+persistent high score round out the progression.</p>
+<hr />
+<h2 id="engine-hardening-between-asteroids-and-next-game">Engine hardening (between Asteroids and next game)</h2>
+<h3 id="the-problem">The problem</h3>
+<p>When <code>AudioManager</code> changed from static to instance methods, both Pong and
+Breakout broke — they were calling <code>Engine::Services::audio().playTone(...)</code> and
+<code>Engine::AudioManager::playTone(...)</code> directly. The root cause was that game code
+was coupled to engine internals: <code>Services</code> is an internal registry, not a public
+API. Any refactor of how the engine manages subsystems forces fixes across every
+game file.</p>
+<h3 id="engine-facade">Engine facade</h3>
+<p>A facade layer was introduced: free functions grouped in <code>Engine::Audio::</code>,
+<code>Engine::Particles::</code>, and <code>Engine::Collision::</code> namespaces. Games call these
+stable functions; the facade owns the mapping to the current internal
+implementation. The facade headers are pure declarations — no inline
+implementation, no internal includes — with <code>.cpp</code> files compiled as part of the
+engine holding the actual wrappers. <code>Engine.h</code> aggregates all three facades into a
+single include for game code.</p>
+<p>Enforcement was added at the compiler level. An <code>ENGINE_INTERNAL</code> preprocessor
+guard was added to <code>Services.h</code>, <code>AudioManager.h</code>, <code>ParticleSystem.h</code>, and
+<code>CollisionWorld.h</code>; the engine CMake target defines it privately. Game code that
+tries to include these headers directly gets a compile error with a message
+pointing to <code>&lt;engine/Engine.h&gt;</code>. <code>Application</code> was refactored to pimpl so its
+subsystem members (<code>AudioManager</code>, <code>ParticleSystem</code>, <code>CollisionWorld</code>) live in a
+private <code>struct Impl</code> in <code>Application.cpp</code>, removing all internal includes from
+the public header.</p>
+<h3 id="documentation">Documentation</h3>
+<p>All public facade headers and shared game types were annotated with Doxygen <code>///</code>
+comments. The engine facade roadmap document was converted into a stable
+architecture reference at <code>docs/engine/engine-facade.md</code> — covering the design
+rationale, what belongs in the facade vs. what doesn't, enforcement details, and
+how to add new subsystems. Doxygen CI config and GitHub Pages publishing are
+tracked separately in issue #68. READMEs were written for Asteroids and Frogger.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
