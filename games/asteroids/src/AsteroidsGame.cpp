@@ -43,6 +43,7 @@ AsteroidsGame::AsteroidsGame()
     , m_gameOverScreen(m_ctx)
 {
     loadAllConfigs();
+    watchAllConfigs();
 
     auto texture = std::make_shared<Engine::Texture>("games/asteroids/assets/asteroids-arcade.png");
     m_sheet      = std::make_shared<Engine::SpriteSheet>(texture, 16, 16);

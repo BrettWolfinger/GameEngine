@@ -1,17 +1,18 @@
 #include "AsteroidsConfigs.h"
 #include "AsteroidsConfig.h"
 #include <engine/config/ConfigLoader.h>
+#include <engine/facade/Config.h>
 
 // ---- UFO sizes --------------------------------------------------------------
 
 static UfoConfig ufoFromToml(const toml::table& t) {
     return UfoConfig{
-        static_cast<float>(t["render_size"  ].value_or(0.0)) * SCALE,
-        static_cast<float>(t["speed"        ].value_or(0.0)),
-        static_cast<float>(t["aim_variance" ].value_or(0.0)),
-        static_cast<float>(t["fire_rate"    ].value_or(0.0)),
-        static_cast<int>  (t["sprite_frame" ].value_or(0)),
-        static_cast<int>  (t["score"        ].value_or(0)),
+        static_cast<float>(t["render_size"              ].value_or(0.0)) * SCALE,
+        static_cast<float>(t["speed"                    ].value_or(0.0)),
+        static_cast<float>(t["aim_variance"             ].value_or(0.0)),
+        static_cast<float>(t["fire_rate"                ].value_or(0.0)),
+        static_cast<int>  (t["sprite_frame"             ].value_or(0)),
+        static_cast<int>  (t["score"                    ].value_or(0)),
         static_cast<int>  (t["particle_count"           ].value_or(0)),
         static_cast<float>(t["particle_speed"           ].value_or(0.0)),
         static_cast<float>(t["particle_speed_variance"  ].value_or(0.0)),
@@ -19,6 +20,15 @@ static UfoConfig ufoFromToml(const toml::table& t) {
         static_cast<float>(t["particle_lifetime_variance"].value_or(0.0)),
         static_cast<float>(t["particle_size"            ].value_or(0.0)) * SCALE,
     };
+}
+
+static constexpr std::string_view kUfoPath = "games/asteroids/assets/configs/ufo_sizes.toml";
+
+static void loadUfoConfigs() {
+    const auto root = Engine::ConfigLoader::load(kUfoPath);
+    UfoConfigs::All.clear();
+    UfoConfigs::All.push_back(ufoFromToml(*root["large"].as_table()));
+    UfoConfigs::All.push_back(ufoFromToml(*root["small"].as_table()));
 }
 
 // ---- Asteroid sizes ---------------------------------------------------------
@@ -39,12 +49,12 @@ static AsteroidSizeConfig asteroidFromToml(const toml::table& t) {
     }
 
     if (const auto* p = t["particles"].as_table()) {
-        cfg.particleCount          = static_cast<int>  ((*p)["count"            ].value_or(0));
-        cfg.particleSpeed          = static_cast<float>((*p)["speed"            ].value_or(0.0));
-        cfg.particleSpeedVariance  = static_cast<float>((*p)["speed_variance"   ].value_or(0.0));
-        cfg.particleLifetime       = static_cast<float>((*p)["lifetime"         ].value_or(0.0));
+        cfg.particleCount            = static_cast<int>  ((*p)["count"            ].value_or(0));
+        cfg.particleSpeed            = static_cast<float>((*p)["speed"            ].value_or(0.0));
+        cfg.particleSpeedVariance    = static_cast<float>((*p)["speed_variance"   ].value_or(0.0));
+        cfg.particleLifetime         = static_cast<float>((*p)["lifetime"         ].value_or(0.0));
         cfg.particleLifetimeVariance = static_cast<float>((*p)["lifetime_variance"].value_or(0.0));
-        cfg.particleSize           = static_cast<float>((*p)["size"             ].value_or(0.0)) * SCALE;
+        cfg.particleSize             = static_cast<float>((*p)["size"             ].value_or(0.0)) * SCALE;
     }
 
     if (const auto* a = t["audio"].as_table()) {
@@ -54,6 +64,16 @@ static AsteroidSizeConfig asteroidFromToml(const toml::table& t) {
     }
 
     return cfg;
+}
+
+static constexpr std::string_view kAsteroidPath = "games/asteroids/assets/configs/asteroid_sizes.toml";
+
+static void loadAsteroidConfigs() {
+    const auto root = Engine::ConfigLoader::load(kAsteroidPath);
+    AsteroidSizeConfigs::All.clear();
+    AsteroidSizeConfigs::All.push_back(asteroidFromToml(*root["large" ].as_table()));
+    AsteroidSizeConfigs::All.push_back(asteroidFromToml(*root["medium"].as_table()));
+    AsteroidSizeConfigs::All.push_back(asteroidFromToml(*root["small" ].as_table()));
 }
 
 // ---- Ships ------------------------------------------------------------------
@@ -72,31 +92,27 @@ static ShipConfig shipFromToml(const toml::table& t) {
     };
 }
 
-// ---- Entry point ------------------------------------------------------------
+static constexpr std::string_view kShipsPath = "games/asteroids/assets/configs/ships.toml";
+
+static void loadShipConfigs() {
+    const auto root = Engine::ConfigLoader::load(kShipsPath);
+    ShipConfigs::All.clear();
+    for (const auto& [key, val] : root) {
+        if (const auto* t = val.as_table())
+            ShipConfigs::All.push_back(shipFromToml(*t));
+    }
+}
+
+// ---- Entry points -----------------------------------------------------------
 
 void loadAllConfigs() {
-    {
-        const auto root = Engine::ConfigLoader::load(
-            "games/asteroids/assets/configs/ufo_sizes.toml");
-        UfoConfigs::All.clear();
-        UfoConfigs::All.push_back(ufoFromToml(*root["large"].as_table()));
-        UfoConfigs::All.push_back(ufoFromToml(*root["small"].as_table()));
-    }
-    {
-        const auto root = Engine::ConfigLoader::load(
-            "games/asteroids/assets/configs/asteroid_sizes.toml");
-        AsteroidSizeConfigs::All.clear();
-        AsteroidSizeConfigs::All.push_back(asteroidFromToml(*root["large" ].as_table()));
-        AsteroidSizeConfigs::All.push_back(asteroidFromToml(*root["medium"].as_table()));
-        AsteroidSizeConfigs::All.push_back(asteroidFromToml(*root["small" ].as_table()));
-    }
-    {
-        const auto root = Engine::ConfigLoader::load(
-            "games/asteroids/assets/configs/ships.toml");
-        ShipConfigs::All.clear();
-        for (const auto& [key, val] : root) {
-            if (const auto* t = val.as_table())
-                ShipConfigs::All.push_back(shipFromToml(*t));
-        }
-    }
+    loadUfoConfigs();
+    loadAsteroidConfigs();
+    loadShipConfigs();
+}
+
+void watchAllConfigs() {
+    Engine::Config::watch(kUfoPath,      loadUfoConfigs);
+    Engine::Config::watch(kAsteroidPath, loadAsteroidConfigs);
+    Engine::Config::watch(kShipsPath,    loadShipConfigs);
 }

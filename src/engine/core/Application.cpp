@@ -2,6 +2,7 @@
 #include "Services.h"
 #include "Input.h"
 #include "../audio/AudioManager.h"
+#include "../config/ConfigWatcher.h"
 #include "../particles/ParticleSystem.h"
 #include "../physics/CollisionWorld.h"
 #include "../renderer/Renderer2D.h"
@@ -12,6 +13,7 @@ namespace Engine {
 
 struct Application::Impl {
     AudioManager   audioManager;
+    ConfigWatcher  configWatcher;
     ParticleSystem particleSystem;
     CollisionWorld collisionWorld;
 };
@@ -23,6 +25,7 @@ Application::Application(const char* title, int width, int height)
     Input::init(m_window->getNativeWindow());
     m_impl->audioManager.init();
     Services::setAudio(&m_impl->audioManager);
+    Services::setConfigWatcher(&m_impl->configWatcher);
     Services::setParticles(&m_impl->particleSystem);
     Services::setCollision(&m_impl->collisionWorld);
 }
@@ -45,6 +48,10 @@ void Application::run() {
         accum           += frameTime;
 
         m_window->pollEvents();
+
+#ifdef ENABLE_TOOLS
+        m_impl->configWatcher.poll();
+#endif
 
         while (accum >= fixedDt) {
             Input::update();
