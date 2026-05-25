@@ -80,6 +80,7 @@ Subclass `Engine::Application` and override whichever lifecycle hooks you need:
 #pragma once
 #include <engine/core/Application.h>
 #include <engine/renderer/Renderer2D.h>
+#include <engine/Engine.h>  // Engine::Audio, Engine::Collision, Engine::Particles
 
 class MyGame : public Engine::Application {
 public:
@@ -114,7 +115,7 @@ void MyGame::onRender() {
 }
 ```
 
-By the time the constructor body runs, `Services::collision()` is already valid — objects can register colliders immediately.
+By the time the constructor body runs, all engine subsystems are ready — objects can call `Engine::Collision::add()`, `Engine::Audio::playTone()`, etc. immediately.
 
 ---
 
