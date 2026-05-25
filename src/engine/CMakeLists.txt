@@ -1,4 +1,5 @@
 add_library(engine STATIC
+    config/ConfigLoader.cpp
     facade/Audio.cpp
     facade/Particles.cpp
     facade/Collision.cpp
@@ -29,7 +30,7 @@ target_compile_definitions(engine PRIVATE ENGINE_INTERNAL)
 target_include_directories(engine PRIVATE ${miniaudio_SOURCE_DIR})
 target_include_directories(engine PRIVATE ${stb_image_SOURCE_DIR})
 
-target_link_libraries(engine PUBLIC glad_gl glfw glm::glm)
+target_link_libraries(engine PUBLIC glad_gl glfw glm::glm tomlplusplus::tomlplusplus)
 
 if(APPLE)
     target_link_libraries(engine PUBLIC

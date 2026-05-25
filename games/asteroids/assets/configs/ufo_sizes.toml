@@ -1,0 +1,30 @@
+# UFO size configurations for Asteroids.
+# render_size and particle_size are raw values; the loader multiplies by SCALE.
+
+[large]
+render_size              = 32.0
+speed                    = 80.0
+aim_variance             = 3.14159   # radians; ~pi = fully random direction
+fire_rate                = 2.0       # seconds between shots
+sprite_frame             = 44
+score                    = 200
+particle_count           = 18
+particle_speed           = 150.0
+particle_speed_variance  = 70.0
+particle_lifetime        = 1.0
+particle_lifetime_variance = 0.25
+particle_size            = 4.0
+
+[small]
+render_size              = 16.0
+speed                    = 120.0
+aim_variance             = 0.15     # tight cone toward player
+fire_rate                = 1.2
+sprite_frame             = 12
+score                    = 1000
+particle_count           = 10
+particle_speed           = 110.0
+particle_speed_variance  = 70.0
+particle_lifetime        = 0.7
+particle_lifetime_variance = 0.25
+particle_size            = 3.0

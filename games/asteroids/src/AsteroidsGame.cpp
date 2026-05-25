@@ -1,5 +1,6 @@
 #include "AsteroidsGame.h"
 #include "AsteroidsConfig.h"
+#include "AsteroidsConfigs.h"
 #include <engine/Engine.h>
 #include <engine/renderer/Texture.h>
 
@@ -41,6 +42,8 @@ AsteroidsGame::AsteroidsGame()
     , m_playingScreen(m_ctx)
     , m_gameOverScreen(m_ctx)
 {
+    loadAllConfigs();
+
     auto texture = std::make_shared<Engine::Texture>("games/asteroids/assets/asteroids-arcade.png");
     m_sheet      = std::make_shared<Engine::SpriteSheet>(texture, 16, 16);
 
