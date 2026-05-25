@@ -139,8 +139,15 @@ The binary lands at `build/games/mygame/mygame`.
 | `onInit()` | Once, before the loop | Late setup requiring a ready window |
 | `preStep(dt)` | Every tick, before collision | Move objects, call `updateCircle/updateAABB` |
 | `onUpdate(dt)` | Every tick, after collision | Input, collision response, spawning, erasing |
-| `onRender()` | Every frame | `beginScene` then draw calls — no state mutation |
+| `onRender()` | Every frame | `beginScene` then world draw calls |
+| `onOverlayRender()` | Every frame, after particles | HUD, menus, overlays that appear above particles |
 | `onShutdown()` | Once, after loop exits | Cleanup |
+
+To enable automatic particle rendering between `onRender` and `onOverlayRender`, override `getRenderer()` to return your `Renderer2D` instance:
+
+```cpp
+Engine::Renderer2D* getRenderer() override { return &m_renderer; }
+```
 
 `dt` is always `1/60 ≈ 0.01667s`. See `docs/engine/application-game-loop.md` for the full tick order and timing details.
 

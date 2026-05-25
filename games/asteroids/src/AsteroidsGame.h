@@ -24,9 +24,11 @@ public:
     AsteroidsGame();
 
 protected:
-    void preStep(float dt)  override;
-    void onUpdate(float dt) override;
-    void onRender()         override;
+    void        preStep(float dt)    override;
+    void        onUpdate(float dt)   override;
+    void        onRender()           override;
+    void        onOverlayRender()    override;
+    Engine::Renderer2D* getRenderer() override { return &m_renderer; }
 
 private:
     // ---- resources ----
