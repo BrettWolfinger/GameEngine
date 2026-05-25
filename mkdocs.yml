@@ -16,6 +16,9 @@ theme:
     - search.suggest
     - content.code.copy
 
+extra_javascript:
+  - js/extra.js
+
 docs_dir: docs
 
 nav:
