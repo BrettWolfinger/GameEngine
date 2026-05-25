@@ -1,9 +1,8 @@
 #include "Ship.h"
 #include "AsteroidsConfig.h"
-#include <engine/audio/AudioManager.h>
+#include <engine/Engine.h>
 #include <engine/core/Input.h>
 #include <engine/core/Services.h>
-#include <engine/particles/ParticleSystem.h>
 #include <engine/physics/CollisionWorld.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -51,7 +50,7 @@ Ship::Ship(std::shared_ptr<Engine::SpriteSheet> sheet, const ShipConfig& config)
 }
 
 Ship::~Ship() {
-    Engine::Services::audio().stopLoopingVoice(THRUST_AUDIO_SLOT);
+    Engine::Audio::stopLoopingVoice(THRUST_AUDIO_SLOT);
     Engine::Services::collision().remove(m_colliderHandle);
 }
 
@@ -59,7 +58,7 @@ void Ship::reset() {
     m_pos             = { W * 0.5f, H * 0.5f };
     m_angle           = 0.f;
     m_vel             = { 0.f, 0.f };
-    if (m_thrusting) Engine::Services::audio().stopLoopingVoice(THRUST_AUDIO_SLOT);
+    if (m_thrusting) Engine::Audio::stopLoopingVoice(THRUST_AUDIO_SLOT);
     m_thrusting       = false;
     m_fireTimer       = 0.f;
     m_flashTimer      = 0.f;
@@ -84,7 +83,7 @@ std::optional<Ship::BulletSpawn> Ship::tryShoot() {
         return std::nullopt;
     m_fireTimer  = m_config.fireCooldown;
     m_flashTimer = FLASH_DURATION;
-    Engine::Services::audio().playTone(800.f, 0.08f, 0.25f);
+    Engine::Audio::playTone(800.f, 0.08f, 0.25f);
     const glm::vec2 direction = { glm::sin(m_angle), -glm::cos(m_angle) };
     const glm::vec2 nose      = m_pos + direction * (RENDER_SIZE * 0.5f);
     return BulletSpawn{ nose, direction };
@@ -100,9 +99,9 @@ void Ship::update(float dt, int screenW, int screenH) {
     m_thrusting = Engine::Input::isKeyDown(GLFW_KEY_UP) || Engine::Input::isKeyDown(GLFW_KEY_W);
 
     if (m_thrusting && !wasThrusting)
-        Engine::Services::audio().playLoopingNoise(THRUST_AUDIO_SLOT, 0.08f);
+        Engine::Audio::playLoopingNoise(THRUST_AUDIO_SLOT, 0.08f);
     else if (!m_thrusting && wasThrusting)
-        Engine::Services::audio().stopLoopingVoice(THRUST_AUDIO_SLOT);
+        Engine::Audio::stopLoopingVoice(THRUST_AUDIO_SLOT);
 
     if (m_thrusting) {
         glm::vec2 forward = { glm::sin(m_angle), -glm::cos(m_angle) };
@@ -187,5 +186,5 @@ void Ship::emitHitParticles() const {
     params.lifetimeVariance  = 0.2f;
     params.startSize         = 4.f * SCALE;
     params.endSize           = 0.f;
-    Engine::Services::particles().emit(params);
+    Engine::Particles::emit(params);
 }
