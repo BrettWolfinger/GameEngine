@@ -29,6 +29,7 @@ nav:
   - Engine:
     - Engine Facade: engine/engine-facade.md
     - Application & Game Loop: engine/application-game-loop.md
+    - Runtime Config System: engine/runtime-config.md
     - Collision System: engine/collision-system.md
     - Input: engine/input.md
     - Renderer2D: engine/renderer2d.md

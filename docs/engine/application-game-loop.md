@@ -43,6 +43,8 @@ int main() {
 | `preStep(dt)` | Every tick, before collision | Move objects, sync collider positions |
 | `onUpdate(dt)` | Every tick, after collision | Game logic, collision response, spawning |
 | `onRender()` | Every frame, after all ticks | Draw calls only — no state mutation |
+| `onOverlayRender()` | Every frame, after particles | HUD, menus, overlays that appear above particles |
+| `onImGuiRender()` | Every frame, when F1 overlay is on | ImGui debug/tools widgets (debug builds only) |
 | `onShutdown()` | Once, after the loop exits | Cleanup |
 
 All hooks have empty default implementations, so you only override what you need.
@@ -58,6 +60,8 @@ each frame:
   frameTime = now - prevTime  (clamped to 0.25s max)
   accum    += frameTime
 
+  [ENABLE_TOOLS] ConfigWatcher::poll()   — hot-reload check
+
   while accum >= 1/60:
       Input::update()
       preStep(1/60)
@@ -66,6 +70,11 @@ each frame:
       accum -= 1/60
 
   onRender()
+  ParticleSystem::render()               — automatic if getRenderer() is overridden
+  onOverlayRender()
+
+  [ENABLE_TOOLS] if F1 toggled: onImGuiRender()
+
   swapBuffers()
 ```
 
@@ -89,6 +98,28 @@ onUpdate(dt)            — read collision results, spawn/erase objects, handle 
 ```
 
 `preStep` exists specifically so collision sees current-tick positions rather than last-tick positions. See `docs/engine/collision-system.md` for why this ordering matters.
+
+---
+
+## ImGui Overlay (Debug Builds)
+
+In non-Release builds, pressing **F1** toggles an ImGui overlay. The engine handles the full ImGui frame lifecycle (init, `NewFrame`, `Render`, `RenderDrawData`) — games just override `onImGuiRender()` and call their editor functions:
+
+```cpp
+void MyGame::onImGuiRender() {
+#ifdef ENABLE_TOOLS
+    renderConfigEditor();  // or any ImGui::* calls
+#endif
+}
+```
+
+The `#ifdef ENABLE_TOOLS` guard in the game's `.cpp` is required because `onImGuiRender()` is always declared in the base class (it's a virtual method), but game-side editor code (like `renderConfigEditor()`) is also only compiled under `ENABLE_TOOLS`. The guard is absent in release builds entirely — `onImGuiRender()` is declared but never called.
+
+Game targets must define `ENABLE_TOOLS` for non-Release builds to match the engine:
+
+```cmake
+target_compile_definitions(mygame PRIVATE $<$<NOT:$<CONFIG:Release>>:ENABLE_TOOLS>)
+```
 
 ---
 

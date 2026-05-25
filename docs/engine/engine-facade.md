@@ -49,6 +49,7 @@ src/engine/facade/
     Audio.h       → Engine::Audio::*
     Particles.h   → Engine::Particles::*
     Collision.h   → Engine::Collision::*
+    Config.h      → Engine::Config::*
 
 src/engine/Engine.h   ← most game code includes this
 ```
@@ -63,6 +64,7 @@ implementation and is the only place that includes engine-internal headers.
 #pragma once
 #include <engine/facade/Audio.h>
 #include <engine/facade/Collision.h>
+#include <engine/facade/Config.h>
 #include <engine/facade/Particles.h>
 ```
 
@@ -77,7 +79,7 @@ Operations — things games *do*:
 - Play audio
 - Emit particles (`emit`, `clear` — `update` and `render` are engine-owned)
 - Register, update, and remove colliders
-- (Future) Load assets, log, access save data
+- Register hot-reload callbacks for config files
 
 ### What does not go in the facade
 
@@ -174,4 +176,7 @@ Engine::Collision::add(desc, callback);
 Engine::Collision::remove(handle);
 Engine::Collision::updateCircle(handle, cx, cy, r);
 Engine::Collision::updateAABB(handle, x, y, w, h);
+
+// Config — hot-reload (no-op in release builds, so no #ifdef needed at call sites)
+Engine::Config::watch("games/mygame/assets/configs/enemies.toml", loadEnemyConfigs);
 ```

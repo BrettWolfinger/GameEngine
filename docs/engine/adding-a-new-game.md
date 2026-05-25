@@ -33,9 +33,11 @@ target_include_directories(mygame PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(mygame PRIVATE engine)
 
 target_compile_definitions(mygame PRIVATE $<$<NOT:$<CONFIG:Release>>:ENABLE_DEV_KEYS>)
+target_compile_definitions(mygame PRIVATE $<$<NOT:$<CONFIG:Release>>:ENABLE_TOOLS>)
 ```
 
-`ENABLE_DEV_KEYS` is a preprocessor flag available in Debug and RelWithDebInfo builds. Use it to gate cheat keys or debug overlays that shouldn't ship in release builds.
+- `ENABLE_DEV_KEYS` — gate cheat keys or debug overlays that shouldn't ship.
+- `ENABLE_TOOLS` — required for hot-reload (`Engine::Config::watch`) and the ImGui overlay (`onImGuiRender`). Must match the same flag the engine sets on itself.
 
 ---
 
@@ -141,6 +143,7 @@ The binary lands at `build/games/mygame/mygame`.
 | `onUpdate(dt)` | Every tick, after collision | Input, collision response, spawning, erasing |
 | `onRender()` | Every frame | `beginScene` then world draw calls |
 | `onOverlayRender()` | Every frame, after particles | HUD, menus, overlays that appear above particles |
+| `onImGuiRender()` | Every frame, when F1 overlay is on | ImGui debug widgets (debug builds only) |
 | `onShutdown()` | Once, after loop exits | Cleanup |
 
 To enable automatic particle rendering between `onRender` and `onOverlayRender`, override `getRenderer()` to return your `Renderer2D` instance:
@@ -155,15 +158,17 @@ Engine::Renderer2D* getRenderer() override { return &m_renderer; }
 
 ## Config Header Convention
 
-Give each game a config header for window dimensions, layer constants, and tuning values that need to be visible across multiple files:
+Split game config into two files:
+
+**`GameConstants.h`** — window dimensions, `SCALE`, and layer bitmasks. These values are compile-time constants that appear in many files:
 
 ```cpp
-// MyGameConfig.h
+// GameConstants.h
 #pragma once
 #include <cstdint>
 
-inline constexpr int W     = 800;
-inline constexpr int H     = 600;
+inline constexpr int W       = 800;
+inline constexpr int H       = 600;
 inline constexpr float SCALE = 1.f;
 
 inline constexpr uint32_t kPlayerLayer = 1 << 0;
@@ -171,3 +176,15 @@ inline constexpr uint32_t kEnemyLayer  = 1 << 1;
 ```
 
 Keeping `SCALE` here and deriving all render sizes from it (`16.f * SCALE`) means you can resize sprites globally without hunting through source files.
+
+**`ConfigInit.h/.cpp`** — runtime-loaded per-entity tuning data (speeds, scores, particle params, etc.) stored in TOML files. See `docs/engine/runtime-config.md` for the full pattern.
+
+```cpp
+// ConfigInit.h
+void loadAllConfigs();   // call once at startup
+void watchAllConfigs();  // registers hot-reload callbacks (no-op in release)
+
+#ifdef ENABLE_TOOLS
+void renderConfigEditor(); // ImGui editor window; call from onImGuiRender()
+#endif
+```

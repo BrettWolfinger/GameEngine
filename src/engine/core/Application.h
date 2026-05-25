@@ -22,6 +22,9 @@ protected:
     virtual void onUpdate(float dt)    {}
     virtual void onRender()            {}
     virtual void onOverlayRender()     {}
+    /// Override to render ImGui widgets. Called after onOverlayRender() when
+    /// the F1 overlay is toggled on. No-op in release builds — the engine
+    /// never calls it when ENABLE_TOOLS is not defined.
     virtual void onImGuiRender()       {}
     virtual void onShutdown()          {}
 

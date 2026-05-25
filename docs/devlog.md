@@ -159,7 +159,7 @@ persistent high score round out the progression.
 
 ---
 
-## Engine hardening (between Asteroids and next game)
+## Engine hardening and tooling (between Asteroids and next game)
 
 ### The problem
 
@@ -197,3 +197,60 @@ architecture reference at `docs/engine/engine-facade.md` — covering the design
 rationale, what belongs in the facade vs. what doesn't, enforcement details, and
 how to add new subsystems. Doxygen CI config and GitHub Pages publishing are
 tracked separately in issue #68. READMEs were written for Asteroids and Frogger.
+
+### Docs site
+
+The GitHub Wiki was replaced with MkDocs Material on GitHub Pages. The key
+motivation: the Wiki was a second place to look for things, out of sync with the
+codebase and not version-controlled alongside it. GitHub Pages lets the docs and
+the code live in the same repo and deploy together.
+
+The Doxygen API reference is also hosted on GitHub Pages and linked from the
+MkDocs nav. A GitHub Actions workflow builds MkDocs, runs Doxygen with the
+Doxygen Awesome CSS theme, copies the output into `site/api/`, and deploys the
+whole thing in one step. Three engine-internal headers (`Services.h`,
+`AudioManager.h`, `CollisionWorld.h`) are excluded from the Doxygen output — they
+are not part of the public API and showing them would be misleading.
+
+### Runtime config system
+
+Asteroids' config tables were `constexpr` arrays — clean structure, but a
+recompile on every value change. As the game accumulated three entity types with
+distinct physics, particle, audio, and scoring parameters, the edit-compile-run
+loop for tuning became the bottleneck. The solution was a three-phase runtime
+config system.
+
+**Phase 1 — TOML files.** TOML was chosen over JSON (no comment support) and
+YAML (indentation-sensitive, surprising edge cases). `toml++` is header-only and
+dropped in via FetchContent. The `constexpr All[]` arrays were replaced with
+`inline std::vector<T> All` — a C++17 ODR-safe inline variable whose size is
+driven entirely by the TOML file, not by a C++ constant. This matters: adding a
+new ship type no longer requires a code change. Each entity type got a TOML file
+under `games/asteroids/assets/configs/`, and `ConfigInit.h/.cpp` was introduced
+as a standard pattern for centralising load and watch calls. The naming was
+intentionally de-branded from "Asteroids" because the `GameConstants.h` /
+`ConfigInit.h/.cpp` split will carry forward to every game.
+
+**Phase 2 — Hot-reload.** `ConfigWatcher` polls `std::filesystem::last_write_time`
+once per frame (before game logic) and fires a callback when a file changes. The
+callback is the same `loadXxxConfigs()` function used at startup, so there is no
+separate reload path to maintain. The watcher is stored in `Application::Impl` and
+called via a `Services` locator. Hot-reload is gated behind `ENABLE_TOOLS` — an
+`Engine::Config::watch()` facade always compiles but no-ops in release, so call
+sites need no `#ifdef`.
+
+**Phase 3 — ImGui editor.** Dear ImGui was added via FetchContent and built as a
+static library with the GLFW and OpenGL3 backends. The full ImGui frame lifecycle
+(init, `NewFrame`, `Render`, `RenderDrawData`) lives in `Application.cpp` behind
+`ENABLE_TOOLS`, with F1 toggling the overlay on and off. A new `onImGuiRender()`
+virtual hook lets games add their own widgets without touching the engine.
+
+The editor calls `renderConfigEditor()` from `ConfigInit.cpp`. Each config section
+has drag widgets per field, a Save button that writes the current values back to
+TOML via a `toToml()` serializer, and the watcher closes the loop by hot-reloading
+the saved file on the next frame. Size fields are divided by `SCALE` before being
+written so the files stay in human-readable raw units. An ImGui ID collision bug
+was caught during testing — `PushID(i)` resets to zero in each section, so when
+multiple collapsing headers are open simultaneously the index scopes overlap. Fixed
+by wrapping each section's loop with a string-keyed `PushID("ufos")` /
+`PushID("asteroids")` / `PushID("ships")`.
