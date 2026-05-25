@@ -16,7 +16,7 @@
         <link rel="prev" href="../engine-facade/">
       
       
-        <link rel="next" href="../collision-system/">
+        <link rel="next" href="../runtime-config/">
       
       
         
@@ -458,6 +458,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#imgui-overlay-debug-builds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ImGui Overlay (Debug Builds)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#subsystem-initialization" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -483,6 +494,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runtime-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime Config System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -973,6 +1012,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#imgui-overlay-debug-builds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ImGui Overlay (Debug Builds)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#subsystem-initialization" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1070,6 +1120,16 @@ protected:
 <td>Draw calls only — no state mutation</td>
 </tr>
 <tr>
+<td><code>onOverlayRender()</code></td>
+<td>Every frame, after particles</td>
+<td>HUD, menus, overlays that appear above particles</td>
+</tr>
+<tr>
+<td><code>onImGuiRender()</code></td>
+<td>Every frame, when F1 overlay is on</td>
+<td>ImGui debug/tools widgets (debug builds only)</td>
+</tr>
+<tr>
 <td><code>onShutdown()</code></td>
 <td>Once, after the loop exits</td>
 <td>Cleanup</td>
@@ -1084,6 +1144,8 @@ protected:
   frameTime = now - prevTime  (clamped to 0.25s max)
   accum    += frameTime
 
+  [ENABLE_TOOLS] ConfigWatcher::poll()   — hot-reload check
+
   while accum &gt;= 1/60:
       Input::update()
       preStep(1/60)
@@ -1092,6 +1154,11 @@ protected:
       accum -= 1/60
 
   onRender()
+  ParticleSystem::render()               — automatic if getRenderer() is overridden
+  onOverlayRender()
+
+  [ENABLE_TOOLS] if F1 toggled: onImGuiRender()
+
   swapBuffers()
 </code></pre>
 <p>The <code>0.25s</code> clamp on <code>frameTime</code> prevents the <strong>spiral of death</strong>: if a frame takes too long (debugger pause, system hiccup), the engine doesn't try to catch up with an unbounded burst of ticks. It simply accepts the lost time and moves on.</p>
@@ -1106,6 +1173,19 @@ CollisionWorld::step()  — test overlaps against current positions, fire callba
 onUpdate(dt)            — read collision results, spawn/erase objects, handle input
 </code></pre>
 <p><code>preStep</code> exists specifically so collision sees current-tick positions rather than last-tick positions. See <code>docs/engine/collision-system.md</code> for why this ordering matters.</p>
+<hr />
+<h2 id="imgui-overlay-debug-builds">ImGui Overlay (Debug Builds)</h2>
+<p>In non-Release builds, pressing <strong>F1</strong> toggles an ImGui overlay. The engine handles the full ImGui frame lifecycle (init, <code>NewFrame</code>, <code>Render</code>, <code>RenderDrawData</code>) — games just override <code>onImGuiRender()</code> and call their editor functions:</p>
+<pre><code class="language-cpp">void MyGame::onImGuiRender() {
+#ifdef ENABLE_TOOLS
+    renderConfigEditor();  // or any ImGui::* calls
+#endif
+}
+</code></pre>
+<p>The <code>#ifdef ENABLE_TOOLS</code> guard in the game's <code>.cpp</code> is required because <code>onImGuiRender()</code> is always declared in the base class (it's a virtual method), but game-side editor code (like <code>renderConfigEditor()</code>) is also only compiled under <code>ENABLE_TOOLS</code>. The guard is absent in release builds entirely — <code>onImGuiRender()</code> is declared but never called.</p>
+<p>Game targets must define <code>ENABLE_TOOLS</code> for non-Release builds to match the engine:</p>
+<pre><code class="language-cmake">target_compile_definitions(mygame PRIVATE $&lt;$&lt;NOT:$&lt;CONFIG:Release&gt;&gt;:ENABLE_TOOLS&gt;)
+</code></pre>
 <hr />
 <h2 id="subsystem-initialization">Subsystem Initialization</h2>
 <p>The <code>Application</code> constructor sets up all engine subsystems before <code>onInit</code> or any game constructor body runs. By the time your game's constructor body executes, audio, particles, and collision are all ready — game objects can call <code>Engine::Collision::add()</code>, <code>Engine::Audio::playTone()</code>, etc. immediately, including from objects constructed in the game's constructor body.</p>

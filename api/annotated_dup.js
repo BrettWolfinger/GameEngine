@@ -2,7 +2,7 @@ var annotated_dup =
 [
     [ "Engine", null, [
       [ "AnimClip", "structEngine_1_1AnimClip.html", null ],
-      [ "Application", "classEngine_1_1Application.html", null ],
+      [ "Application", "classEngine_1_1Application.html", "classEngine_1_1Application" ],
       [ "ColliderDesc", "structEngine_1_1ColliderDesc.html", "structEngine_1_1ColliderDesc" ],
       [ "ConfigLoader", "classEngine_1_1ConfigLoader.html", null ],
       [ "ConfigWatcher", "classEngine_1_1ConfigWatcher.html", null ],

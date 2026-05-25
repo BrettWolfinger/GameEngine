@@ -367,6 +367,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../engine/runtime-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime Config System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../engine/collision-system/" class="md-nav__link">
         
   
@@ -976,15 +1004,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#engine-hardening-between-asteroids-and-next-game" class="md-nav__link">
+  <a href="#engine-hardening-and-tooling-between-asteroids-and-next-game" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Engine hardening (between Asteroids and next game)
+        Engine hardening and tooling (between Asteroids and next game)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Engine hardening (between Asteroids and next game)">
+    <nav class="md-nav" aria-label="Engine hardening and tooling (between Asteroids and next game)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1014,6 +1042,28 @@
     <span class="md-ellipsis">
       
         Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docs-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docs site
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-config-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime config system
       
     </span>
   </a>
@@ -1287,15 +1337,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#engine-hardening-between-asteroids-and-next-game" class="md-nav__link">
+  <a href="#engine-hardening-and-tooling-between-asteroids-and-next-game" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Engine hardening (between Asteroids and next game)
+        Engine hardening and tooling (between Asteroids and next game)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Engine hardening (between Asteroids and next game)">
+    <nav class="md-nav" aria-label="Engine hardening and tooling (between Asteroids and next game)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1325,6 +1375,28 @@
     <span class="md-ellipsis">
       
         Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docs-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docs site
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-config-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime config system
       
     </span>
   </a>
@@ -1475,7 +1547,7 @@ player, and respawns every 20 seconds. Player and UFO bullets use separate
 collision layers so UFO fire can't destroy asteroids. Lives, score, and a
 persistent high score round out the progression.</p>
 <hr />
-<h2 id="engine-hardening-between-asteroids-and-next-game">Engine hardening (between Asteroids and next game)</h2>
+<h2 id="engine-hardening-and-tooling-between-asteroids-and-next-game">Engine hardening and tooling (between Asteroids and next game)</h2>
 <h3 id="the-problem">The problem</h3>
 <p>When <code>AudioManager</code> changed from static to instance methods, both Pong and
 Breakout broke — they were calling <code>Engine::Services::audio().playTone(...)</code> and
@@ -1506,6 +1578,54 @@ architecture reference at <code>docs/engine/engine-facade.md</code> — covering
 rationale, what belongs in the facade vs. what doesn't, enforcement details, and
 how to add new subsystems. Doxygen CI config and GitHub Pages publishing are
 tracked separately in issue #68. READMEs were written for Asteroids and Frogger.</p>
+<h3 id="docs-site">Docs site</h3>
+<p>The GitHub Wiki was replaced with MkDocs Material on GitHub Pages. The key
+motivation: the Wiki was a second place to look for things, out of sync with the
+codebase and not version-controlled alongside it. GitHub Pages lets the docs and
+the code live in the same repo and deploy together.</p>
+<p>The Doxygen API reference is also hosted on GitHub Pages and linked from the
+MkDocs nav. A GitHub Actions workflow builds MkDocs, runs Doxygen with the
+Doxygen Awesome CSS theme, copies the output into <code>site/api/</code>, and deploys the
+whole thing in one step. Three engine-internal headers (<code>Services.h</code>,
+<code>AudioManager.h</code>, <code>CollisionWorld.h</code>) are excluded from the Doxygen output — they
+are not part of the public API and showing them would be misleading.</p>
+<h3 id="runtime-config-system">Runtime config system</h3>
+<p>Asteroids' config tables were <code>constexpr</code> arrays — clean structure, but a
+recompile on every value change. As the game accumulated three entity types with
+distinct physics, particle, audio, and scoring parameters, the edit-compile-run
+loop for tuning became the bottleneck. The solution was a three-phase runtime
+config system.</p>
+<p><strong>Phase 1 — TOML files.</strong> TOML was chosen over JSON (no comment support) and
+YAML (indentation-sensitive, surprising edge cases). <code>toml++</code> is header-only and
+dropped in via FetchContent. The <code>constexpr All[]</code> arrays were replaced with
+<code>inline std::vector&lt;T&gt; All</code> — a C++17 ODR-safe inline variable whose size is
+driven entirely by the TOML file, not by a C++ constant. This matters: adding a
+new ship type no longer requires a code change. Each entity type got a TOML file
+under <code>games/asteroids/assets/configs/</code>, and <code>ConfigInit.h/.cpp</code> was introduced
+as a standard pattern for centralising load and watch calls. The naming was
+intentionally de-branded from "Asteroids" because the <code>GameConstants.h</code> /
+<code>ConfigInit.h/.cpp</code> split will carry forward to every game.</p>
+<p><strong>Phase 2 — Hot-reload.</strong> <code>ConfigWatcher</code> polls <code>std::filesystem::last_write_time</code>
+once per frame (before game logic) and fires a callback when a file changes. The
+callback is the same <code>loadXxxConfigs()</code> function used at startup, so there is no
+separate reload path to maintain. The watcher is stored in <code>Application::Impl</code> and
+called via a <code>Services</code> locator. Hot-reload is gated behind <code>ENABLE_TOOLS</code> — an
+<code>Engine::Config::watch()</code> facade always compiles but no-ops in release, so call
+sites need no <code>#ifdef</code>.</p>
+<p><strong>Phase 3 — ImGui editor.</strong> Dear ImGui was added via FetchContent and built as a
+static library with the GLFW and OpenGL3 backends. The full ImGui frame lifecycle
+(init, <code>NewFrame</code>, <code>Render</code>, <code>RenderDrawData</code>) lives in <code>Application.cpp</code> behind
+<code>ENABLE_TOOLS</code>, with F1 toggling the overlay on and off. A new <code>onImGuiRender()</code>
+virtual hook lets games add their own widgets without touching the engine.</p>
+<p>The editor calls <code>renderConfigEditor()</code> from <code>ConfigInit.cpp</code>. Each config section
+has drag widgets per field, a Save button that writes the current values back to
+TOML via a <code>toToml()</code> serializer, and the watcher closes the loop by hot-reloading
+the saved file on the next frame. Size fields are divided by <code>SCALE</code> before being
+written so the files stay in human-readable raw units. An ImGui ID collision bug
+was caught during testing — <code>PushID(i)</code> resets to zero in each section, so when
+multiple collapsing headers are open simultaneously the index scopes overlap. Fixed
+by wrapping each section's loop with a string-keyed <code>PushID("ufos")</code> /
+<code>PushID("asteroids")</code> / <code>PushID("ships")</code>.</p>
 
 
 

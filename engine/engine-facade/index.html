@@ -545,6 +545,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../runtime-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime Config System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../collision-system/" class="md-nav__link">
         
   
@@ -1148,6 +1176,7 @@ details.</p>
     Audio.h       → Engine::Audio::*
     Particles.h   → Engine::Particles::*
     Collision.h   → Engine::Collision::*
+    Config.h      → Engine::Config::*
 
 src/engine/Engine.h   ← most game code includes this
 </code></pre>
@@ -1158,6 +1187,7 @@ implementation and is the only place that includes engine-internal headers.</p>
 <pre><code class="language-cpp">#pragma once
 #include &lt;engine/facade/Audio.h&gt;
 #include &lt;engine/facade/Collision.h&gt;
+#include &lt;engine/facade/Config.h&gt;
 #include &lt;engine/facade/Particles.h&gt;
 </code></pre>
 <p>Game <code>.cpp</code> files that use more than one subsystem include <code>&lt;engine/Engine.h&gt;</code>.
@@ -1169,7 +1199,7 @@ include the per-subsystem header directly.</p>
 <li>Play audio</li>
 <li>Emit particles (<code>emit</code>, <code>clear</code> — <code>update</code> and <code>render</code> are engine-owned)</li>
 <li>Register, update, and remove colliders</li>
-<li>(Future) Load assets, log, access save data</li>
+<li>Register hot-reload callbacks for config files</li>
 </ul>
 <h3 id="what-does-not-go-in-the-facade">What does not go in the facade</h3>
 <p>Types that games hold or pass around stay as direct includes — they cannot be
@@ -1275,6 +1305,9 @@ Engine::Collision::add(desc, callback);
 Engine::Collision::remove(handle);
 Engine::Collision::updateCircle(handle, cx, cy, r);
 Engine::Collision::updateAABB(handle, x, y, w, h);
+
+// Config — hot-reload (no-op in release builds, so no #ifdef needed at call sites)
+Engine::Config::watch(&quot;games/mygame/assets/configs/enemies.toml&quot;, loadEnemyConfigs);
 </code></pre>
 
 

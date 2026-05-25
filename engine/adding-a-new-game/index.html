@@ -371,6 +371,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../runtime-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime Config System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../collision-system/" class="md-nav__link">
         
   
@@ -1062,8 +1090,12 @@ target_include_directories(mygame PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(mygame PRIVATE engine)
 
 target_compile_definitions(mygame PRIVATE $&lt;$&lt;NOT:$&lt;CONFIG:Release&gt;&gt;:ENABLE_DEV_KEYS&gt;)
+target_compile_definitions(mygame PRIVATE $&lt;$&lt;NOT:$&lt;CONFIG:Release&gt;&gt;:ENABLE_TOOLS&gt;)
 </code></pre>
-<p><code>ENABLE_DEV_KEYS</code> is a preprocessor flag available in Debug and RelWithDebInfo builds. Use it to gate cheat keys or debug overlays that shouldn't ship in release builds.</p>
+<ul>
+<li><code>ENABLE_DEV_KEYS</code> — gate cheat keys or debug overlays that shouldn't ship.</li>
+<li><code>ENABLE_TOOLS</code> — required for hot-reload (<code>Engine::Config::watch</code>) and the ImGui overlay (<code>onImGuiRender</code>). Must match the same flag the engine sets on itself.</li>
+</ul>
 <hr />
 <h2 id="step-2-register-in-the-root-cmakeliststxt">Step 2 — Register in the Root CMakeLists.txt</h2>
 <p>Add one line to the bottom of <code>/CMakeLists.txt</code>:</p>
@@ -1170,6 +1202,11 @@ cmake --build build
 <td>HUD, menus, overlays that appear above particles</td>
 </tr>
 <tr>
+<td><code>onImGuiRender()</code></td>
+<td>Every frame, when F1 overlay is on</td>
+<td>ImGui debug widgets (debug builds only)</td>
+</tr>
+<tr>
 <td><code>onShutdown()</code></td>
 <td>Once, after loop exits</td>
 <td>Cleanup</td>
@@ -1182,19 +1219,29 @@ cmake --build build
 <p><code>dt</code> is always <code>1/60 ≈ 0.01667s</code>. See <code>docs/engine/application-game-loop.md</code> for the full tick order and timing details.</p>
 <hr />
 <h2 id="config-header-convention">Config Header Convention</h2>
-<p>Give each game a config header for window dimensions, layer constants, and tuning values that need to be visible across multiple files:</p>
-<pre><code class="language-cpp">// MyGameConfig.h
+<p>Split game config into two files:</p>
+<p><strong><code>GameConstants.h</code></strong> — window dimensions, <code>SCALE</code>, and layer bitmasks. These values are compile-time constants that appear in many files:</p>
+<pre><code class="language-cpp">// GameConstants.h
 #pragma once
 #include &lt;cstdint&gt;
 
-inline constexpr int W     = 800;
-inline constexpr int H     = 600;
+inline constexpr int W       = 800;
+inline constexpr int H       = 600;
 inline constexpr float SCALE = 1.f;
 
 inline constexpr uint32_t kPlayerLayer = 1 &lt;&lt; 0;
 inline constexpr uint32_t kEnemyLayer  = 1 &lt;&lt; 1;
 </code></pre>
 <p>Keeping <code>SCALE</code> here and deriving all render sizes from it (<code>16.f * SCALE</code>) means you can resize sprites globally without hunting through source files.</p>
+<p><strong><code>ConfigInit.h/.cpp</code></strong> — runtime-loaded per-entity tuning data (speeds, scores, particle params, etc.) stored in TOML files. See <code>docs/engine/runtime-config.md</code> for the full pattern.</p>
+<pre><code class="language-cpp">// ConfigInit.h
+void loadAllConfigs();   // call once at startup
+void watchAllConfigs();  // registers hot-reload callbacks (no-op in release)
+
+#ifdef ENABLE_TOOLS
+void renderConfigEditor(); // ImGui editor window; call from onImGuiRender()
+#endif
+</code></pre>
 
 
 
