@@ -1,4 +1,7 @@
 add_library(engine STATIC
+    facade/Audio.cpp
+    facade/Particles.cpp
+    facade/Collision.cpp
     ui/Menu.cpp
     core/Application.cpp
     core/Window.cpp
@@ -20,7 +23,8 @@ add_library(engine STATIC
 # Expose src/ so consumers use #include <engine/...>
 target_include_directories(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
-target_compile_definitions(engine PUBLIC GLFW_INCLUDE_NONE)
+target_compile_definitions(engine PUBLIC  GLFW_INCLUDE_NONE)
+target_compile_definitions(engine PRIVATE ENGINE_INTERNAL)
 
 target_include_directories(engine PRIVATE ${miniaudio_SOURCE_DIR})
 target_include_directories(engine PRIVATE ${stb_image_SOURCE_DIR})

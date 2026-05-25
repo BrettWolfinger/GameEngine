@@ -1,4 +1,7 @@
 #pragma once
+#ifndef ENGINE_INTERNAL
+#  error "engine/physics/CollisionWorld.h is an engine-internal header. Include <engine/Engine.h> instead."
+#endif
 #include "Collider.h"
 #include <vector>
 

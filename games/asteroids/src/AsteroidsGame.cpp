@@ -1,7 +1,6 @@
 #include "AsteroidsGame.h"
 #include "AsteroidsConfig.h"
 #include <engine/Engine.h>
-#include <engine/core/Services.h>
 #include <engine/renderer/Texture.h>
 
 static GameContext makeContext(

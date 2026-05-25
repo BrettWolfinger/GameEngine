@@ -1,4 +1,7 @@
 #pragma once
+#ifndef ENGINE_INTERNAL
+#  error "engine/audio/AudioManager.h is an engine-internal header. Include <engine/Engine.h> instead."
+#endif
 #include <atomic>
 
 // Forward-declare miniaudio device type to avoid pulling the heavy header here.

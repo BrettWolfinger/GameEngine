@@ -1,17 +1,13 @@
 #pragma once
 #include <memory>
 #include "Window.h"
-#include "Services.h"
-#include "../audio/AudioManager.h"
-#include "../particles/ParticleSystem.h"
-#include "../physics/CollisionWorld.h"
 
 namespace Engine {
 
 class Application {
 public:
     Application(const char* title, int width, int height);
-    virtual ~Application() { m_audioManager.shutdown(); }
+    virtual ~Application();
 
     void run();
     void quit() { m_running = false; }
@@ -25,13 +21,10 @@ protected:
     virtual void onRender()          {}
     virtual void onShutdown()        {}
 
-    CollisionWorld& collisionWorld() { return m_collisionWorld; }
-
 private:
+    struct Impl;
     std::unique_ptr<Window> m_window;
-    AudioManager            m_audioManager;
-    ParticleSystem          m_particleSystem;
-    CollisionWorld          m_collisionWorld;
+    std::unique_ptr<Impl>   m_impl;
     bool                    m_running = true;
 };
 
