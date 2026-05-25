@@ -4,6 +4,8 @@ var annotated_dup =
       [ "AnimClip", "structEngine_1_1AnimClip.html", null ],
       [ "Application", "classEngine_1_1Application.html", null ],
       [ "ColliderDesc", "structEngine_1_1ColliderDesc.html", "structEngine_1_1ColliderDesc" ],
+      [ "ConfigLoader", "classEngine_1_1ConfigLoader.html", null ],
+      [ "ConfigWatcher", "classEngine_1_1ConfigWatcher.html", null ],
       [ "Input", "classEngine_1_1Input.html", null ],
       [ "Menu", "classEngine_1_1Menu.html", null ],
       [ "Particle", "structEngine_1_1Particle.html", null ],
