@@ -45,7 +45,7 @@ public:
 
 private:
     int                    m_frameIndex     = 0;
-    Engine::ColliderHandle m_colliderHandle = Engine::NULL_COLLIDER;
+    Engine::Collision::ColliderHandle m_colliderHandle = Engine::Collision::NULL_COLLIDER;
     bool                   m_wasShot        = false;
 
     Asteroid() = default;

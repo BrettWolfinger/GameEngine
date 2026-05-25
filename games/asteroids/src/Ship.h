@@ -54,6 +54,6 @@ private:
 
     int                     m_frameCells     = 2;
     Engine::SpriteAnimator  m_animator;
-    Engine::ColliderHandle  m_colliderHandle = Engine::NULL_COLLIDER;
+    Engine::Collision::ColliderHandle m_colliderHandle = Engine::Collision::NULL_COLLIDER;
     bool                    m_wasHit         = false;
 };

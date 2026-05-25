@@ -12,13 +12,13 @@ Asteroid::~Asteroid() {
 
 void Asteroid::registerCollider() {
     m_colliderHandle = Engine::Collision::add(
-        Engine::ColliderDesc::makeCircle(kAsteroidLayer, kBulletLayer, pos.x, pos.y, radius()),
-        [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
+        Engine::Collision::ColliderDesc::makeCircle(kAsteroidLayer, kBulletLayer, pos.x, pos.y, radius()),
+        [this](Engine::Collision::ColliderHandle self, Engine::Collision::ColliderHandle) {
             m_wasShot = true;
             playDestructionSound();
             emitDestructionParticles();
             Engine::Collision::remove(self);
-            m_colliderHandle = Engine::NULL_COLLIDER;
+            m_colliderHandle = Engine::Collision::NULL_COLLIDER;
         });
 }
 
@@ -113,7 +113,7 @@ void Asteroid::update(float dt, int screenW, int screenH) {
     if (pos.y < -16.f)           pos.y += screenH + 32.f;
     if (pos.y > screenH + 16.f)  pos.y -= screenH + 32.f;
 
-    if (m_colliderHandle != Engine::NULL_COLLIDER)
+    if (m_colliderHandle != Engine::Collision::NULL_COLLIDER)
         Engine::Collision::updateCircle(m_colliderHandle, pos.x, pos.y, radius());
 }
 

@@ -30,5 +30,5 @@ public:
     void render(Engine::Renderer2D& renderer) const;
 
 private:
-    Engine::ColliderHandle m_colliderHandle = Engine::NULL_COLLIDER;
+    Engine::Collision::ColliderHandle m_colliderHandle = Engine::Collision::NULL_COLLIDER;
 };

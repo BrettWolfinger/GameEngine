@@ -37,13 +37,13 @@ Ship::Ship(std::shared_ptr<Engine::SpriteSheet> sheet, const ShipConfig& config)
     m_animator.setClip("idle");
 
     m_colliderHandle = Engine::Collision::add(
-        Engine::ColliderDesc::makeCircle(kShipLayer, kAsteroidLayer | kUfoBulletLayer, m_pos.x, m_pos.y, COLLISION_RADIUS),
-        [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
+        Engine::Collision::ColliderDesc::makeCircle(kShipLayer, kAsteroidLayer | kUfoBulletLayer, m_pos.x, m_pos.y, COLLISION_RADIUS),
+        [this](Engine::Collision::ColliderHandle self, Engine::Collision::ColliderHandle) {
             if (m_invincibleTimer > 0.f) return;
             m_wasHit = true;
             emitHitParticles();
             Engine::Collision::remove(self);
-            m_colliderHandle = Engine::NULL_COLLIDER;
+            m_colliderHandle = Engine::Collision::NULL_COLLIDER;
         });
 }
 
@@ -66,13 +66,13 @@ void Ship::reset() {
     m_animator.setClip("idle");
 
     m_colliderHandle = Engine::Collision::add(
-        Engine::ColliderDesc::makeCircle(kShipLayer, kAsteroidLayer | kUfoBulletLayer, m_pos.x, m_pos.y, COLLISION_RADIUS),
-        [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
+        Engine::Collision::ColliderDesc::makeCircle(kShipLayer, kAsteroidLayer | kUfoBulletLayer, m_pos.x, m_pos.y, COLLISION_RADIUS),
+        [this](Engine::Collision::ColliderHandle self, Engine::Collision::ColliderHandle) {
             if (m_invincibleTimer > 0.f) return;
             m_wasHit = true;
             emitHitParticles();
             Engine::Collision::remove(self);
-            m_colliderHandle = Engine::NULL_COLLIDER;
+            m_colliderHandle = Engine::Collision::NULL_COLLIDER;
         });
 }
 
@@ -131,7 +131,7 @@ void Ship::update(float dt, int screenW, int screenH) {
 
     m_animator.update(dt);
 
-    if (m_colliderHandle != Engine::NULL_COLLIDER)
+    if (m_colliderHandle != Engine::Collision::NULL_COLLIDER)
         Engine::Collision::updateCircle(m_colliderHandle, m_pos.x, m_pos.y, COLLISION_RADIUS);
 }
 

@@ -7,11 +7,11 @@ Bullet::Bullet(glm::vec2 pos, glm::vec2 vel, Engine::UVRect uv, const Engine::Te
     : pos(pos), vel(vel), lifetime(LIFETIME), uv(uv), tex(tex)
 {
     m_colliderHandle = Engine::Collision::add(
-        Engine::ColliderDesc::makeCircle(selfLayer, targetLayer, pos.x, pos.y, SIZE * 0.5f),
-        [this](Engine::ColliderHandle self, Engine::ColliderHandle) {
+        Engine::Collision::ColliderDesc::makeCircle(selfLayer, targetLayer, pos.x, pos.y, SIZE * 0.5f),
+        [this](Engine::Collision::ColliderHandle self, Engine::Collision::ColliderHandle) {
             lifetime = 0.f;
             Engine::Collision::remove(self);
-            m_colliderHandle = Engine::NULL_COLLIDER;
+            m_colliderHandle = Engine::Collision::NULL_COLLIDER;
         });
 }
 
@@ -23,7 +23,7 @@ void Bullet::update(float dt) {
     pos      += vel * dt;
     lifetime -= dt;
 
-    if (m_colliderHandle != Engine::NULL_COLLIDER)
+    if (m_colliderHandle != Engine::Collision::NULL_COLLIDER)
         Engine::Collision::updateCircle(m_colliderHandle, pos.x, pos.y, SIZE * 0.5f);
 }
 

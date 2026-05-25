@@ -45,5 +45,5 @@ private:
     bool          m_wasDestroyed = false;
     std::mt19937& m_rng;
 
-    Engine::ColliderHandle m_colliderHandle = Engine::NULL_COLLIDER;
+    Engine::Collision::ColliderHandle m_colliderHandle = Engine::Collision::NULL_COLLIDER;
 };
