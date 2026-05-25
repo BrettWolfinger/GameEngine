@@ -22,6 +22,7 @@ protected:
     virtual void onUpdate(float dt)    {}
     virtual void onRender()            {}
     virtual void onOverlayRender()     {}
+    virtual void onImGuiRender()       {}
     virtual void onShutdown()          {}
 
     // Override to enable automatic particle rendering between onRender and

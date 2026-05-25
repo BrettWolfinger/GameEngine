@@ -28,6 +28,7 @@ protected:
     void        onUpdate(float dt)   override;
     void        onRender()           override;
     void        onOverlayRender()    override;
+    void        onImGuiRender()      override;
     Engine::Renderer2D* getRenderer() override { return &m_renderer; }
 
 private:
