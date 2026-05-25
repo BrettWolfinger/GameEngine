@@ -19,6 +19,9 @@ theme:
 extra_javascript:
   - js/extra.js
 
+markdown_extensions:
+  - attr_list
+
 docs_dir: docs
 
 nav:
