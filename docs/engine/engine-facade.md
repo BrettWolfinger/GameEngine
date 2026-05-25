@@ -75,7 +75,7 @@ include the per-subsystem header directly.
 Operations — things games *do*:
 
 - Play audio
-- Emit particles
+- Emit particles (`emit`, `clear` — `update` and `render` are engine-owned)
 - Register, update, and remove colliders
 - (Future) Load assets, log, access save data
 
@@ -165,8 +165,9 @@ Engine::Audio::playLoopingTone(slot, hz, amplitude);
 Engine::Audio::playLoopingNoise(slot, amplitude);
 Engine::Audio::stopLoopingVoice(slot);
 
-// Particles
+// Particles — update/render are engine-owned; games only call emit and clear
 Engine::Particles::emit(params);
+Engine::Particles::clear();  // call on state transitions to prevent stale particles
 
 // Collision
 Engine::Collision::add(desc, callback);

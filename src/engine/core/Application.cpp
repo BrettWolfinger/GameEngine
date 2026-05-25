@@ -4,6 +4,7 @@
 #include "../audio/AudioManager.h"
 #include "../particles/ParticleSystem.h"
 #include "../physics/CollisionWorld.h"
+#include "../renderer/Renderer2D.h"
 #include <GLFW/glfw3.h>
 #include <algorithm>
 
@@ -50,10 +51,14 @@ void Application::run() {
             preStep(static_cast<float>(fixedDt));
             m_impl->collisionWorld.step();
             onUpdate(static_cast<float>(fixedDt));
+            m_impl->particleSystem.update(static_cast<float>(fixedDt));
             accum -= fixedDt;
         }
 
         onRender();
+        if (Renderer2D* r = getRenderer())
+            m_impl->particleSystem.render(*r);
+        onOverlayRender();
         m_window->swapBuffers();
     }
 

@@ -71,8 +71,6 @@ void AsteroidsGame::onUpdate(float dt) {
         default: break;
     }
     if (next != m_screen) transitionTo(next);
-
-    Engine::Particles::update(dt);
 }
 
 void AsteroidsGame::onRender() {
@@ -80,13 +78,15 @@ void AsteroidsGame::onRender() {
     switch (m_screen) {
         case Screen::Title:      m_titleScreen.render();      break;
         case Screen::ShipSelect: m_shipSelectScreen.render(); break;
-        case Screen::Playing:    m_playingScreen.render();
-                                 Engine::Particles::render(m_renderer); break;
-        case Screen::GameOver:   m_playingScreen.render();    // game world stays visible
-                                 Engine::Particles::render(m_renderer);
-                                 m_gameOverScreen.render();   break;
+        case Screen::Playing:    m_playingScreen.render();    break;
+        case Screen::GameOver:   m_playingScreen.render();    break;  // game world stays visible
         default: break;
     }
+}
+
+void AsteroidsGame::onOverlayRender() {
+    if (m_screen == Screen::GameOver)
+        m_gameOverScreen.render();
 }
 
 // ---- transitions ------------------------------------------------------------
