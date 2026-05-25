@@ -1,7 +1,7 @@
 #pragma once
 #include "AsteroidsConfig.h"
 #include "ShipConfig.h"
-#include <engine/physics/Collider.h>
+#include <engine/facade/Collision.h>
 #include <engine/renderer/SpriteAnimator.h>
 #include <engine/renderer/Renderer2D.h>
 #include <glm/glm.hpp>

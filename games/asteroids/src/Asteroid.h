@@ -2,7 +2,7 @@
 #include "AsteroidsConfig.h"
 #include "AsteroidConfig.h"
 #include <engine/core/Services.h>
-#include <engine/physics/Collider.h>
+#include <engine/facade/Collision.h>
 #include <engine/renderer/Renderer2D.h>
 #include <engine/renderer/SpriteSheet.h>
 #include <glm/glm.hpp>
