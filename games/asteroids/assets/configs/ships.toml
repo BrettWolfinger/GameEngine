@@ -1,0 +1,46 @@
+# Ship configurations for Asteroids.
+# Frame indices reference the 16x16 sprite sheet atlas.
+
+[fighter]
+name           = "FIGHTER"
+max_speed      = 450.0
+thrust_force   = 250.0
+drag           = 0.980
+rotate_speed   = 3.0
+fire_cooldown  = 0.25
+ship_frame     = 0
+thrust_frame_1 = 4
+thrust_frame_2 = 8
+
+[scout]
+name           = "SCOUT"
+max_speed      = 580.0
+thrust_force   = 320.0
+drag           = 0.990
+rotate_speed   = 3.8
+fire_cooldown  = 0.35   # fast ship, slower fire
+ship_frame     = 2
+thrust_frame_1 = 6
+thrust_frame_2 = 10
+
+[gunship]
+name           = "GUNSHIP"
+max_speed      = 350.0
+thrust_force   = 200.0
+drag           = 0.970
+rotate_speed   = 2.5
+fire_cooldown  = 0.15   # slow ship, rapid fire
+ship_frame     = 32
+thrust_frame_1 = 36
+thrust_frame_2 = 40
+
+[racer]
+name           = "RACER"
+max_speed      = 520.0
+thrust_force   = 280.0
+drag           = 0.985
+rotate_speed   = 3.4
+fire_cooldown  = 0.20
+ship_frame     = 34
+thrust_frame_1 = 38
+thrust_frame_2 = 42

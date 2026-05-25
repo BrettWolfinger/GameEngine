@@ -1,5 +1,8 @@
 add_library(engine STATIC
+    config/ConfigLoader.cpp
+    config/ConfigWatcher.cpp
     facade/Audio.cpp
+    facade/Config.cpp
     facade/Particles.cpp
     facade/Collision.cpp
     ui/Menu.cpp
@@ -25,11 +28,12 @@ target_include_directories(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 target_compile_definitions(engine PUBLIC  GLFW_INCLUDE_NONE)
 target_compile_definitions(engine PRIVATE ENGINE_INTERNAL)
+target_compile_definitions(engine PRIVATE $<$<NOT:$<CONFIG:Release>>:ENABLE_TOOLS>)
 
 target_include_directories(engine PRIVATE ${miniaudio_SOURCE_DIR})
 target_include_directories(engine PRIVATE ${stb_image_SOURCE_DIR})
 
-target_link_libraries(engine PUBLIC glad_gl glfw glm::glm)
+target_link_libraries(engine PUBLIC glad_gl glfw glm::glm tomlplusplus::tomlplusplus)
 
 if(APPLE)
     target_link_libraries(engine PUBLIC

@@ -1,5 +1,5 @@
 #include "PlayingScreen.h"
-#include "AsteroidsConfig.h"
+#include "GameConstants.h"
 #include "ShipConfig.h"
 #include <engine/core/Input.h>
 #include <engine/renderer/PixelFont.h>

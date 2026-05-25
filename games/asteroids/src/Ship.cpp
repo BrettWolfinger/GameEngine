@@ -1,5 +1,5 @@
 #include "Ship.h"
-#include "AsteroidsConfig.h"
+#include "GameConstants.h"
 #include <engine/Engine.h>
 #include <engine/core/Input.h>
 #include <GLFW/glfw3.h>

@@ -1,6 +1,6 @@
 #pragma once
-#include "AsteroidsConfig.h"
-#include "AsteroidConfig.h"
+#include "GameConstants.h"
+#include "AsteroidSizeConfig.h"
 #include <engine/facade/Collision.h>
 #include <engine/renderer/Renderer2D.h>
 #include <engine/renderer/SpriteSheet.h>

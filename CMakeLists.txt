@@ -58,6 +58,13 @@ FetchContent_Declare(glm
 )
 FetchContent_MakeAvailable(glm)
 
+# toml++ (header-only TOML parser)
+FetchContent_Declare(tomlplusplus
+    GIT_REPOSITORY https://github.com/marzer/tomlplusplus.git
+    GIT_TAG        v3.4.0
+)
+FetchContent_MakeAvailable(tomlplusplus)
+
 add_subdirectory(src/engine)
 add_subdirectory(games/pong)
 add_subdirectory(games/breakout)

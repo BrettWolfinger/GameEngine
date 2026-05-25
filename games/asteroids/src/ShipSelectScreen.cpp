@@ -1,5 +1,5 @@
 #include "ShipSelectScreen.h"
-#include "AsteroidsConfig.h"
+#include "GameConstants.h"
 #include "ShipConfig.h"
 #include <engine/core/Input.h>
 #include <engine/renderer/PixelFont.h>
@@ -17,10 +17,11 @@ Screen ShipSelectScreen::update(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q))      return Screen::Quit;
     if (Engine::Input::isKeyPressed(GLFW_KEY_ESCAPE)) return Screen::Title;
 
+    const int shipCount = static_cast<int>(ShipConfigs::All.size());
     if (Engine::Input::isKeyPressed(GLFW_KEY_LEFT) || Engine::Input::isKeyPressed(GLFW_KEY_A))
-        m_ctx.selectedShip = (m_ctx.selectedShip - 1 + ShipConfigs::Count) % ShipConfigs::Count;
+        m_ctx.selectedShip = (m_ctx.selectedShip - 1 + shipCount) % shipCount;
     if (Engine::Input::isKeyPressed(GLFW_KEY_RIGHT) || Engine::Input::isKeyPressed(GLFW_KEY_D))
-        m_ctx.selectedShip = (m_ctx.selectedShip + 1) % ShipConfigs::Count;
+        m_ctx.selectedShip = (m_ctx.selectedShip + 1) % shipCount;
 
     if (Engine::Input::isKeyPressed(GLFW_KEY_ENTER) || Engine::Input::isKeyPressed(GLFW_KEY_KP_ENTER))
         return Screen::Playing;
@@ -41,13 +42,14 @@ void ShipSelectScreen::render() {
 
     Engine::PixelFont::drawStringCentered(m_ctx.renderer, "SELECT SHIP", W * 0.5f, H * 0.12f, HEADER_SCALE, WHITE);
 
-    const float totalW  = ShipConfigs::Count * PREVIEW_SIZE + (ShipConfigs::Count - 1) * GAP;
+    const int   shipCount = static_cast<int>(ShipConfigs::All.size());
+    const float totalW  = shipCount * PREVIEW_SIZE + (shipCount - 1) * GAP;
     const float startX  = W * 0.5f - totalW * 0.5f;
     const float previewY = H * 0.35f;
     const float nameY   = previewY + PREVIEW_SIZE + 16.f;
     const Engine::Texture& tex = m_ctx.sheet->texture();
 
-    for (int i = 0; i < ShipConfigs::Count; ++i) {
+    for (int i = 0; i < shipCount; ++i) {
         const bool       selected = (i == m_ctx.selectedShip);
         const float      x        = startX + i * (PREVIEW_SIZE + GAP);
         const float      cx       = x + PREVIEW_SIZE * 0.5f;

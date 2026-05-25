@@ -1,5 +1,6 @@
 #pragma once
-#include "AsteroidsConfig.h"
+#include "GameConstants.h"
+#include <vector>
 
 struct UfoConfig {
     float renderSize;
@@ -33,11 +34,7 @@ inline constexpr float NOISE_AMPLITUDE   = 0.40f;
 inline constexpr float NOISE_FADE_TIME   = 0.35f;  // seconds until explosion fades to near-silence
 inline constexpr int   SPRITE_CELLS      = 2;
 
-// Indexed by UfoSize cast to int (Large=0, Small=1).
-inline constexpr UfoConfig All[] = {
-    //           renderSize      speed  aimVar    rate  frame score  cnt  spd   spVar  life  lifeVar  size
-    /* Large */ { 32.f*SCALE,    80.f,  3.14159f, 2.0f,  44,  200,  18, 150.f, 70.f, 1.0f,  0.25f, 4.f*SCALE },
-    /* Small */ { 16.f*SCALE,   120.f,  0.15f,    1.2f,  12, 1000,  10, 110.f, 70.f, 0.7f,  0.25f, 3.f*SCALE },
-};
+// Indexed by UfoSize cast to int (Large=0, Small=1). Populated by loadAllConfigs().
+inline std::vector<UfoConfig> All;
 
 } // namespace UfoConfigs
