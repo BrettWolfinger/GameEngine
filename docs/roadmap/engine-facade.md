@@ -208,11 +208,25 @@ update games to include it.
 
 ---
 
-### Phase 5 — Hide `Services` (future)
+### Phase 5 — Hide internal headers (partial)
 
-Move `Services.h` out of the public include path so the compiler enforces the
-convention. This is a larger CMake restructure (separating engine public vs
-private headers) and should be done deliberately, not alongside other work.
+Enforce the facade convention at the compiler level so game code cannot
+accidentally reach into engine internals.
+
+**Implemented:**
+- Facade headers converted from inline wrappers to proper declared functions
+  with `.cpp` implementations — `Services.h` is no longer included by any
+  public header
+- `ENGINE_INTERNAL` preprocessor guard added to `Services.h`; the engine
+  CMake target defines it privately so only engine code can include it
+- `Services.h` removed from `Application.h` (was leaking transitively into
+  all game code)
+
+**Remaining — requires pimpl refactor of `Application`:**
+`Application.h` still includes `AudioManager.h`, `ParticleSystem.h`, and
+`CollisionWorld.h` to store members by value. Adding guards to those headers
+requires converting the members to `std::unique_ptr` (pimpl) so only forward
+declarations are needed in the public header. Track in a separate issue.
 
 ---
 
