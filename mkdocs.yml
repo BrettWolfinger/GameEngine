@@ -34,3 +34,4 @@ nav:
     - Engine Facade: roadmap/engine-facade.md
     - Runtime Config System: roadmap/runtime-config-system.md
   - Devlog: devlog.md
+  - API Reference: https://brettwolfinger.github.io/GameEngine/api/

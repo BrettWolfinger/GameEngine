@@ -19,4 +19,4 @@ Games shipped on the engine: **Pong**, **Breakout**, **Frogger**, **Asteroids**.
 | Draw sprites | [Renderer2D](engine/renderer2d.md) |
 | Handle keyboard input | [Input](engine/input.md) |
 | See the full history of the project | [Devlog](devlog.md) |
-| Browse the generated API reference | [API Reference](api/index.html) |
+| Browse the generated API reference | [API Reference](https://brettwolfinger.github.io/GameEngine/api/) |
