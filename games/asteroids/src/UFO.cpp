@@ -7,6 +7,9 @@ UFO::UFO(UfoSize size, glm::vec2 pos, glm::vec2 vel, std::mt19937& rng)
 {
     m_colliderHandle = Engine::Collision::add(
         Engine::Collision::ColliderDesc::makeCircle(kUfoLayer, kBulletLayer, pos.x, pos.y, collisionRadius()),
+        [this]() {
+            Engine::Collision::updateCircle(m_colliderHandle, m_pos.x, m_pos.y, collisionRadius());
+        },
         [this](Engine::Collision::ColliderHandle self, Engine::Collision::ColliderHandle) {
             m_wasDestroyed = true;
             emitDestructionParticles();
@@ -50,9 +53,6 @@ void UFO::update(float dt, int screenW, int screenH, glm::vec2 /*shipPos*/) {
     }
 
     m_fireTimer -= dt;
-
-    if (m_colliderHandle != Engine::Collision::NULL_COLLIDER)
-        Engine::Collision::updateCircle(m_colliderHandle, m_pos.x, m_pos.y, collisionRadius());
 }
 
 std::optional<UFO::BulletSpawn> UFO::tryFire(glm::vec2 shipPos) {

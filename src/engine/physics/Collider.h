@@ -71,6 +71,12 @@ struct ColliderDesc {
     }
 };
 
+/// Called by CollisionWorld::step() before pair tests to sync a collider's
+/// position with its owning object's current position. Register one at
+/// collider creation time instead of calling updateCircle/updateAABB manually
+/// each tick. May be nullptr for static colliders that never move.
+using SyncFn = std::function<void()>;
+
 /// Callback fired each fixed tick for every overlapping collider pair that
 /// passes the layer/mask filter.
 /// @param self   Handle of the collider that registered this callback.

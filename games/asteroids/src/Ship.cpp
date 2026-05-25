@@ -36,15 +36,7 @@ Ship::Ship(std::shared_ptr<Engine::SpriteSheet> sheet, const ShipConfig& config)
     m_currentClip = "idle";
     m_animator.setClip("idle");
 
-    m_colliderHandle = Engine::Collision::add(
-        Engine::Collision::ColliderDesc::makeCircle(kShipLayer, kAsteroidLayer | kUfoBulletLayer, m_pos.x, m_pos.y, COLLISION_RADIUS),
-        [this](Engine::Collision::ColliderHandle self, Engine::Collision::ColliderHandle) {
-            if (m_invincibleTimer > 0.f) return;
-            m_wasHit = true;
-            emitHitParticles();
-            Engine::Collision::remove(self);
-            m_colliderHandle = Engine::Collision::NULL_COLLIDER;
-        });
+    registerCollider();
 }
 
 Ship::~Ship() {
@@ -65,8 +57,15 @@ void Ship::reset() {
     m_currentClip     = "idle";
     m_animator.setClip("idle");
 
+    registerCollider();
+}
+
+void Ship::registerCollider() {
     m_colliderHandle = Engine::Collision::add(
         Engine::Collision::ColliderDesc::makeCircle(kShipLayer, kAsteroidLayer | kUfoBulletLayer, m_pos.x, m_pos.y, COLLISION_RADIUS),
+        [this]() {
+            Engine::Collision::updateCircle(m_colliderHandle, m_pos.x, m_pos.y, COLLISION_RADIUS);
+        },
         [this](Engine::Collision::ColliderHandle self, Engine::Collision::ColliderHandle) {
             if (m_invincibleTimer > 0.f) return;
             m_wasHit = true;
@@ -130,9 +129,6 @@ void Ship::update(float dt, int screenW, int screenH) {
     }
 
     m_animator.update(dt);
-
-    if (m_colliderHandle != Engine::Collision::NULL_COLLIDER)
-        Engine::Collision::updateCircle(m_colliderHandle, m_pos.x, m_pos.y, COLLISION_RADIUS);
 }
 
 void Ship::render(Engine::Renderer2D& renderer) const {

@@ -16,19 +16,21 @@ namespace Engine::Collision {
 // Re-export collision types so game code only needs Engine::Collision::
 using ColliderHandle    = Engine::ColliderHandle;   ///< Opaque collider identifier.
 using ColliderDesc      = Engine::ColliderDesc;     ///< Collider shape and filter data.
+using SyncFn            = Engine::SyncFn;           ///< `void()` — syncs collider position each tick.
 using CollisionCallback = Engine::CollisionCallback;///< `void(ColliderHandle self, ColliderHandle other)`
 
 /// Sentinel value for an unregistered or removed collider.
 inline constexpr ColliderHandle NULL_COLLIDER = Engine::NULL_COLLIDER;
 
 /// Register a collider and return its handle.
-/// The callback fires each fixed tick for every overlapping pair that passes
-/// the layer/mask filter. Do not remove game objects from containers inside
-/// the callback — defer side effects until after the tick completes.
 /// @param desc      Shape, position, layer, and mask for this collider.
+/// @param syncFn    Called each tick before pair tests to sync the collider's
+///                  position with the owning object. Pass nullptr for static colliders.
 /// @param callback  Called with (self, other) for each overlapping collider.
+///                  Do not remove game objects from containers inside the callback —
+///                  defer side effects until after the tick completes.
 /// @return          An opaque handle used for updates and removal.
-ColliderHandle add(const ColliderDesc& desc, CollisionCallback callback);
+ColliderHandle add(const ColliderDesc& desc, SyncFn syncFn, CollisionCallback callback);
 
 /// Deregister a collider. Safe to call with NULL_COLLIDER (no-op).
 /// @param handle  Handle returned by add().
