@@ -1,5 +1,5 @@
 #include "Asteroid.h"
-#include "AsteroidsConfig.h"
+#include "GameConstants.h"
 #include <engine/Engine.h>
 #include <glm/gtc/constants.hpp>
 #include <cmath>

@@ -1,5 +1,5 @@
 #pragma once
-#include "AsteroidsConfig.h"
+#include "GameConstants.h"
 #include <vector>
 
 struct UfoConfig {

@@ -1,5 +1,5 @@
 #pragma once
-#include "AsteroidsConfig.h"
+#include "GameConstants.h"
 #include "ShipConfig.h"
 #include <engine/facade/Collision.h>
 #include <engine/renderer/SpriteAnimator.h>

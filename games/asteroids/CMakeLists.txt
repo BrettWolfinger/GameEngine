@@ -1,7 +1,7 @@
 add_executable(asteroids
     src/main.cpp
     src/AsteroidsGame.cpp
-    src/AsteroidsConfigs.cpp
+    src/ConfigInit.cpp
     src/TitleScreen.cpp
     src/ShipSelectScreen.cpp
     src/PlayingScreen.cpp

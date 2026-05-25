@@ -1,6 +1,6 @@
 #pragma once
 #include "UfoConfig.h"
-#include "AsteroidConfig.h"
+#include "AsteroidSizeConfig.h"
 #include "ShipConfig.h"
 
 // Load all Asteroids configs from their TOML files under

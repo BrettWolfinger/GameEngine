@@ -1,5 +1,5 @@
-#include "AsteroidsConfigs.h"
-#include "AsteroidsConfig.h"
+#include "ConfigInit.h"
+#include "GameConstants.h"
 #include <engine/config/ConfigLoader.h>
 #include <engine/facade/Config.h>
 

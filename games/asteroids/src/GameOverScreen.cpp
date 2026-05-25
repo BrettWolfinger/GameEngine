@@ -1,5 +1,5 @@
 #include "GameOverScreen.h"
-#include "AsteroidsConfig.h"
+#include "GameConstants.h"
 #include <engine/core/Input.h>
 #include <engine/renderer/PixelFont.h>
 #include <GLFW/glfw3.h>

@@ -1,6 +1,6 @@
 #include "AsteroidsGame.h"
-#include "AsteroidsConfig.h"
-#include "AsteroidsConfigs.h"
+#include "GameConstants.h"
+#include "ConfigInit.h"
 #include <engine/Engine.h>
 #include <engine/renderer/Texture.h>
 

@@ -1,5 +1,5 @@
 #include "Bullet.h"
-#include "AsteroidsConfig.h"
+#include "GameConstants.h"
 #include <engine/Engine.h>
 
 Bullet::Bullet(glm::vec2 pos, glm::vec2 vel, Engine::UVRect uv, const Engine::Texture* tex,
