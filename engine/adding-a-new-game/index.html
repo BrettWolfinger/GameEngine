@@ -1213,7 +1213,7 @@ cmake --build build
 </tr>
 </tbody>
 </table>
-<p>To enable automatic particle rendering between <code>onRender</code> and <code>onOverlayRender</code>, override <code>getRenderer()</code> to return your <code>Renderer2D</code> instance:</p>
+<p>Override <code>getRenderer()</code> to return your <code>Renderer2D</code> instance — this is <strong>required</strong> for the render layer flush and particle rendering to fire:</p>
 <pre><code class="language-cpp">Engine::Renderer2D* getRenderer() override { return &amp;m_renderer; }
 </code></pre>
 <p><code>dt</code> is always <code>1/60 ≈ 0.01667s</code>. See <code>docs/engine/application-game-loop.md</code> for the full tick order and timing details.</p>

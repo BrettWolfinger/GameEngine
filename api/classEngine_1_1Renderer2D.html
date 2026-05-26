@@ -92,7 +92,9 @@ $(document).ready(function(){initNavTree('classEngine_1_1Renderer2D.html',''); i
 
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="classEngine_1_1Renderer2D-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">Engine::Renderer2D Class Reference</div></div>
 </div><!--header-->
@@ -103,12 +105,24 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a959b02217d2874e423c71d56c63b255d" id="r_a959b02217d2874e423c71d56c63b255d"><td class="memItemLeft" align="right" valign="top"><a id="a959b02217d2874e423c71d56c63b255d" name="a959b02217d2874e423c71d56c63b255d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>beginScene</b> (int width, int height)</td></tr>
 <tr class="separator:a959b02217d2874e423c71d56c63b255d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aefea2eb15bc1ed1e4f18fbce103a548c" id="r_aefea2eb15bc1ed1e4f18fbce103a548c"><td class="memItemLeft" align="right" valign="top"><a id="aefea2eb15bc1ed1e4f18fbce103a548c" name="aefea2eb15bc1ed1e4f18fbce103a548c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>drawRect</b> (float x, float y, float w, float h, const glm::vec4 &amp;color)</td></tr>
-<tr class="separator:aefea2eb15bc1ed1e4f18fbce103a548c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59822f8068a9845a0ca94b5b60110507" id="r_a59822f8068a9845a0ca94b5b60110507"><td class="memItemLeft" align="right" valign="top"><a id="a59822f8068a9845a0ca94b5b60110507" name="a59822f8068a9845a0ca94b5b60110507"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>drawTexturedRect</b> (float x, float y, float w, float h, const <a class="el" href="classEngine_1_1Texture.html">Texture</a> &amp;tex, float u0=0.f, float v0=0.f, float u1=1.f, float v1=1.f, float angle=0.f, const glm::vec4 &amp;tint={ 1.f, 1.f, 1.f, 1.f })</td></tr>
-<tr class="separator:a59822f8068a9845a0ca94b5b60110507"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf00bdc41cbb8d51f9bf217a63c8a399" id="r_abf00bdc41cbb8d51f9bf217a63c8a399"><td class="memItemLeft" align="right" valign="top"><a id="abf00bdc41cbb8d51f9bf217a63c8a399" name="abf00bdc41cbb8d51f9bf217a63c8a399"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>endScene</b> ()</td></tr>
+<tr class="separator:abf00bdc41cbb8d51f9bf217a63c8a399"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a2e6920005e4a72a6c391110c9ecc1e" id="r_a4a2e6920005e4a72a6c391110c9ecc1e"><td class="memItemLeft" align="right" valign="top"><a id="a4a2e6920005e4a72a6c391110c9ecc1e" name="a4a2e6920005e4a72a6c391110c9ecc1e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>drawRect</b> (float x, float y, float w, float h, const glm::vec4 &amp;color, int layer=0)</td></tr>
+<tr class="separator:a4a2e6920005e4a72a6c391110c9ecc1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f0676226fa92fc075e2b543750b6c6e" id="r_a8f0676226fa92fc075e2b543750b6c6e"><td class="memItemLeft" align="right" valign="top"><a id="a8f0676226fa92fc075e2b543750b6c6e" name="a8f0676226fa92fc075e2b543750b6c6e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>drawTexturedRect</b> (float x, float y, float w, float h, const <a class="el" href="classEngine_1_1Texture.html">Texture</a> &amp;tex, float u0=0.f, float v0=0.f, float u1=1.f, float v1=1.f, float angle=0.f, const glm::vec4 &amp;tint={ 1.f, 1.f, 1.f, 1.f }, int layer=0)</td></tr>
+<tr class="separator:a8f0676226fa92fc075e2b543750b6c6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:af91a8728fe4776ef72539eb3cb9a4ff7" id="r_af91a8728fe4776ef72539eb3cb9a4ff7"><td class="memItemLeft" align="right" valign="top"><a id="af91a8728fe4776ef72539eb3cb9a4ff7" name="af91a8728fe4776ef72539eb3cb9a4ff7"></a>
+static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><b>kMaxLayers</b> = 16</td></tr>
+<tr class="separator:af91a8728fe4776ef72539eb3cb9a4ff7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66c081f5c8a3453ac31f4a656d1f3488" id="r_a66c081f5c8a3453ac31f4a656d1f3488"><td class="memItemLeft" align="right" valign="top"><a id="a66c081f5c8a3453ac31f4a656d1f3488" name="a66c081f5c8a3453ac31f4a656d1f3488"></a>
+static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><b>kParticleLayer</b> = kMaxLayers - 1</td></tr>
+<tr class="separator:a66c081f5c8a3453ac31f4a656d1f3488"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>src/engine/renderer/<a class="el" href="Renderer2D_8h_source.html">Renderer2D.h</a></li>

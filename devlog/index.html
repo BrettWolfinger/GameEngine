@@ -1060,6 +1060,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#render-layer-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Render layer system
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#runtime-config-system" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1393,6 +1404,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#render-layer-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Render layer system
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#runtime-config-system" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1589,6 +1611,11 @@ Doxygen Awesome CSS theme, copies the output into <code>site/api/</code>, and de
 whole thing in one step. Three engine-internal headers (<code>Services.h</code>,
 <code>AudioManager.h</code>, <code>CollisionWorld.h</code>) are excluded from the Doxygen output — they
 are not part of the public API and showing them would be misleading.</p>
+<h3 id="render-layer-system">Render layer system</h3>
+<p>Draw order in the earlier games was implicit — whatever was called last in <code>onRender</code> ended up on top. For Pacman, with a background image, dots, ghosts, and Pac-Man all at different visual depths, explicit ordering was necessary.</p>
+<p>The solution was a deferred render layer system. Rather than executing draw calls immediately, <code>drawRect</code> and <code>drawTexturedRect</code> queue commands into per-layer <code>std::vector</code> buckets. <code>endScene()</code> flushes all buckets in ascending layer order (0 → 15). Games define layer constants in <code>GameConstants.h</code> (same pattern as collision layer bitmasks) and tag each draw call with the appropriate layer.</p>
+<p>Two design decisions shaped the implementation. First, the particle system needed to always render above game objects without games having to manage that ordering. The fix: <code>ParticleSystem</code> uses <code>kParticleLayer</code> (15), a reserved constant games should not touch. Second, <code>onOverlayRender</code> (HUD, menus) needed to always appear above particles regardless of which layer numbers the overlay uses. The fix: Application calls <code>endScene()</code> twice — once after <code>onRender()</code> + particles (world pass), and once after <code>onOverlayRender()</code> (overlay pass). The two-pass approach guarantees overlay is always above world without any coordination between the two.</p>
+<p>Pong, Breakout, and Frogger didn't override <code>getRenderer()</code> (it was only needed for particles, which those games don't use). Since <code>endScene()</code> is now called through <code>getRenderer()</code>, all three needed the one-liner override added. All existing draw call sites were unchanged — the layer parameter defaults to 0.</p>
 <h3 id="runtime-config-system">Runtime config system</h3>
 <p>Asteroids' config tables were <code>constexpr</code> arrays — clean structure, but a
 recompile on every value change. As the game accumulated three entity types with
