@@ -212,6 +212,16 @@ whole thing in one step. Three engine-internal headers (`Services.h`,
 `AudioManager.h`, `CollisionWorld.h`) are excluded from the Doxygen output — they
 are not part of the public API and showing them would be misleading.
 
+### Render layer system
+
+Draw order in the earlier games was implicit — whatever was called last in `onRender` ended up on top. For Pacman, with a background image, dots, ghosts, and Pac-Man all at different visual depths, explicit ordering was necessary.
+
+The solution was a deferred render layer system. Rather than executing draw calls immediately, `drawRect` and `drawTexturedRect` queue commands into per-layer `std::vector` buckets. `endScene()` flushes all buckets in ascending layer order (0 → 15). Games define layer constants in `GameConstants.h` (same pattern as collision layer bitmasks) and tag each draw call with the appropriate layer.
+
+Two design decisions shaped the implementation. First, the particle system needed to always render above game objects without games having to manage that ordering. The fix: `ParticleSystem` uses `kParticleLayer` (15), a reserved constant games should not touch. Second, `onOverlayRender` (HUD, menus) needed to always appear above particles regardless of which layer numbers the overlay uses. The fix: Application calls `endScene()` twice — once after `onRender()` + particles (world pass), and once after `onOverlayRender()` (overlay pass). The two-pass approach guarantees overlay is always above world without any coordination between the two.
+
+Pong, Breakout, and Frogger didn't override `getRenderer()` (it was only needed for particles, which those games don't use). Since `endScene()` is now called through `getRenderer()`, all three needed the one-liner override added. All existing draw call sites were unchanged — the layer parameter defaults to 0.
+
 ### Runtime config system
 
 Asteroids' config tables were `constexpr` arrays — clean structure, but a

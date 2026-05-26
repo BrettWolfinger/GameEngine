@@ -146,7 +146,7 @@ The binary lands at `build/games/mygame/mygame`.
 | `onImGuiRender()` | Every frame, when F1 overlay is on | ImGui debug widgets (debug builds only) |
 | `onShutdown()` | Once, after loop exits | Cleanup |
 
-To enable automatic particle rendering between `onRender` and `onOverlayRender`, override `getRenderer()` to return your `Renderer2D` instance:
+Override `getRenderer()` to return your `Renderer2D` instance — this is **required** for the render layer flush and particle rendering to fire:
 
 ```cpp
 Engine::Renderer2D* getRenderer() override { return &m_renderer; }

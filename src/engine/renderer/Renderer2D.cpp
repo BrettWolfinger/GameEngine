@@ -119,39 +119,64 @@ void Renderer2D::beginScene(int width, int height) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // Screen-space ortho: (0,0) top-left, (w,h) bottom-right
     m_proj = glm::ortho(0.f, (float)width, (float)height, 0.f, -1.f, 1.f);
+    for (auto& layer : m_layers)
+        layer.clear();
 }
 
-void Renderer2D::drawRect(float x, float y, float w, float h, const glm::vec4& color) {
-    glm::mat4 model = glm::translate(glm::mat4(1.f), glm::vec3(x, y, 0.f));
-    model = glm::scale(model, glm::vec3(w, h, 1.f));
+void Renderer2D::endScene() {
+    for (auto& layer : m_layers) {
+        for (const auto& cmd : layer) {
+            std::visit([this](const auto& c) {
+                using T = std::decay_t<decltype(c)>;
+                if constexpr (std::is_same_v<T, RectCmd>)
+                    flushRect(c);
+                else
+                    flushTex(c);
+            }, cmd);
+        }
+        layer.clear();
+    }
+}
 
-    m_shader->bind();
-    m_shader->setMat4("u_mvp", m_proj * model);
-    m_shader->setVec4("u_color", color);
-
-    glBindVertexArray(m_vao);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-    glBindVertexArray(0);
+void Renderer2D::drawRect(float x, float y, float w, float h,
+                           const glm::vec4& color, int layer) {
+    m_layers[layer].push_back(RectCmd{ x, y, w, h, color });
 }
 
 void Renderer2D::drawTexturedRect(float x, float y, float w, float h,
                                    const Texture& tex,
                                    float u0, float v0, float u1, float v1,
                                    float angle,
-                                   const glm::vec4& tint) {
-    // Translate to sprite center, rotate, translate back, then scale
-    glm::mat4 model = glm::translate(glm::mat4(1.f), glm::vec3(x + w * 0.5f, y + h * 0.5f, 0.f));
-    if (angle != 0.f)
-        model = glm::rotate(model, angle, glm::vec3(0.f, 0.f, 1.f));
-    model = glm::translate(model, glm::vec3(-w * 0.5f, -h * 0.5f, 0.f));
-    model = glm::scale(model, glm::vec3(w, h, 1.f));
+                                   const glm::vec4& tint, int layer) {
+    m_layers[layer].push_back(TexCmd{ x, y, w, h, u0, v0, u1, v1, angle, tint, &tex });
+}
 
-    tex.bind(0);
+void Renderer2D::flushRect(const RectCmd& cmd) {
+    glm::mat4 model = glm::translate(glm::mat4(1.f), glm::vec3(cmd.x, cmd.y, 0.f));
+    model = glm::scale(model, glm::vec3(cmd.w, cmd.h, 1.f));
+
+    m_shader->bind();
+    m_shader->setMat4("u_mvp", m_proj * model);
+    m_shader->setVec4("u_color", cmd.color);
+
+    glBindVertexArray(m_vao);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+    glBindVertexArray(0);
+}
+
+void Renderer2D::flushTex(const TexCmd& cmd) {
+    glm::mat4 model = glm::translate(glm::mat4(1.f), glm::vec3(cmd.x + cmd.w * 0.5f, cmd.y + cmd.h * 0.5f, 0.f));
+    if (cmd.angle != 0.f)
+        model = glm::rotate(model, cmd.angle, glm::vec3(0.f, 0.f, 1.f));
+    model = glm::translate(model, glm::vec3(-cmd.w * 0.5f, -cmd.h * 0.5f, 0.f));
+    model = glm::scale(model, glm::vec3(cmd.w, cmd.h, 1.f));
+
+    cmd.tex->bind(0);
 
     m_texShader->bind();
     m_texShader->setMat4("u_mvp", m_proj * model);
-    m_texShader->setVec4("u_uvRegion", glm::vec4(u0, v0, u1, v1));
-    m_texShader->setVec4("u_tint", tint);
+    m_texShader->setVec4("u_uvRegion", glm::vec4(cmd.u0, cmd.v0, cmd.u1, cmd.v1));
+    m_texShader->setVec4("u_tint", cmd.tint);
     m_texShader->setInt("u_tex", 0);
 
     glBindVertexArray(m_texVao);
