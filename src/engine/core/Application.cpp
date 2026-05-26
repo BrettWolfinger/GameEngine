@@ -94,9 +94,13 @@ void Application::run() {
         }
 
         onRender();
-        if (Renderer2D* r = getRenderer())
+        if (Renderer2D* r = getRenderer()) {
             m_impl->particleSystem.render(*r);
+            r->endScene();
+        }
         onOverlayRender();
+        if (Renderer2D* r = getRenderer())
+            r->endScene();
 
 #ifdef ENABLE_TOOLS
         if (m_impl->showImGui) onImGuiRender();

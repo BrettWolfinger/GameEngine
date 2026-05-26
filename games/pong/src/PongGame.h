@@ -11,6 +11,7 @@ public:
 protected:
     void onUpdate(float dt) override;
     void onRender()         override;
+    Engine::Renderer2D* getRenderer() override { return &m_renderer; }
 
 private:
     enum class GameState { ModeSelect, Playing, WinScreen };

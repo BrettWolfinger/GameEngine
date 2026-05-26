@@ -57,7 +57,8 @@ void ParticleSystem::render(Renderer2D& renderer) {
         if (size <= 0.f) continue;
 
         const glm::vec4 color = { p.color.r, p.color.g, p.color.b, alpha };
-        renderer.drawRect(p.pos.x - size * 0.5f, p.pos.y - size * 0.5f, size, size, color);
+        renderer.drawRect(p.pos.x - size * 0.5f, p.pos.y - size * 0.5f, size, size, color,
+                         Renderer2D::kParticleLayer);
     }
 }
 
