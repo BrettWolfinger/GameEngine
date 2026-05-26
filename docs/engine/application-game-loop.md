@@ -70,8 +70,10 @@ each frame:
       accum -= 1/60
 
   onRender()
-  ParticleSystem::render()               — automatic if getRenderer() is overridden
+  ParticleSystem::render()               — queued to kParticleLayer (15)
+  endScene()                             — flush world layers 0–15 in order
   onOverlayRender()
+  endScene()                             — flush overlay layers (always above world)
 
   [ENABLE_TOOLS] if F1 toggled: onImGuiRender()
 
