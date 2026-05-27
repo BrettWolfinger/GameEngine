@@ -25,5 +25,6 @@ private:
     std::shared_ptr<Engine::Texture>     m_tilesetTex;
     std::shared_ptr<Engine::SpriteSheet> m_tilesetSheet;
     MarioMap                             m_map;
+    float                                m_marioX  = 0.f;
     float                                m_cameraX = 0.f;
 };
