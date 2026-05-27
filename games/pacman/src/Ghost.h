@@ -22,7 +22,7 @@ public:
     /// @param pacDir        Pac-Man's current direction (used by Pinky and Inky).
     /// @param blinkyCol/Row Blinky's current tile (used by Inky).
     void update(float dt, int pacCol, int pacRow, Dir pacDir, int blinkyCol, int blinkyRow);
-    void render(Engine::Renderer2D& renderer, int renderLayer) const;
+    void render(Engine::Renderer2D& renderer, int renderLayer, float offsetY = 0.f) const;
 
     /// Switch scatter/chase mode and immediately reverse direction.
     void setMode(GhostMode mode);

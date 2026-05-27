@@ -24,7 +24,7 @@ protected:
     Engine::Renderer2D* getRenderer() override { return &m_renderer; }
 
 private:
-    enum class GameState { Playing, Dying, GameOver };
+    enum class GameState { Playing, Dying, LevelClear, GameOver };
 
     void buildDotCache();
     void tryEatDot();
@@ -35,6 +35,12 @@ private:
     void startDeathSequence();
     void handleDyingState(float dt);
     void respawnAfterDeath();
+    void startLevelClear();
+    void startNextLevel();
+    void restartGame();
+    void loadHighScore();
+    void saveHighScore();
+    void updateHighScore();
     void renderWalls();
     void renderDots();
     void renderGhosts();
@@ -67,8 +73,13 @@ private:
     float     m_frightenedTimer        = 0.f;
     int       m_ghostsEatenThisPellet  = 0;
 
-    // Lives and death sequence
-    int       m_lives           = kStartLives;
-    GameState m_gameState       = GameState::Playing;
-    float     m_deathPauseTimer = 0.f;
+    // Lives, death sequence, and level state
+    int       m_lives            = kStartLives;
+    GameState m_gameState        = GameState::Playing;
+    float     m_deathPauseTimer  = 0.f;
+    float     m_levelClearTimer  = 0.f;
+    int       m_dotsRemaining    = 0;
+
+    // Scoring
+    int       m_highScore        = 0;
 };

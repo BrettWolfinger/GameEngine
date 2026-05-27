@@ -240,11 +240,11 @@ void Ghost::update(float dt, int pacCol, int pacRow, Dir pacDir, int blinkyCol, 
     m_animator.update(dt);
 }
 
-void Ghost::render(Engine::Renderer2D& renderer, int renderLayer) const {
+void Ghost::render(Engine::Renderer2D& renderer, int renderLayer, float offsetY) const {
     const auto uv = m_animator.currentFrameUVs();
 
     renderer.drawTexturedRect(
-        m_x - kRenderSize * 0.5f, m_y - kRenderSize * 0.5f,
+        m_x - kRenderSize * 0.5f, m_y - kRenderSize * 0.5f + offsetY,
         kRenderSize, kRenderSize,
         m_animator.sheet().texture(),
         uv.u0, uv.v0, uv.u1, uv.v1,
