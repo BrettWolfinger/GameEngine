@@ -648,6 +648,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#mapobject" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MapObject
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#objectlayer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ObjectLayer
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -661,6 +683,34 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#object-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Object layers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Object layers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setting-up-spawn-objects-in-tiled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting up spawn objects in Tiled
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1140,6 +1190,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#mapobject" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MapObject
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#objectlayer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ObjectLayer
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1153,6 +1225,34 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#object-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Object layers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Object layers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setting-up-spawn-objects-in-tiled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting up spawn objects in Tiled
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1291,6 +1391,7 @@ external <code>.tsx</code> files — relative to the TMX path. It populates:</p>
 <li><code>map.backgroundColor</code> — the <code>backgroundcolor</code> attribute as a <code>Color4</code> (RGBA floats)</li>
 <li><code>map.layers</code> — all tile layers in TMX order</li>
 <li><code>map.tilesets</code> — all tileset references with resolved image paths and column counts</li>
+<li><code>map.objectLayers</code> — all object layers in TMX order</li>
 </ul>
 <hr />
 <h2 id="data-types">Data types</h2>
@@ -1299,11 +1400,16 @@ external <code>.tsx</code> files — relative to the TMX path. It populates:</p>
     int    cols, rows;
     int    tileWidth, tileHeight;
     Color4 backgroundColor;
-    std::vector&lt;TileLayer&gt;  layers;
-    std::vector&lt;TilesetRef&gt; tilesets;
+    std::vector&lt;TileLayer&gt;   layers;
+    std::vector&lt;TilesetRef&gt;  tilesets;
+    std::vector&lt;ObjectLayer&gt; objectLayers;
 
-    const TileLayer*  findLayer(const std::string&amp; name) const;
-    const TilesetRef* tilesetForGid(uint32_t gid) const;
+    const TileLayer*   findLayer(const std::string&amp; name) const;
+    const TilesetRef*  tilesetForGid(uint32_t gid) const;
+
+    const ObjectLayer* findObjectLayer(const std::string&amp; name) const;
+    const MapObject*   findObject(const std::string&amp; name) const;
+    std::vector&lt;const MapObject*&gt; findObjectsByType(const std::string&amp; type) const;
 };
 </code></pre>
 <h3 id="tilelayer"><code>TileLayer</code></h3>
@@ -1327,9 +1433,35 @@ comparing to tileset ranges.</p>
 <h3 id="color4"><code>Color4</code></h3>
 <pre><code class="language-cpp">struct Color4 { float r, g, b, a; };
 </code></pre>
+<h3 id="mapobject"><code>MapObject</code></h3>
+<p>One object from a TMX <code>&lt;objectgroup&gt;</code> layer. Point objects (placed with Tiled's point
+tool) have <code>width == 0</code> and <code>height == 0</code>.</p>
+<pre><code class="language-cpp">struct MapObject {
+    int         id;
+    std::string name;
+    std::string type;   // &quot;class&quot; in Tiled 1.9+, &quot;type&quot; in older versions
+    float       x, y;       // position in map pixel space (col * tileWidth, row * tileHeight)
+    float       width, height;
+
+    bool isPoint() const;   // true when width == 0 &amp;&amp; height == 0
+};
+</code></pre>
+<p><code>x</code> and <code>y</code> are in map pixel space. To convert to tile coordinates use integer division:</p>
+<pre><code class="language-cpp">int col = static_cast&lt;int&gt;(obj-&gt;x) / map.tileWidth;
+int row = static_cast&lt;int&gt;(obj-&gt;y) / map.tileHeight;
+</code></pre>
+<p>Tiled stores point positions at exact tile boundaries when placed on a tile grid, so
+integer division is reliable. If a position looks off, check that the object is snapped to
+the grid in Tiled (View → Snapping → Snap to Grid).</p>
+<h3 id="objectlayer"><code>ObjectLayer</code></h3>
+<pre><code class="language-cpp">struct ObjectLayer {
+    std::string            name;
+    std::vector&lt;MapObject&gt; objects;
+};
+</code></pre>
 <hr />
 <h2 id="looking-up-layers-and-tilesets">Looking up layers and tilesets</h2>
-<pre><code class="language-cpp">// Find a layer by name (returns nullptr if not found)
+<pre><code class="language-cpp">// Find a tile layer by name (returns nullptr if not found)
 const Engine::Tilemap::TileLayer* layer = m_map.findLayer(&quot;Terrain&quot;);
 
 // Find the tileset that owns a given GID (flip bits stripped internally)
@@ -1338,6 +1470,34 @@ const Engine::Tilemap::TilesetRef* ts = m_map.tilesetForGid(1);
 <p><code>tilesetForGid</code> finds the tileset with the highest <code>firstGid</code> that is still ≤ the
 stripped GID — making it correct for multi-tileset maps and resilient to GID
 renumbering in Tiled.</p>
+<hr />
+<h2 id="object-layers">Object layers</h2>
+<p>Object layers (<code>&lt;objectgroup&gt;</code> in the TMX) hold named point, rect, and polygon objects
+placed in Tiled. They are commonly used for spawn positions, trigger zones, and waypoints.</p>
+<pre><code class="language-cpp">// Find the first object with a given name across all object layers
+const Engine::Tilemap::MapObject* spawn = m_map.findObject(&quot;PlayerSpawn&quot;);
+if (spawn) {
+    int col = static_cast&lt;int&gt;(spawn-&gt;x) / m_map.tileWidth;
+    int row = static_cast&lt;int&gt;(spawn-&gt;y) / m_map.tileHeight;
+}
+
+// Find an object layer by name
+const Engine::Tilemap::ObjectLayer* ol = m_map.findObjectLayer(&quot;Spawns&quot;);
+
+// Find all objects of a given type/class
+auto enemies = m_map.findObjectsByType(&quot;Enemy&quot;);
+for (const auto* e : enemies) { /* ... */ }
+</code></pre>
+<p><code>findObjectsByType</code> matches the <code>type</code> attribute (Tiled ≤ 1.8) and the <code>class</code> attribute
+(Tiled ≥ 1.9) transparently — the parser normalises both into <code>MapObject::type</code>.</p>
+<h3 id="setting-up-spawn-objects-in-tiled">Setting up spawn objects in Tiled</h3>
+<ol>
+<li>Open the map in Tiled and add an <strong>Object Layer</strong> (Layer → New → Object Layer).</li>
+<li>Name the layer (e.g. <code>Spawns</code>).</li>
+<li>Select the <strong>Point</strong> tool and click the spawn tile. Enable <strong>View → Snapping → Snap to Grid</strong> so the point lands on an exact tile boundary.</li>
+<li>In the object properties panel, set <strong>Name</strong> (matched by <code>findObject</code>) and optionally <strong>Class</strong> (matched by <code>findObjectsByType</code>).</li>
+<li>Save the TMX. The engine reads object coordinates as pixel-space floats; integer division by <code>tileWidth</code>/<code>tileHeight</code> gives the tile column and row.</li>
+</ol>
 <hr />
 <h2 id="rendering-a-layer">Rendering a layer</h2>
 <pre><code class="language-cpp">#include &lt;engine/tilemap/TilemapRenderer.h&gt;

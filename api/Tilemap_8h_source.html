@@ -134,51 +134,84 @@ $(document).ready(function(){initNavTree('Tilemap_8h_source.html',''); initResiz
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>};</div>
 </div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
-<div class="foldopen" id="foldopen00034" data-start="{" data-end="};">
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structEngine_1_1Tilemap_1_1Map.html">   34</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structEngine_1_1Tilemap_1_1Map.html">Map</a> {</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">int</span>                     cols        = 0;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">int</span>                     rows        = 0;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">int</span>                     tileWidth   = 16;</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">int</span>                     tileHeight  = 16;</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_struct" href="structEngine_1_1Tilemap_1_1Color4.html">Color4</a>                  backgroundColor;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    std::vector&lt;TileLayer&gt;  layers;</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    std::vector&lt;TilesetRef&gt; tilesets;</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structEngine_1_1Tilemap_1_1Map.html#ad8df47c4f44a2b649bffa01b4d1e456e">   44</a></span>    <span class="keyword">const</span> <a class="code hl_struct" href="structEngine_1_1Tilemap_1_1TileLayer.html">TileLayer</a>*  <a class="code hl_function" href="structEngine_1_1Tilemap_1_1Map.html#ad8df47c4f44a2b649bffa01b4d1e456e">findLayer</a>(<span class="keyword">const</span> std::string&amp; name) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structEngine_1_1Tilemap_1_1Map.html#a9bbdb5f8dcd6d681f0ae6775c9f002a1">   47</a></span>    <span class="keyword">const</span> <a class="code hl_struct" href="structEngine_1_1Tilemap_1_1TilesetRef.html">TilesetRef</a>* <a class="code hl_function" href="structEngine_1_1Tilemap_1_1Map.html#a9bbdb5f8dcd6d681f0ae6775c9f002a1">tilesetForGid</a>(uint32_t gid) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>};</div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structEngine_1_1Tilemap_1_1MapObject.html">   36</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structEngine_1_1Tilemap_1_1MapObject.html">MapObject</a> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">int</span>         <span class="keywordtype">id</span>     = 0;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    std::string name;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    std::string type;   <span class="comment">// &quot;class&quot; in Tiled 1.9+, &quot;type&quot; in older versions</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">float</span>       x      = 0.f;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">float</span>       y      = 0.f;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">float</span>       width  = 0.f;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">float</span>       height = 0.f;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">bool</span> isPoint()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> width == 0.f &amp;&amp; height == 0.f; }</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>};</div>
 </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="comment">// ---- flip bit utilities ----------------------------------------------------</span></div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keyword">constexpr</span> uint32_t kFlipMask = 0xE0000000u;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="foldopen" id="foldopen00049" data-start="{" data-end="};">
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structEngine_1_1Tilemap_1_1ObjectLayer.html">   49</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structEngine_1_1Tilemap_1_1ObjectLayer.html">ObjectLayer</a> {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    std::string            name;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    std::vector&lt;MapObject&gt; objects;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>};</div>
+</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keyword">inline</span> uint32_t stripFlips(uint32_t gid) { <span class="keywordflow">return</span> gid &amp; ~kFlipMask; }</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">inline</span> <span class="keywordtype">bool</span> hasFlipH(uint32_t gid) { <span class="keywordflow">return</span> (gid &amp; 0x80000000u) != 0; }</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="keyword">inline</span> <span class="keywordtype">bool</span> hasFlipV(uint32_t gid) { <span class="keywordflow">return</span> (gid &amp; 0x40000000u) != 0; }</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="keyword">inline</span> <span class="keywordtype">bool</span> hasFlipD(uint32_t gid) { <span class="keywordflow">return</span> (gid &amp; 0x20000000u) != 0; }</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="foldopen" id="foldopen00062" data-start="{" data-end="};">
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structEngine_1_1Tilemap_1_1FlippedUV.html">   62</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structEngine_1_1Tilemap_1_1FlippedUV.html">FlippedUV</a> {</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <a class="code hl_struct" href="structEngine_1_1UVRect.html">UVRect</a> uv;</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">float</span>  angle = 0.f;</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>};</div>
-</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><a class="code hl_struct" href="structEngine_1_1Tilemap_1_1FlippedUV.html">FlippedUV</a> applyFlips(<a class="code hl_struct" href="structEngine_1_1UVRect.html">UVRect</a> uv, uint32_t rawGid);</div>
+<div class="foldopen" id="foldopen00055" data-start="{" data-end="};">
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structEngine_1_1Tilemap_1_1Map.html">   55</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structEngine_1_1Tilemap_1_1Map.html">Map</a> {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">int</span>                      cols        = 0;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordtype">int</span>                      rows        = 0;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordtype">int</span>                      tileWidth   = 16;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">int</span>                      tileHeight  = 16;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <a class="code hl_struct" href="structEngine_1_1Tilemap_1_1Color4.html">Color4</a>                   backgroundColor;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    std::vector&lt;TileLayer&gt;   layers;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    std::vector&lt;TilesetRef&gt;  tilesets;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    std::vector&lt;ObjectLayer&gt; objectLayers;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structEngine_1_1Tilemap_1_1Map.html#ad8df47c4f44a2b649bffa01b4d1e456e">   66</a></span>    <span class="keyword">const</span> <a class="code hl_struct" href="structEngine_1_1Tilemap_1_1TileLayer.html">TileLayer</a>*   <a class="code hl_function" href="structEngine_1_1Tilemap_1_1Map.html#ad8df47c4f44a2b649bffa01b4d1e456e">findLayer</a>(<span class="keyword">const</span> std::string&amp; name) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structEngine_1_1Tilemap_1_1Map.html#a448130d1b7ffd3030a7e9ad511bc9f51">   69</a></span>    <span class="keyword">const</span> <a class="code hl_struct" href="structEngine_1_1Tilemap_1_1ObjectLayer.html">ObjectLayer</a>* <a class="code hl_function" href="structEngine_1_1Tilemap_1_1Map.html#a448130d1b7ffd3030a7e9ad511bc9f51">findObjectLayer</a>(<span class="keyword">const</span> std::string&amp; name) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="comment">// ---- loader ----------------------------------------------------------------</span></div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><a class="code hl_struct" href="structEngine_1_1Tilemap_1_1Map.html">Map</a> loadMap(<span class="keyword">const</span> std::string&amp; tmxPath);</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>} <span class="comment">// namespace Engine::Tilemap</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structEngine_1_1Tilemap_1_1Map.html#ab2aa54fb0149a4c1791ca5ca631577c2">   72</a></span>    <span class="keyword">const</span> <a class="code hl_struct" href="structEngine_1_1Tilemap_1_1MapObject.html">MapObject</a>*   <a class="code hl_function" href="structEngine_1_1Tilemap_1_1Map.html#ab2aa54fb0149a4c1791ca5ca631577c2">findObject</a>(<span class="keyword">const</span> std::string&amp; name) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structEngine_1_1Tilemap_1_1Map.html#a51d203783cf1aa303d14f2e3cfb1e0d6">   75</a></span>    std::vector&lt;const MapObject*&gt; <a class="code hl_function" href="structEngine_1_1Tilemap_1_1Map.html#a51d203783cf1aa303d14f2e3cfb1e0d6">findObjectsByType</a>(<span class="keyword">const</span> std::string&amp; type) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structEngine_1_1Tilemap_1_1Map.html#a9bbdb5f8dcd6d681f0ae6775c9f002a1">   78</a></span>    <span class="keyword">const</span> <a class="code hl_struct" href="structEngine_1_1Tilemap_1_1TilesetRef.html">TilesetRef</a>*  <a class="code hl_function" href="structEngine_1_1Tilemap_1_1Map.html#a9bbdb5f8dcd6d681f0ae6775c9f002a1">tilesetForGid</a>(uint32_t gid) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>};</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="comment">// ---- flip bit utilities ----------------------------------------------------</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="keyword">constexpr</span> uint32_t kFlipMask = 0xE0000000u;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="keyword">inline</span> uint32_t stripFlips(uint32_t gid) { <span class="keywordflow">return</span> gid &amp; ~kFlipMask; }</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="keyword">inline</span> <span class="keywordtype">bool</span> hasFlipH(uint32_t gid) { <span class="keywordflow">return</span> (gid &amp; 0x80000000u) != 0; }</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="keyword">inline</span> <span class="keywordtype">bool</span> hasFlipV(uint32_t gid) { <span class="keywordflow">return</span> (gid &amp; 0x40000000u) != 0; }</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="keyword">inline</span> <span class="keywordtype">bool</span> hasFlipD(uint32_t gid) { <span class="keywordflow">return</span> (gid &amp; 0x20000000u) != 0; }</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="foldopen" id="foldopen00093" data-start="{" data-end="};">
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="structEngine_1_1Tilemap_1_1FlippedUV.html">   93</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structEngine_1_1Tilemap_1_1FlippedUV.html">FlippedUV</a> {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <a class="code hl_struct" href="structEngine_1_1UVRect.html">UVRect</a> uv;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordtype">float</span>  angle = 0.f;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>};</div>
+</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><a class="code hl_struct" href="structEngine_1_1Tilemap_1_1FlippedUV.html">FlippedUV</a> applyFlips(<a class="code hl_struct" href="structEngine_1_1UVRect.html">UVRect</a> uv, uint32_t rawGid);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="comment">// ---- loader ----------------------------------------------------------------</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><a class="code hl_struct" href="structEngine_1_1Tilemap_1_1Map.html">Map</a> loadMap(<span class="keyword">const</span> std::string&amp; tmxPath);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>} <span class="comment">// namespace Engine::Tilemap</span></div>
 <div class="ttc" id="astructEngine_1_1Tilemap_1_1Color4_html"><div class="ttname"><a href="structEngine_1_1Tilemap_1_1Color4.html">Engine::Tilemap::Color4</a></div><div class="ttdef"><b>Definition</b> Tilemap.h:11</div></div>
-<div class="ttc" id="astructEngine_1_1Tilemap_1_1FlippedUV_html"><div class="ttname"><a href="structEngine_1_1Tilemap_1_1FlippedUV.html">Engine::Tilemap::FlippedUV</a></div><div class="ttdoc">Result of applying TMX flip flags to a UV rect.</div><div class="ttdef"><b>Definition</b> Tilemap.h:62</div></div>
-<div class="ttc" id="astructEngine_1_1Tilemap_1_1Map_html"><div class="ttname"><a href="structEngine_1_1Tilemap_1_1Map.html">Engine::Tilemap::Map</a></div><div class="ttdoc">Full parsed map.</div><div class="ttdef"><b>Definition</b> Tilemap.h:34</div></div>
+<div class="ttc" id="astructEngine_1_1Tilemap_1_1FlippedUV_html"><div class="ttname"><a href="structEngine_1_1Tilemap_1_1FlippedUV.html">Engine::Tilemap::FlippedUV</a></div><div class="ttdoc">Result of applying TMX flip flags to a UV rect.</div><div class="ttdef"><b>Definition</b> Tilemap.h:93</div></div>
+<div class="ttc" id="astructEngine_1_1Tilemap_1_1MapObject_html"><div class="ttname"><a href="structEngine_1_1Tilemap_1_1MapObject.html">Engine::Tilemap::MapObject</a></div><div class="ttdef"><b>Definition</b> Tilemap.h:36</div></div>
+<div class="ttc" id="astructEngine_1_1Tilemap_1_1Map_html"><div class="ttname"><a href="structEngine_1_1Tilemap_1_1Map.html">Engine::Tilemap::Map</a></div><div class="ttdoc">Full parsed map.</div><div class="ttdef"><b>Definition</b> Tilemap.h:55</div></div>
+<div class="ttc" id="astructEngine_1_1Tilemap_1_1Map_html_a448130d1b7ffd3030a7e9ad511bc9f51"><div class="ttname"><a href="structEngine_1_1Tilemap_1_1Map.html#a448130d1b7ffd3030a7e9ad511bc9f51">Engine::Tilemap::Map::findObjectLayer</a></div><div class="ttdeci">const ObjectLayer * findObjectLayer(const std::string &amp;name) const</div><div class="ttdoc">Returns the object layer with the given name, or nullptr.</div></div>
+<div class="ttc" id="astructEngine_1_1Tilemap_1_1Map_html_a51d203783cf1aa303d14f2e3cfb1e0d6"><div class="ttname"><a href="structEngine_1_1Tilemap_1_1Map.html#a51d203783cf1aa303d14f2e3cfb1e0d6">Engine::Tilemap::Map::findObjectsByType</a></div><div class="ttdeci">std::vector&lt; const MapObject * &gt; findObjectsByType(const std::string &amp;type) const</div><div class="ttdoc">Returns all objects whose type matches across all object layers.</div></div>
 <div class="ttc" id="astructEngine_1_1Tilemap_1_1Map_html_a9bbdb5f8dcd6d681f0ae6775c9f002a1"><div class="ttname"><a href="structEngine_1_1Tilemap_1_1Map.html#a9bbdb5f8dcd6d681f0ae6775c9f002a1">Engine::Tilemap::Map::tilesetForGid</a></div><div class="ttdeci">const TilesetRef * tilesetForGid(uint32_t gid) const</div><div class="ttdoc">Returns the tileset whose GID range contains gid (flip bits stripped internally).</div></div>
-<div class="ttc" id="astructEngine_1_1Tilemap_1_1Map_html_ad8df47c4f44a2b649bffa01b4d1e456e"><div class="ttname"><a href="structEngine_1_1Tilemap_1_1Map.html#ad8df47c4f44a2b649bffa01b4d1e456e">Engine::Tilemap::Map::findLayer</a></div><div class="ttdeci">const TileLayer * findLayer(const std::string &amp;name) const</div><div class="ttdoc">Returns the layer with the given name, or nullptr.</div></div>
+<div class="ttc" id="astructEngine_1_1Tilemap_1_1Map_html_ab2aa54fb0149a4c1791ca5ca631577c2"><div class="ttname"><a href="structEngine_1_1Tilemap_1_1Map.html#ab2aa54fb0149a4c1791ca5ca631577c2">Engine::Tilemap::Map::findObject</a></div><div class="ttdeci">const MapObject * findObject(const std::string &amp;name) const</div><div class="ttdoc">Returns the first object with the given name across all object layers, or nullptr.</div></div>
+<div class="ttc" id="astructEngine_1_1Tilemap_1_1Map_html_ad8df47c4f44a2b649bffa01b4d1e456e"><div class="ttname"><a href="structEngine_1_1Tilemap_1_1Map.html#ad8df47c4f44a2b649bffa01b4d1e456e">Engine::Tilemap::Map::findLayer</a></div><div class="ttdeci">const TileLayer * findLayer(const std::string &amp;name) const</div><div class="ttdoc">Returns the tile layer with the given name, or nullptr.</div></div>
+<div class="ttc" id="astructEngine_1_1Tilemap_1_1ObjectLayer_html"><div class="ttname"><a href="structEngine_1_1Tilemap_1_1ObjectLayer.html">Engine::Tilemap::ObjectLayer</a></div><div class="ttdoc">One object layer as read from a TMX &lt;objectgroup&gt; element.</div><div class="ttdef"><b>Definition</b> Tilemap.h:49</div></div>
 <div class="ttc" id="astructEngine_1_1Tilemap_1_1TileLayer_html"><div class="ttname"><a href="structEngine_1_1Tilemap_1_1TileLayer.html">Engine::Tilemap::TileLayer</a></div><div class="ttdef"><b>Definition</b> Tilemap.h:17</div></div>
 <div class="ttc" id="astructEngine_1_1Tilemap_1_1TilesetRef_html"><div class="ttname"><a href="structEngine_1_1Tilemap_1_1TilesetRef.html">Engine::Tilemap::TilesetRef</a></div><div class="ttdoc">One tileset reference declared in the TMX &lt;tileset&gt; element.</div><div class="ttdef"><b>Definition</b> Tilemap.h:25</div></div>
 <div class="ttc" id="astructEngine_1_1UVRect_html"><div class="ttname"><a href="structEngine_1_1UVRect.html">Engine::UVRect</a></div><div class="ttdef"><b>Definition</b> UVRect.h:7</div></div>

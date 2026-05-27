@@ -1159,6 +1159,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#object-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Object layers
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1553,6 +1564,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#object-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Object layers
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1820,6 +1842,20 @@ setup, entity spawning) without pulling in the full rendering stack.</p>
 GID, making it correct for multi-tileset maps and resilient to GID renumbering when the
 Tiled file is edited. The game-level <code>MapLoader</code> files were removed from both Pac-Man
 and Mario, replaced with the two-line engine calls.</p>
+<h3 id="object-layers">Object layers</h3>
+<p><code>Engine::Tilemap</code> was extended with full object layer support. <code>MapObject</code> and
+<code>ObjectLayer</code> structs were added to <code>Tilemap.h</code>, and <code>loadMap()</code> now parses all
+<code>&lt;objectgroup&gt;</code> elements and their <code>&lt;object&gt;</code> children. Three query methods were added
+to <code>Map</code>: <code>findObjectLayer()</code>, <code>findObject()</code>, and <code>findObjectsByType()</code>. The parser
+normalises both Tiled's old <code>type</code> attribute (≤ 1.8) and the newer <code>class</code> attribute
+(≥ 1.9) into a single <code>MapObject::type</code> field.</p>
+<p>The immediate use case was Pac-Man's spawn position. Rather than hardcoding a fallback
+column and row in game code, the spawn is authored as a named point object (<code>PacmanSpawn</code>)
+in a <code>Spawns</code> object layer in the TMX. <code>onInit</code> calls <code>findObject("PacmanSpawn")</code> and
+converts the pixel-space coordinates to tile coordinates via integer division. The
+hardcoded fallback (col 14, row 23) is still present as a safety net if the object is
+absent. Object layers are the intended mechanism for all future entity spawning —
+ghosts, items, and trigger zones will follow the same pattern.</p>
 
 
 

@@ -5,6 +5,8 @@ var annotated_dup =
         [ "Color4", "structEngine_1_1Tilemap_1_1Color4.html", null ],
         [ "FlippedUV", "structEngine_1_1Tilemap_1_1FlippedUV.html", null ],
         [ "Map", "structEngine_1_1Tilemap_1_1Map.html", "structEngine_1_1Tilemap_1_1Map" ],
+        [ "MapObject", "structEngine_1_1Tilemap_1_1MapObject.html", null ],
+        [ "ObjectLayer", "structEngine_1_1Tilemap_1_1ObjectLayer.html", null ],
         [ "TileLayer", "structEngine_1_1Tilemap_1_1TileLayer.html", null ],
         [ "TilesetRef", "structEngine_1_1Tilemap_1_1TilesetRef.html", null ]
       ] ],

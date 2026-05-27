@@ -113,8 +113,20 @@ Collaboration diagram for Engine::Tilemap::Map:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ad8df47c4f44a2b649bffa01b4d1e456e" id="r_ad8df47c4f44a2b649bffa01b4d1e456e"><td class="memItemLeft" align="right" valign="top"><a id="ad8df47c4f44a2b649bffa01b4d1e456e" name="ad8df47c4f44a2b649bffa01b4d1e456e"></a>
 const <a class="el" href="structEngine_1_1Tilemap_1_1TileLayer.html">TileLayer</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>findLayer</b> (const std::string &amp;name) const</td></tr>
-<tr class="memdesc:ad8df47c4f44a2b649bffa01b4d1e456e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the layer with the given name, or nullptr. <br /></td></tr>
+<tr class="memdesc:ad8df47c4f44a2b649bffa01b4d1e456e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the tile layer with the given name, or nullptr. <br /></td></tr>
 <tr class="separator:ad8df47c4f44a2b649bffa01b4d1e456e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a448130d1b7ffd3030a7e9ad511bc9f51" id="r_a448130d1b7ffd3030a7e9ad511bc9f51"><td class="memItemLeft" align="right" valign="top"><a id="a448130d1b7ffd3030a7e9ad511bc9f51" name="a448130d1b7ffd3030a7e9ad511bc9f51"></a>
+const <a class="el" href="structEngine_1_1Tilemap_1_1ObjectLayer.html">ObjectLayer</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>findObjectLayer</b> (const std::string &amp;name) const</td></tr>
+<tr class="memdesc:a448130d1b7ffd3030a7e9ad511bc9f51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the object layer with the given name, or nullptr. <br /></td></tr>
+<tr class="separator:a448130d1b7ffd3030a7e9ad511bc9f51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2aa54fb0149a4c1791ca5ca631577c2" id="r_ab2aa54fb0149a4c1791ca5ca631577c2"><td class="memItemLeft" align="right" valign="top"><a id="ab2aa54fb0149a4c1791ca5ca631577c2" name="ab2aa54fb0149a4c1791ca5ca631577c2"></a>
+const <a class="el" href="structEngine_1_1Tilemap_1_1MapObject.html">MapObject</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>findObject</b> (const std::string &amp;name) const</td></tr>
+<tr class="memdesc:ab2aa54fb0149a4c1791ca5ca631577c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the first object with the given name across all object layers, or nullptr. <br /></td></tr>
+<tr class="separator:ab2aa54fb0149a4c1791ca5ca631577c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51d203783cf1aa303d14f2e3cfb1e0d6" id="r_a51d203783cf1aa303d14f2e3cfb1e0d6"><td class="memItemLeft" align="right" valign="top"><a id="a51d203783cf1aa303d14f2e3cfb1e0d6" name="a51d203783cf1aa303d14f2e3cfb1e0d6"></a>
+std::vector&lt; const <a class="el" href="structEngine_1_1Tilemap_1_1MapObject.html">MapObject</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>findObjectsByType</b> (const std::string &amp;type) const</td></tr>
+<tr class="memdesc:a51d203783cf1aa303d14f2e3cfb1e0d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns all objects whose type matches across all object layers. <br /></td></tr>
+<tr class="separator:a51d203783cf1aa303d14f2e3cfb1e0d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9bbdb5f8dcd6d681f0ae6775c9f002a1" id="r_a9bbdb5f8dcd6d681f0ae6775c9f002a1"><td class="memItemLeft" align="right" valign="top"><a id="a9bbdb5f8dcd6d681f0ae6775c9f002a1" name="a9bbdb5f8dcd6d681f0ae6775c9f002a1"></a>
 const <a class="el" href="structEngine_1_1Tilemap_1_1TilesetRef.html">TilesetRef</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>tilesetForGid</b> (uint32_t gid) const</td></tr>
 <tr class="memdesc:a9bbdb5f8dcd6d681f0ae6775c9f002a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the tileset whose GID range contains gid (flip bits stripped internally). <br /></td></tr>
@@ -143,6 +155,9 @@ std::vector&lt; <a class="el" href="structEngine_1_1Tilemap_1_1TileLayer.html">T
 <tr class="memitem:a0740a05478293356f94a575152b65fab" id="r_a0740a05478293356f94a575152b65fab"><td class="memItemLeft" align="right" valign="top"><a id="a0740a05478293356f94a575152b65fab" name="a0740a05478293356f94a575152b65fab"></a>
 std::vector&lt; <a class="el" href="structEngine_1_1Tilemap_1_1TilesetRef.html">TilesetRef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>tilesets</b></td></tr>
 <tr class="separator:a0740a05478293356f94a575152b65fab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a61e6be0d846795e19d3a28176df4ec" id="r_a6a61e6be0d846795e19d3a28176df4ec"><td class="memItemLeft" align="right" valign="top"><a id="a6a61e6be0d846795e19d3a28176df4ec" name="a6a61e6be0d846795e19d3a28176df4ec"></a>
+std::vector&lt; <a class="el" href="structEngine_1_1Tilemap_1_1ObjectLayer.html">ObjectLayer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>objectLayers</b></td></tr>
+<tr class="separator:a6a61e6be0d846795e19d3a28176df4ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Full parsed map. </p>
