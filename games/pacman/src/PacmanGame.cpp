@@ -28,12 +28,15 @@ void PacmanGame::onInit() {
     m_itemsSheet = std::make_shared<Engine::SpriteSheet>(m_itemsTex, itemsTs->columns,
                                                           itemsTs->tileCount / itemsTs->columns);
 
+    m_pacTex   = std::make_shared<Engine::Texture>("games/pacman/assets/sprites/PacManAssets-PacMan.png");
+    m_pacSheet = std::make_shared<Engine::SpriteSheet>(m_pacTex, kPacSheetCols, kPacSheetRows);
+
     buildDotCache();
 
-    // Construct Pac-Man after the map is loaded (needs a stable wall layer reference)
+    // Construct Pac-Man after map and spritesheet are ready
     const auto* wallLayer = m_map.findLayer("Wall");
     if (wallLayer)
-        m_pacman.emplace(*wallLayer);
+        m_pacman.emplace(*wallLayer, m_pacSheet);
 }
 
 void PacmanGame::buildDotCache() {

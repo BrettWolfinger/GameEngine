@@ -32,6 +32,8 @@ private:
     std::shared_ptr<Engine::SpriteSheet>  m_wallSheet;
     std::shared_ptr<Engine::Texture>      m_itemsTex;
     std::shared_ptr<Engine::SpriteSheet>  m_itemsSheet;
+    std::shared_ptr<Engine::Texture>      m_pacTex;
+    std::shared_ptr<Engine::SpriteSheet>  m_pacSheet;
     Engine::Tilemap::Map                  m_map;
     std::vector<CellType>                 m_dots;
 

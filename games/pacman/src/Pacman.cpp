@@ -2,9 +2,16 @@
 #include <engine/core/Input.h>
 #include <GLFW/glfw3.h>
 #include <cmath>
-#include <cstdlib> // std::abs
+#include <cstdlib>
 
-static constexpr float kSpeed = 7.5f; // tiles per second
+static constexpr float kSpeed   = 7.5f;
+static constexpr float kHalfPi  = 1.5707963268f;
+
+// Grid tile size in pixels — used for all position and movement math.
+static constexpr float kGridSize = static_cast<float>(TILE * SCALE);
+
+// Rendered sprite size in pixels — may differ from kGridSize.
+static constexpr float kRenderSize = static_cast<float>(kPacFrameSize * SCALE);
 
 static std::pair<int,int> dirOffset(Dir d) {
     switch (d) {
@@ -16,17 +23,21 @@ static std::pair<int,int> dirOffset(Dir d) {
     }
 }
 
-Pacman::Pacman(const Engine::Tilemap::TileLayer& wallLayer)
+Pacman::Pacman(const Engine::Tilemap::TileLayer& wallLayer,
+               std::shared_ptr<Engine::SpriteSheet> sheet)
     : m_wallLayer(wallLayer)
+    , m_animator(sheet)
 {
-    const float tileSize = static_cast<float>(TILE * SCALE);
-    m_x = m_col * tileSize + tileSize * 0.5f;
-    m_y = m_row * tileSize + tileSize * 0.5f;
+    m_animator.addClip("move", { {0, 1, 2, 3}, 0.1f, Engine::PlayMode::Loop });
+    m_animator.setClip("move");
+
+    m_x = m_col * kGridSize + kGridSize * 0.5f;
+    m_y = m_row * kGridSize + kGridSize * 0.5f;
 }
 
 bool Pacman::isWall(int col, int row) const {
     if (row < 0 || row >= m_wallLayer.rows) return true;
-    col = (col + m_wallLayer.cols) % m_wallLayer.cols; // horizontal wrap
+    col = (col + m_wallLayer.cols) % m_wallLayer.cols;
     return Engine::Tilemap::stripFlips(m_wallLayer.gids[row * m_wallLayer.cols + col]) != 0;
 }
 
@@ -57,23 +68,20 @@ void Pacman::update(float dt) {
         return;
     }
 
-    // --- advance toward target cell ---
-    const float tileSize = static_cast<float>(TILE * SCALE);
-    float tx   = m_tgtCol * tileSize + tileSize * 0.5f;
-    float ty   = m_tgtRow * tileSize + tileSize * 0.5f;
+    // --- advance toward target cell center ---
+    float tx   = m_tgtCol * kGridSize + kGridSize * 0.5f;
+    float ty   = m_tgtRow * kGridSize + kGridSize * 0.5f;
     float dx   = tx - m_x;
     float dy   = ty - m_y;
     float dist = std::abs(dx) + std::abs(dy);
-    float step = kSpeed * tileSize * dt;
+    float step = kSpeed * kGridSize * dt;
 
     if (step >= dist) {
-        // Arrived — snap to target cell center
         m_x   = tx;
         m_y   = ty;
         m_col = m_tgtCol;
         m_row = m_tgtRow;
 
-        // Try buffered direction, then continue, then stop
         if (m_nextDir != Dir::None && canMove(m_col, m_row, m_nextDir)) {
             m_dir = m_nextDir;
             setTarget(m_col, m_row, m_dir);
@@ -86,14 +94,27 @@ void Pacman::update(float dt) {
         m_x += (dx / dist) * step;
         m_y += (dy / dist) * step;
     }
+
+    m_animator.update(dt);
 }
 
 void Pacman::render(Engine::Renderer2D& renderer, int renderLayer) const {
-    const float tileSize = static_cast<float>(TILE * SCALE);
-    renderer.drawRect(
-        m_x - tileSize * 0.5f, m_y - tileSize * 0.5f,
-        tileSize, tileSize,
-        {1.f, 1.f, 0.f, 1.f}, // yellow placeholder
+    auto  uv    = m_animator.currentFrameUVs();
+    float angle = 0.f;
+
+    switch (m_dir == Dir::None ? m_nextDir : m_dir) {
+        case Dir::Left:  std::swap(uv.u0, uv.u1); break;
+        case Dir::Up:    angle = -kHalfPi;         break;
+        case Dir::Down:  angle = +kHalfPi;         break;
+        default: break;
+    }
+
+    renderer.drawTexturedRect(
+        m_x - kRenderSize * 0.5f, m_y - kRenderSize * 0.5f,
+        kRenderSize, kRenderSize,
+        m_animator.sheet().texture(),
+        uv.u0, uv.v0, uv.u1, uv.v1,
+        angle, {1.f, 1.f, 1.f, 1.f},
         renderLayer
     );
 }
