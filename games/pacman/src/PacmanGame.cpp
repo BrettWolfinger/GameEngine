@@ -32,6 +32,9 @@ void PacmanGame::onInit() {
     m_pacTex   = std::make_shared<Engine::Texture>("games/pacman/assets/sprites/PacManAssets-PacMan.png");
     m_pacSheet = std::make_shared<Engine::SpriteSheet>(m_pacTex, kPacSheetCols, kPacSheetRows);
 
+    m_ghostTex   = std::make_shared<Engine::Texture>("games/pacman/assets/sprites/PacManAssets-Ghosts.png");
+    m_ghostSheet = std::make_shared<Engine::SpriteSheet>(m_ghostTex, kGhostSheetCols, kGhostSheetRows);
+
     buildDotCache();
 
     // Resolve spawn position from object layer, fall back to classic Pac-Man start
@@ -42,10 +45,19 @@ void PacmanGame::onInit() {
         spawnRow = static_cast<int>(spawn->y) / m_map.tileHeight;
     }
 
-    // Construct Pac-Man after map and spritesheet are ready
+    // Construct Pac-Man and ghosts after map and spritesheets are ready
     const auto* wallLayer = m_map.findLayer("Wall");
-    if (wallLayer)
+    if (wallLayer) {
         m_pacman.emplace(*wallLayer, m_pacSheet, spawnCol, spawnRow);
+
+        // All four ghosts start just above the ghost house (col 14, row 11).
+        // Spawn positions and exit logic are added in a later phase.
+        m_ghosts.reserve(4);
+        m_ghosts.emplace_back(*wallLayer, m_ghostSheet, GhostType::Blinky, 14, 11);
+        m_ghosts.emplace_back(*wallLayer, m_ghostSheet, GhostType::Pinky,  14, 11);
+        m_ghosts.emplace_back(*wallLayer, m_ghostSheet, GhostType::Inky,   14, 11);
+        m_ghosts.emplace_back(*wallLayer, m_ghostSheet, GhostType::Clyde,  14, 11);
+    }
 }
 
 void PacmanGame::buildDotCache() {
@@ -88,6 +100,9 @@ void PacmanGame::onUpdate(float dt) {
     if (m_pacman)
         m_pacman->update(dt);
 
+    for (auto& ghost : m_ghosts)
+        ghost.update(dt);
+
     tryEatDot();
 }
 
@@ -95,6 +110,7 @@ void PacmanGame::onRender() {
     m_renderer.beginScene(WIN_W, WIN_H);
     renderWalls();
     renderDots();
+    renderGhosts();
     if (m_pacman)
         m_pacman->render(m_renderer, kLayerPacman);
     renderHUD();
@@ -107,6 +123,11 @@ void PacmanGame::renderWalls() {
 
     Engine::Tilemap::renderLayer(m_renderer, *layer, *m_wallSheet, *ts,
                                  static_cast<float>(TILE * SCALE), kLayerWalls);
+}
+
+void PacmanGame::renderGhosts() {
+    for (const auto& ghost : m_ghosts)
+        ghost.render(m_renderer, kLayerGhosts);
 }
 
 void PacmanGame::renderHUD() {
