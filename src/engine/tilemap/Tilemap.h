@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
-#include "../renderer/SpriteSheet.h" // for UVRect
+#include "../renderer/UVRect.h"
 
 namespace Engine::Tilemap {
 

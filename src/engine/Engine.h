@@ -16,5 +16,6 @@
 #include <engine/facade/Collision.h>
 #include <engine/facade/Config.h>
 #include <engine/facade/Particles.h>
+#include <engine/renderer/UVRect.h>
 #include <engine/tilemap/Tilemap.h>
 #include <engine/tilemap/TilemapRenderer.h>

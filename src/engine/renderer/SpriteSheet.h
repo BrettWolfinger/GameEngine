@@ -1,12 +1,9 @@
 #pragma once
+#include "UVRect.h"
 #include "Texture.h"
 #include <memory>
 
 namespace Engine {
-
-struct UVRect {
-    float u0, v0, u1, v1;
-};
 
 class SpriteSheet {
 public:
