@@ -1,8 +1,10 @@
 #include "Ghost.h"
 #include <cmath>
 #include <climits>
+#include <cstdlib>
 
-static constexpr float kGhostSpeed  = 6.0f; // tiles per second
+static constexpr float kGhostSpeed           = 6.0f; // tiles per second
+static constexpr float kGhostSpeedFrightened = 3.0f;
 static constexpr float kGridSize    = static_cast<float>(TILE * SCALE);
 static constexpr float kRenderSize  = static_cast<float>(TILE * 2 * SCALE);
 
@@ -34,10 +36,14 @@ Ghost::Ghost(const Engine::Tilemap::TileLayer& wallLayer,
     , m_type(type)
     , m_col(startCol)
     , m_row(startRow)
+    , m_startCol(startCol)
+    , m_startRow(startRow)
 {
     // Each ghost type occupies one row; columns are animation frames.
-    const int base = static_cast<int>(m_type) * kGhostSheetCols;
-    m_animator.addClip("move", { {base, base+1, base+2, base+3}, 0.15f, Engine::PlayMode::Loop });
+    const int base  = static_cast<int>(m_type) * kGhostSheetCols;
+    const int fBase = kGhostFrightenedRow * kGhostSheetCols;
+    m_animator.addClip("move",       { {base,  base+1,  base+2,  base+3},  0.15f, Engine::PlayMode::Loop });
+    m_animator.addClip("frightened", { {fBase, fBase+1, fBase+2, fBase+3}, 0.2f,  Engine::PlayMode::Loop });
     m_animator.setClip("move");
 
     m_x = m_col * kGridSize + kGridSize * 0.5f;
@@ -103,8 +109,24 @@ std::pair<int,int> Ghost::targetTile() const {
 }
 
 Dir Ghost::chooseDirection() const {
-    // Classic Pac-Man tie-break priority: Up, Left, Down, Right.
-    static constexpr Dir kPriority[] = { Dir::Up, Dir::Left, Dir::Down, Dir::Right };
+    static constexpr Dir kAllDirs[] = { Dir::Up, Dir::Left, Dir::Down, Dir::Right };
+
+    // Frightened: pick randomly from valid non-reverse directions.
+    if (m_mode == GhostMode::Frightened) {
+        const Dir rev = opposite(m_dir);
+        Dir valid[4];
+        int count = 0;
+        for (Dir d : kAllDirs) {
+            if (d == rev) continue;
+            auto [dc, dr] = dirOffset(d);
+            int nc = (m_col + dc + m_wallLayer.cols) % m_wallLayer.cols;
+            int nr = m_row + dr;
+            if (!isWall(nc, nr))
+                valid[count++] = d;
+        }
+        if (count > 0) return valid[std::rand() % count];
+        return rev;
+    }
 
     const Dir rev = opposite(m_dir); // direction ghosts may not reverse into
     auto [tCol, tRow] = targetTile();
@@ -112,7 +134,7 @@ Dir Ghost::chooseDirection() const {
     int bestDist = INT_MAX;
     Dir bestDir  = Dir::None;
 
-    for (Dir d : kPriority) {
+    for (Dir d : kAllDirs) {
         if (d == rev) continue;
         auto [dc, dr] = dirOffset(d);
         int nc = (m_col + dc + m_wallLayer.cols) % m_wallLayer.cols;
@@ -147,6 +169,35 @@ void Ghost::setMode(GhostMode mode) {
     reverseDirection();
 }
 
+void Ghost::frighten() {
+    if (m_mode == GhostMode::Eyes) return; // eaten ghosts are unaffected
+    m_mode = GhostMode::Frightened;
+    reverseDirection();
+    m_animator.setClip("frightened");
+}
+
+void Ghost::endFrightened(GhostMode returnMode) {
+    m_mode = returnMode;
+    m_animator.setClip("move");
+}
+
+void Ghost::respawn() {
+    m_col    = m_startCol;
+    m_row    = m_startRow;
+    m_tgtCol = m_startCol;
+    m_tgtRow = m_startRow;
+    m_x      = m_startCol * kGridSize + kGridSize * 0.5f;
+    m_y      = m_startRow * kGridSize + kGridSize * 0.5f;
+    m_mode   = GhostMode::Scatter;
+    m_dir    = chooseDirection();
+    setTarget(m_dir);
+    m_animator.setClip("move");
+}
+
+float Ghost::currentSpeed() const {
+    return (m_mode == GhostMode::Frightened) ? kGhostSpeedFrightened : kGhostSpeed;
+}
+
 void Ghost::setTarget(Dir dir) {
     auto [dc, dr] = dirOffset(dir);
     m_tgtCol = (m_col + dc + m_wallLayer.cols) % m_wallLayer.cols;
@@ -164,7 +215,7 @@ void Ghost::update(float dt, int pacCol, int pacRow, Dir pacDir, int blinkyCol, 
     float dx   = tx - m_x;
     float dy   = ty - m_y;
     float dist = std::abs(dx) + std::abs(dy);
-    float step = kGhostSpeed * kGridSize * dt;
+    float step = currentSpeed() * kGridSize * dt;
 
     if (step >= dist) {
         m_x   = tx;

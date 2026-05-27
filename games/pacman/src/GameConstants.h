@@ -14,11 +14,20 @@ static constexpr int kLayerPacman = 3;
 static constexpr int kLayerHUD    = 4;
 
 // Ghost spritesheet layout (32px native cells, 4 cols x 11 rows)
-// Row = ghost type (0=Blinky,1=Pinky,2=Inky,3=Clyde)
-// Within each row: right(0), left(1), up(2), down(3)
-static constexpr int kGhostSheetCols = 4;
-static constexpr int kGhostSheetRows = 11;
+// Rows 0-3: Blinky, Inky, Pinky, Clyde (columns = animation frames)
+// Rows 4-7: alternate ghost color variants (unused)
+// Row 8:    frightened (blue)
+// Rows 9-10: unused
+static constexpr int kGhostSheetCols     = 4;
+static constexpr int kGhostSheetRows     = 11;
+static constexpr int kGhostFrightenedRow = 8;
 
 // Dot scoring
 static constexpr int kScoreDot    = 10;
 static constexpr int kScorePellet = 50;
+
+// Ghost eating scores (doubles per ghost per pellet: 200, 400, 800, 1600)
+static constexpr int kGhostScoreBase = 200;
+
+// Frightened mode duration (seconds, Level 1)
+static constexpr float kFrightenedDuration = 7.f;

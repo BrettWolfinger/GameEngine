@@ -78,6 +78,9 @@ static constexpr float kModeSchedule[] = { 7.f, 20.f, 7.f, 20.f, 5.f, 20.f, 5.f 
 static constexpr int   kModeCount      = static_cast<int>(std::size(kModeSchedule));
 
 void PacmanGame::updateModeTimer(float dt) {
+    // Mode timer is paused while ghosts are frightened.
+    if (m_frightenedTimer > 0.f) return;
+
     m_modeTimer -= dt;
     if (m_modeTimer > 0.f) return;
 
@@ -87,6 +90,43 @@ void PacmanGame::updateModeTimer(float dt) {
 
     for (auto& ghost : m_ghosts)
         ghost.setMode(m_currentMode);
+}
+
+void PacmanGame::triggerFrightened() {
+    m_frightenedTimer       = kFrightenedDuration;
+    m_ghostsEatenThisPellet = 0;
+    for (auto& ghost : m_ghosts)
+        ghost.frighten();
+}
+
+void PacmanGame::updateFrightenedTimer(float dt) {
+    if (m_frightenedTimer <= 0.f) return;
+    m_frightenedTimer -= dt;
+    if (m_frightenedTimer <= 0.f) {
+        m_frightenedTimer = 0.f;
+        for (auto& ghost : m_ghosts)
+            ghost.endFrightened(m_currentMode);
+    }
+}
+
+void PacmanGame::checkGhostCollision() {
+    if (!m_pacman || m_pacmanDead) return;
+    const int pc = m_pacman->col();
+    const int pr = m_pacman->row();
+
+    for (auto& ghost : m_ghosts) {
+        if (ghost.col() != pc || ghost.row() != pr) continue;
+
+        if (ghost.mode() == GhostMode::Frightened) {
+            // Eat the ghost — score doubles per ghost eaten this pellet.
+            m_ghostsEatenThisPellet++;
+            m_score += kGhostScoreBase << (m_ghostsEatenThisPellet - 1);
+            ghost.respawn();
+        } else if (ghost.mode() != GhostMode::Eyes) {
+            // Pac-Man is caught — freeze until lives/death sequence added in a later phase.
+            m_pacmanDead = true;
+        }
+    }
 }
 
 void PacmanGame::tryEatDot() {
@@ -105,6 +145,7 @@ void PacmanGame::tryEatDot() {
         case CellType::PowerPellet:
             m_dots[idx] = CellType::Empty;
             m_score += kScorePellet;
+            triggerFrightened();
             break;
         default: break;
     }
@@ -114,10 +155,11 @@ void PacmanGame::onUpdate(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q))
         quit();
 
-    if (m_pacman)
-        m_pacman->update(dt);
-
     updateModeTimer(dt);
+    updateFrightenedTimer(dt);
+
+    if (!m_pacmanDead && m_pacman)
+        m_pacman->update(dt);
 
     if (!m_ghosts.empty() && m_pacman) {
         const int  blinkyCol = m_ghosts[0].col();
@@ -130,6 +172,7 @@ void PacmanGame::onUpdate(float dt) {
     }
 
     tryEatDot();
+    checkGhostCollision();
 }
 
 void PacmanGame::onRender() {
