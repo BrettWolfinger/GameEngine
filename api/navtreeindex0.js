@@ -70,6 +70,7 @@ var NAVTREEINDEX0 =
 "classEngine_1_1Services.html":[0,0,0,12],
 "classEngine_1_1Shader.html":[0,0,0,13],
 "classEngine_1_1SpriteAnimator.html":[0,0,0,14],
+"classEngine_1_1SpriteAnimator.html#a15b41f3ec92225228ecf2f119002b446":[0,0,0,14,0],
 "classEngine_1_1SpriteSheet.html":[0,0,0,15],
 "classEngine_1_1Texture.html":[0,0,0,16],
 "classEngine_1_1Window.html":[0,0,0,18],

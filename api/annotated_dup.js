@@ -23,7 +23,7 @@ var annotated_dup =
       [ "SaveData", "classEngine_1_1SaveData.html", null ],
       [ "Services", "classEngine_1_1Services.html", null ],
       [ "Shader", "classEngine_1_1Shader.html", null ],
-      [ "SpriteAnimator", "classEngine_1_1SpriteAnimator.html", null ],
+      [ "SpriteAnimator", "classEngine_1_1SpriteAnimator.html", "classEngine_1_1SpriteAnimator" ],
       [ "SpriteSheet", "classEngine_1_1SpriteSheet.html", null ],
       [ "Texture", "classEngine_1_1Texture.html", null ],
       [ "UVRect", "structEngine_1_1UVRect.html", null ],
