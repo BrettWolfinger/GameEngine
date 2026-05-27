@@ -42,6 +42,13 @@ static std::string attrStr(const std::string& xml, const std::string& attr, size
     return xml.substr(pos, xml.find('"', pos) - pos);
 }
 
+static float attrFloat(const std::string& xml, const std::string& attr, size_t from = 0, float def = 0.f) {
+    size_t pos = xml.find(attr + "=\"", from);
+    if (pos == std::string::npos) return def;
+    pos += attr.size() + 2;
+    return std::stof(xml.substr(pos, xml.find('"', pos) - pos));
+}
+
 // ---- hex color parser ------------------------------------------------------
 
 static Color4 parseHexColor(const std::string& hex) {
@@ -93,6 +100,27 @@ const TileLayer* Map::findLayer(const std::string& name) const {
     for (const auto& l : layers)
         if (l.name == name) return &l;
     return nullptr;
+}
+
+const ObjectLayer* Map::findObjectLayer(const std::string& name) const {
+    for (const auto& l : objectLayers)
+        if (l.name == name) return &l;
+    return nullptr;
+}
+
+const MapObject* Map::findObject(const std::string& name) const {
+    for (const auto& l : objectLayers)
+        for (const auto& o : l.objects)
+            if (o.name == name) return &o;
+    return nullptr;
+}
+
+std::vector<const MapObject*> Map::findObjectsByType(const std::string& type) const {
+    std::vector<const MapObject*> result;
+    for (const auto& l : objectLayers)
+        for (const auto& o : l.objects)
+            if (o.type == type) result.push_back(&o);
+    return result;
 }
 
 const TilesetRef* Map::tilesetForGid(uint32_t gid) const {
@@ -163,6 +191,35 @@ Map loadMap(const std::string& tmxPath) {
     while ((pos = xml.find("<layer", pos)) != std::string::npos) {
         map.layers.push_back(parseLayer(xml, pos));
         pos += 6;
+    }
+
+    // Object layers
+    pos = 0;
+    while ((pos = xml.find("<objectgroup", pos)) != std::string::npos) {
+        ObjectLayer ol;
+        ol.name = attrStr(xml, "name", pos);
+
+        size_t groupEnd = xml.find("</objectgroup>", pos);
+        size_t objPos   = pos;
+
+        // Search for "<object " (with trailing space) to avoid matching "<objectgroup"
+        while ((objPos = xml.find("<object ", objPos)) != std::string::npos && objPos < groupEnd) {
+            MapObject obj;
+            obj.id     = attrInt(xml,   "id",     objPos);
+            obj.name   = attrStr(xml,   "name",   objPos);
+            obj.type   = attrStr(xml,   "type",   objPos);   // Tiled < 1.9
+            if (obj.type.empty())
+                obj.type = attrStr(xml, "class",  objPos);   // Tiled >= 1.9
+            obj.x      = attrFloat(xml, "x",      objPos);
+            obj.y      = attrFloat(xml, "y",      objPos);
+            obj.width  = attrFloat(xml, "width",  objPos);
+            obj.height = attrFloat(xml, "height", objPos);
+            ol.objects.push_back(std::move(obj));
+            objPos += 8;
+        }
+
+        map.objectLayers.push_back(std::move(ol));
+        pos += 12;
     }
 
     return map;

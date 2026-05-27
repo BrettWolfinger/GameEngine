@@ -33,10 +33,18 @@ void PacmanGame::onInit() {
 
     buildDotCache();
 
+    // Resolve spawn position from object layer, fall back to classic Pac-Man start
+    int spawnCol = 14;
+    int spawnRow = 23;
+    if (const auto* spawn = m_map.findObject("PacmanSpawn")) {
+        spawnCol = static_cast<int>(spawn->x) / m_map.tileWidth;
+        spawnRow = static_cast<int>(spawn->y) / m_map.tileHeight;
+    }
+
     // Construct Pac-Man after map and spritesheet are ready
     const auto* wallLayer = m_map.findLayer("Wall");
     if (wallLayer)
-        m_pacman.emplace(*wallLayer, m_pacSheet);
+        m_pacman.emplace(*wallLayer, m_pacSheet, spawnCol, spawnRow);
 }
 
 void PacmanGame::buildDotCache() {

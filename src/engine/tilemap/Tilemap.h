@@ -30,21 +30,52 @@ struct TilesetRef {
     int         tileCount = 0;
 };
 
+/// One object from a TMX <objectgroup> layer.
+/// Point objects have width == 0 and height == 0.
+/// x and y are in map pixel space (col * tileWidth, row * tileHeight).
+struct MapObject {
+    int         id     = 0;
+    std::string name;
+    std::string type;   // "class" in Tiled 1.9+, "type" in older versions
+    float       x      = 0.f;
+    float       y      = 0.f;
+    float       width  = 0.f;
+    float       height = 0.f;
+
+    bool isPoint() const { return width == 0.f && height == 0.f; }
+};
+
+/// One object layer as read from a TMX <objectgroup> element.
+struct ObjectLayer {
+    std::string            name;
+    std::vector<MapObject> objects;
+};
+
 /// Full parsed map.
 struct Map {
-    int                     cols        = 0;
-    int                     rows        = 0;
-    int                     tileWidth   = 16;
-    int                     tileHeight  = 16;
-    Color4                  backgroundColor;
-    std::vector<TileLayer>  layers;
-    std::vector<TilesetRef> tilesets;
+    int                      cols        = 0;
+    int                      rows        = 0;
+    int                      tileWidth   = 16;
+    int                      tileHeight  = 16;
+    Color4                   backgroundColor;
+    std::vector<TileLayer>   layers;
+    std::vector<TilesetRef>  tilesets;
+    std::vector<ObjectLayer> objectLayers;
 
-    /// Returns the layer with the given name, or nullptr.
-    const TileLayer*  findLayer(const std::string& name) const;
+    /// Returns the tile layer with the given name, or nullptr.
+    const TileLayer*   findLayer(const std::string& name) const;
+
+    /// Returns the object layer with the given name, or nullptr.
+    const ObjectLayer* findObjectLayer(const std::string& name) const;
+
+    /// Returns the first object with the given name across all object layers, or nullptr.
+    const MapObject*   findObject(const std::string& name) const;
+
+    /// Returns all objects whose type matches across all object layers.
+    std::vector<const MapObject*> findObjectsByType(const std::string& type) const;
 
     /// Returns the tileset whose GID range contains gid (flip bits stripped internally).
-    const TilesetRef* tilesetForGid(uint32_t gid) const;
+    const TilesetRef*  tilesetForGid(uint32_t gid) const;
 };
 
 // ---- flip bit utilities ----------------------------------------------------

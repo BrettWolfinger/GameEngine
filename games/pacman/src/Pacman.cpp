@@ -24,13 +24,16 @@ static std::pair<int,int> dirOffset(Dir d) {
 }
 
 Pacman::Pacman(const Engine::Tilemap::TileLayer& wallLayer,
-               std::shared_ptr<Engine::SpriteSheet> sheet)
+               std::shared_ptr<Engine::SpriteSheet> sheet,
+               int startCol, int startRow)
     : m_wallLayer(wallLayer)
     , m_animator(sheet)
 {
     m_animator.addClip("move", { {0, 1, 2, 3}, 0.1f, Engine::PlayMode::Loop });
     m_animator.setClip("move");
 
+    m_col    = m_tgtCol = startCol;
+    m_row    = m_tgtRow = startRow;
     m_x = m_col * kGridSize + kGridSize * 0.5f;
     m_y = m_row * kGridSize + kGridSize * 0.5f;
 }
