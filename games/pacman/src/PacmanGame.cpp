@@ -119,8 +119,15 @@ void PacmanGame::onUpdate(float dt) {
 
     updateModeTimer(dt);
 
-    for (auto& ghost : m_ghosts)
-        ghost.update(dt);
+    if (!m_ghosts.empty() && m_pacman) {
+        const int  blinkyCol = m_ghosts[0].col();
+        const int  blinkyRow = m_ghosts[0].row();
+        const int  pacCol    = m_pacman->col();
+        const int  pacRow    = m_pacman->row();
+        const Dir  pacDir    = m_pacman->dir();
+        for (auto& ghost : m_ghosts)
+            ghost.update(dt, pacCol, pacRow, pacDir, blinkyCol, blinkyRow);
+    }
 
     tryEatDot();
 }

@@ -66,12 +66,48 @@ std::pair<int,int> Ghost::scatterCorner() const {
     return { 0, 0 };
 }
 
+std::pair<int,int> Ghost::chaseTarget() const {
+    auto [dc, dr] = dirOffset(m_pacDir);
+
+    switch (m_type) {
+        case GhostType::Blinky:
+            // Target Pac-Man's current tile directly.
+            return { m_pacCol, m_pacRow };
+
+        case GhostType::Pinky:
+            // Target 4 tiles ahead of Pac-Man.
+            // Recreates the classic Up bug: moving up also offsets 4 tiles left.
+            if (m_pacDir == Dir::Up)
+                return { m_pacCol - 4, m_pacRow - 4 };
+            return { m_pacCol + dc * 4, m_pacRow + dr * 4 };
+
+        case GhostType::Inky: {
+            // Take 2 tiles ahead of Pac-Man, then double the vector from Blinky to that point.
+            int aheadCol = m_pacCol + dc * 2;
+            int aheadRow = m_pacRow + dr * 2;
+            return { aheadCol + (aheadCol - m_blinkyCol),
+                     aheadRow + (aheadRow - m_blinkyRow) };
+        }
+
+        case GhostType::Clyde: {
+            // Target Pac-Man when far (> 8 tiles), scatter corner when close.
+            int dist = std::abs(m_col - m_pacCol) + std::abs(m_row - m_pacRow);
+            return (dist > 8) ? std::make_pair(m_pacCol, m_pacRow) : scatterCorner();
+        }
+    }
+    return { m_pacCol, m_pacRow };
+}
+
+std::pair<int,int> Ghost::targetTile() const {
+    return (m_mode == GhostMode::Chase) ? chaseTarget() : scatterCorner();
+}
+
 Dir Ghost::chooseDirection() const {
     // Classic Pac-Man tie-break priority: Up, Left, Down, Right.
     static constexpr Dir kPriority[] = { Dir::Up, Dir::Left, Dir::Down, Dir::Right };
 
     const Dir rev = opposite(m_dir); // direction ghosts may not reverse into
-    auto [tCol, tRow] = scatterCorner();
+    auto [tCol, tRow] = targetTile();
 
     int bestDist = INT_MAX;
     Dir bestDir  = Dir::None;
@@ -117,7 +153,12 @@ void Ghost::setTarget(Dir dir) {
     m_tgtRow = m_row + dr;
 }
 
-void Ghost::update(float dt) {
+void Ghost::update(float dt, int pacCol, int pacRow, Dir pacDir, int blinkyCol, int blinkyRow) {
+    m_pacCol    = pacCol;
+    m_pacRow    = pacRow;
+    m_pacDir    = pacDir;
+    m_blinkyCol = blinkyCol;
+    m_blinkyRow = blinkyRow;
     float tx   = m_tgtCol * kGridSize + kGridSize * 0.5f;
     float ty   = m_tgtRow * kGridSize + kGridSize * 0.5f;
     float dx   = tx - m_x;

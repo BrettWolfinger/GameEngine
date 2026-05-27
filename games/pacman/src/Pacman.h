@@ -27,6 +27,7 @@ public:
 
     int col() const { return m_col; }
     int row() const { return m_row; }
+    Dir dir() const { return m_dir; }
 
 private:
     bool isWall(int col, int row) const;
