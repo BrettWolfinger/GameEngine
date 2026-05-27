@@ -4,7 +4,7 @@ A C++ 2D game engine built on OpenGL 4.1, GLFW, GLM, and CMake. Designed around 
 stable facade API so games program against `Engine::Audio::`, `Engine::Particles::`,
 and `Engine::Collision::` rather than reaching into subsystem internals.
 
-Games shipped on the engine: **Pong**, **Breakout**, **Frogger**, **Asteroids**.
+Games shipped on the engine: **Pong**, **Breakout**, **Frogger**, **Asteroids**, **Pac-Man**, **Super Mario Bros**.
 
 ---
 
@@ -17,6 +17,7 @@ Games shipped on the engine: **Pong**, **Breakout**, **Frogger**, **Asteroids**.
 | Learn the main loop and lifecycle hooks | [Application & Game Loop](engine/application-game-loop.md) |
 | Set up colliders and callbacks | [Collision System](engine/collision-system.md) |
 | Draw sprites | [Renderer2D](engine/renderer2d.md) |
+| Load and render Tiled maps | [Tilemap System](engine/tilemap.md) |
 | Handle keyboard input | [Input](engine/input.md) |
 | See the full history of the project | [Devlog](devlog.md) |
 | Browse the generated API reference | [API Reference](https://brettwolfinger.github.io/GameEngine/api/){target="_blank" rel="noopener noreferrer"} |

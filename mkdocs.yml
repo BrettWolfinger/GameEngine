@@ -34,6 +34,7 @@ nav:
     - Input: engine/input.md
     - Renderer2D: engine/renderer2d.md
     - Sprite Rendering: engine/sprite-rendering-v2.md
+    - Tilemap System: engine/tilemap.md
     - Adding a New Game: engine/adding-a-new-game.md
   - Patterns:
     - Screen System: patterns/screen-system.md
