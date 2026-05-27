@@ -23,7 +23,7 @@ public:
            int startCol, int startRow);
 
     void update(float dt);
-    void render(Engine::Renderer2D& renderer, int renderLayer) const;
+    void render(Engine::Renderer2D& renderer, int renderLayer, float offsetY = 0.f) const;
 
     /// Begin the death animation; freezes movement and input.
     void startDeath();

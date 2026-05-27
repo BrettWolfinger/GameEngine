@@ -2,6 +2,8 @@
 #include "GameConstants.h"
 #include <engine/renderer/PixelFont.h>
 #include <GLFW/glfw3.h>
+#include <algorithm>
+#include <fstream>
 
 // Items tileset: dot = local ID 8, power pellet = local ID 9
 static constexpr int kDotFrameId    = 8;
@@ -15,6 +17,7 @@ PacmanGame::PacmanGame()
 {}
 
 void PacmanGame::onInit() {
+    loadHighScore();
     m_map = Engine::Tilemap::loadMap("games/pacman/assets/maps/PacManMap.tmx");
 
     // Load tilesets — columns come from the TSX via the engine loader
@@ -122,6 +125,7 @@ void PacmanGame::checkGhostCollision() {
             // Eat the ghost — score doubles per ghost eaten this pellet.
             m_ghostsEatenThisPellet++;
             m_score += kGhostScoreBase << (m_ghostsEatenThisPellet - 1);
+            updateHighScore();
             ghost.respawn();
         } else if (ghost.mode() != GhostMode::Eyes) {
             // Pac-Man is caught — begin death sequence.
@@ -184,6 +188,20 @@ void PacmanGame::startLevelClear() {
         ghost.endFrightened(m_currentMode);
 }
 
+void PacmanGame::startNextLevel() {
+    // Score and lives carry over; everything else resets.
+    m_modePhase             = 0;
+    m_modeTimer             = kModeSchedule[0];
+    m_currentMode           = GhostMode::Scatter;
+    m_frightenedTimer       = 0.f;
+    m_ghostsEatenThisPellet = 0;
+    m_gameState             = GameState::Playing;
+
+    buildDotCache();
+    if (m_pacman) m_pacman->respawn();
+    for (auto& ghost : m_ghosts) ghost.respawn();
+}
+
 void PacmanGame::restartGame() {
     m_score                 = 0;
     m_lives                 = kStartLives;
@@ -197,6 +215,23 @@ void PacmanGame::restartGame() {
     buildDotCache();
     if (m_pacman) m_pacman->respawn();
     for (auto& ghost : m_ghosts) ghost.respawn();
+}
+
+void PacmanGame::updateHighScore() {
+    if (m_score > m_highScore) {
+        m_highScore = m_score;
+        saveHighScore();
+    }
+}
+
+void PacmanGame::loadHighScore() {
+    std::ifstream f("games/pacman/highscore.dat");
+    if (f) f >> m_highScore;
+}
+
+void PacmanGame::saveHighScore() {
+    std::ofstream f("games/pacman/highscore.dat");
+    if (f) f << m_highScore;
 }
 
 void PacmanGame::tryEatDot() {
@@ -222,6 +257,8 @@ void PacmanGame::tryEatDot() {
         default: break;
     }
 
+    updateHighScore();
+
     if (m_dotsRemaining == 0)
         startLevelClear();
 }
@@ -239,7 +276,7 @@ void PacmanGame::onUpdate(float dt) {
     if (m_gameState == GameState::LevelClear) {
         m_levelClearTimer -= dt;
         if (m_levelClearTimer <= 0.f)
-            restartGame();
+            startNextLevel();
         return;
     }
 
@@ -275,7 +312,7 @@ void PacmanGame::onRender() {
     renderDots();
     renderGhosts();
     if (m_pacman)
-        m_pacman->render(m_renderer, kLayerPacman);
+        m_pacman->render(m_renderer, kLayerPacman, static_cast<float>(HUD_H));
     renderHUD();
 #ifdef ENABLE_DEV_KEYS
     renderDevHUD();
@@ -287,13 +324,15 @@ void PacmanGame::renderWalls() {
     const auto* ts    = m_map.tilesetForGid(1);
     if (!layer || !ts) return;
 
+    // cameraY = -HUD_H shifts the world down by the HUD strip height.
     Engine::Tilemap::renderLayer(m_renderer, *layer, *m_wallSheet, *ts,
-                                 static_cast<float>(TILE * SCALE), kLayerWalls);
+                                 static_cast<float>(TILE * SCALE), kLayerWalls,
+                                 0.f, -static_cast<float>(HUD_H));
 }
 
 void PacmanGame::renderGhosts() {
     for (const auto& ghost : m_ghosts)
-        ghost.render(m_renderer, kLayerGhosts);
+        ghost.render(m_renderer, kLayerGhosts, static_cast<float>(HUD_H));
 }
 
 void PacmanGame::renderDevHUD() {
@@ -317,11 +356,29 @@ void PacmanGame::renderDevHUD() {
 }
 
 void PacmanGame::renderHUD() {
-    constexpr float kFontScale = 2.f;
-    constexpr float kMargin    = 8.f;
+    constexpr float kFontScale = 2.5f;
+    constexpr float kMargin    = 5.f;
+
+    // Score — top-left
     Engine::PixelFont::drawString(m_renderer, std::to_string(m_score),
                                   kMargin, kMargin, kFontScale,
                                   {1.f, 1.f, 1.f, 1.f}, kLayerHUD);
+
+    // High score — top-center (label row + value row, 1px gap)
+    const std::string hiLabel = "HI";
+    const std::string hiValue = std::to_string(m_highScore);
+    const float labelW  = Engine::PixelFont::stringWidth(hiLabel, kFontScale);
+    const float valueW  = Engine::PixelFont::stringWidth(hiValue, kFontScale);
+    const float hiBlockW = std::max(labelW, valueW);
+    const float hiX = (WIN_W - hiBlockW) * 0.5f;
+    Engine::PixelFont::drawString(m_renderer, hiLabel,
+                                  hiX + (hiBlockW - labelW) * 0.5f, kMargin,
+                                  kFontScale, {1.f, 0.8f, 0.f, 1.f}, kLayerHUD);
+    Engine::PixelFont::drawString(m_renderer, hiValue,
+                                  hiX + (hiBlockW - valueW) * 0.5f,
+                                  kMargin + 7.f * kFontScale + 1.f,
+                                  kFontScale, {1.f, 1.f, 1.f, 1.f}, kLayerHUD);
+
     renderLives();
 
     if (m_gameState == GameState::LevelClear) {
@@ -352,8 +409,8 @@ void PacmanGame::renderHUD() {
 
 void PacmanGame::renderLives() {
     // Draw one Pac-Man icon per spare life (lives - 1; current life not shown as an icon).
-    constexpr float kIconSize = static_cast<float>(TILE * SCALE); // 32 px
-    constexpr float kMargin   = 8.f;
+    constexpr float kIconSize = static_cast<float>(TILE * SCALE) + 8.f; // 40 px
+    constexpr float kMargin   = 5.f;
     constexpr float kY        = kMargin;
 
     const int spares = std::max(0, m_lives - 1);
@@ -381,7 +438,7 @@ void PacmanGame::renderDots() {
         int   col = i % layer->cols;
         int   row = i / layer->cols;
         float x   = col * tileSize;
-        float y   = row * tileSize;
+        float y   = row * tileSize + static_cast<float>(HUD_H);
         m_renderer.drawTexturedRect(x, y, tileSize, tileSize,
                                     m_itemsSheet->texture(),
                                     uv.u0, uv.v0, uv.u1, uv.v1,

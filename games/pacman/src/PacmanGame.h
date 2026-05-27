@@ -36,7 +36,11 @@ private:
     void handleDyingState(float dt);
     void respawnAfterDeath();
     void startLevelClear();
+    void startNextLevel();
     void restartGame();
+    void loadHighScore();
+    void saveHighScore();
+    void updateHighScore();
     void renderWalls();
     void renderDots();
     void renderGhosts();
@@ -75,4 +79,7 @@ private:
     float     m_deathPauseTimer  = 0.f;
     float     m_levelClearTimer  = 0.f;
     int       m_dotsRemaining    = 0;
+
+    // Scoring
+    int       m_highScore        = 0;
 };
