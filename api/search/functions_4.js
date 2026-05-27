@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['makeaabb_0',['makeAABB',['../structEngine_1_1ColliderDesc.html#a59fa6dc835980be710348e9e8560a90e',1,'Engine::ColliderDesc']]],
-  ['makecircle_1',['makeCircle',['../structEngine_1_1ColliderDesc.html#a59e402b264d2be7504ea2b65d8739663',1,'Engine::ColliderDesc']]]
+  ['load_0',['load',['../classEngine_1_1ConfigLoader.html#ab43d36207f6ecc64cbe85f35c1fe9548',1,'Engine::ConfigLoader']]]
 ];

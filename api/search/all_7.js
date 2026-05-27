@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['onimguirender_0',['onImGuiRender',['../classEngine_1_1Application.html#a6b871e140b5c34624d13cab4081bb985',1,'Engine::Application']]],
-  ['origin_1',['origin',['../structEngine_1_1ParticleEmitParams.html#a42b71bb966d885823fc347d5af5ea23b',1,'Engine::ParticleEmitParams']]]
+  ['null_5fcollider_0',['null_collider',['../Collision_8h.html#a6509ccaad85e364a838ad44a508bbb9a',1,'Engine::Collision::NULL_COLLIDER'],['../Collider_8h.html#a712f405d68e5731d4a0c4f50ee15a043',1,'Engine::NULL_COLLIDER']]]
 ];

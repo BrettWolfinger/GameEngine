@@ -9,9 +9,10 @@ var searchData=
   ['collision_2eh_6',['Collision.h',['../Collision_8h.html',1,'']]],
   ['collisioncallback_7',['collisioncallback',['../Collider_8h.html#a55fb15f80886a44c7a8fe2f7e34f9ba1',1,'Engine::CollisionCallback'],['../Collision_8h.html#a81799bd993aef13b6368a19cc25da493',1,'Engine::Collision::CollisionCallback']]],
   ['color_8',['color',['../structEngine_1_1ParticleEmitParams.html#a70141a461c9bbe4b80279513c80fb0cf',1,'Engine::ParticleEmitParams']]],
-  ['config_2eh_9',['Config.h',['../Config_8h.html',1,'']]],
-  ['configloader_10',['ConfigLoader',['../classEngine_1_1ConfigLoader.html',1,'Engine']]],
-  ['configloader_2eh_11',['ConfigLoader.h',['../ConfigLoader_8h.html',1,'']]],
-  ['configwatcher_12',['ConfigWatcher',['../classEngine_1_1ConfigWatcher.html',1,'Engine']]],
-  ['count_13',['count',['../structEngine_1_1ParticleEmitParams.html#a4bc4b1caf06203fa8982ba751f5e9ac9',1,'Engine::ParticleEmitParams']]]
+  ['color4_9',['Color4',['../structEngine_1_1Tilemap_1_1Color4.html',1,'Engine::Tilemap']]],
+  ['config_2eh_10',['Config.h',['../Config_8h.html',1,'']]],
+  ['configloader_11',['ConfigLoader',['../classEngine_1_1ConfigLoader.html',1,'Engine']]],
+  ['configloader_2eh_12',['ConfigLoader.h',['../ConfigLoader_8h.html',1,'']]],
+  ['configwatcher_13',['ConfigWatcher',['../classEngine_1_1ConfigWatcher.html',1,'Engine']]],
+  ['count_14',['count',['../structEngine_1_1ParticleEmitParams.html#a4bc4b1caf06203fa8982ba751f5e9ac9',1,'Engine::ParticleEmitParams']]]
 ];

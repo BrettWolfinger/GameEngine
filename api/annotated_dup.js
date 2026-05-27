@@ -1,6 +1,13 @@
 var annotated_dup =
 [
     [ "Engine", null, [
+      [ "Tilemap", null, [
+        [ "Color4", "structEngine_1_1Tilemap_1_1Color4.html", null ],
+        [ "FlippedUV", "structEngine_1_1Tilemap_1_1FlippedUV.html", null ],
+        [ "Map", "structEngine_1_1Tilemap_1_1Map.html", "structEngine_1_1Tilemap_1_1Map" ],
+        [ "TileLayer", "structEngine_1_1Tilemap_1_1TileLayer.html", null ],
+        [ "TilesetRef", "structEngine_1_1Tilemap_1_1TilesetRef.html", null ]
+      ] ],
       [ "AnimClip", "structEngine_1_1AnimClip.html", null ],
       [ "Application", "classEngine_1_1Application.html", "classEngine_1_1Application" ],
       [ "ColliderDesc", "structEngine_1_1ColliderDesc.html", "structEngine_1_1ColliderDesc" ],

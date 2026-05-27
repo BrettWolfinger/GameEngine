@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Engine: src/engine/Engine.h File Reference</title>
+<title>Engine: Engine::Tilemap::FlippedUV Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -65,7 +65,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('Engine_8h.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('structEngine_1_1Tilemap_1_1FlippedUV.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -91,40 +91,43 @@ $(document).ready(function(){initNavTree('Engine_8h.html',''); initResizable(); 
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">Engine.h File Reference</div></div>
+  <div class="summary">
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="structEngine_1_1Tilemap_1_1FlippedUV-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">Engine::Tilemap::FlippedUV Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Public entry point for the Engine API.  
-<a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;<a class="el" href="Audio_8h_source.html">engine/facade/Audio.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="Collision_8h_source.html">engine/facade/Collision.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="Config_8h_source.html">engine/facade/Config.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="Particles_8h_source.html">engine/facade/Particles.h</a>&gt;</code><br />
-<code>#include &lt;engine/tilemap/Tilemap.h&gt;</code><br />
-<code>#include &lt;engine/tilemap/TilemapRenderer.h&gt;</code><br />
-</div><div class="textblock"><div class="dynheader">
-Include dependency graph for Engine.h:</div>
+<p>Result of applying TMX flip flags to a UV rect.  
+ <a href="structEngine_1_1Tilemap_1_1FlippedUV.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Tilemap_8h_source.html">Tilemap.h</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for Engine::Tilemap::FlippedUV:</div>
 <div class="dyncontent">
-<div class="center"><img src="Engine_8h__incl.png" border="0" usemap="#asrc_2engine_2Engine_8h" alt=""/></div>
-</div>
-</div>
-<p><a href="Engine_8h_source.html">Go to the source code of this file.</a></p>
+<div class="center"><img src="structEngine_1_1Tilemap_1_1FlippedUV__coll__graph.png" border="0" usemap="#aEngine_1_1Tilemap_1_1FlippedUV_coll__map" alt="Collaboration graph"/></div>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:ae7a53046c3c7bfd6ea1c469d0875d7c3" id="r_ae7a53046c3c7bfd6ea1c469d0875d7c3"><td class="memItemLeft" align="right" valign="top"><a id="ae7a53046c3c7bfd6ea1c469d0875d7c3" name="ae7a53046c3c7bfd6ea1c469d0875d7c3"></a>
+<a class="el" href="structEngine_1_1UVRect.html">UVRect</a>&#160;</td><td class="memItemRight" valign="bottom"><b>uv</b></td></tr>
+<tr class="separator:ae7a53046c3c7bfd6ea1c469d0875d7c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed38b9dfd05565e4cb101e5dbded7411" id="r_aed38b9dfd05565e4cb101e5dbded7411"><td class="memItemLeft" align="right" valign="top"><a id="aed38b9dfd05565e4cb101e5dbded7411" name="aed38b9dfd05565e4cb101e5dbded7411"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>angle</b> = 0.f</td></tr>
+<tr class="separator:aed38b9dfd05565e4cb101e5dbded7411"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Public entry point for the Engine API. </p>
-<p>Game code should include this header (or a per-subsystem facade header) instead of reaching into engine internals directly.</p>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="Engine_8h.html">engine/Engine.h</a>&gt;</span></div>
-<div class="line"> </div>
-<div class="line">Engine::Audio::playTone(440.f, 0.1f);</div>
-<div class="line">Engine::Particles::emit(params);</div>
-<div class="line">Engine::Collision::add(desc, callback);</div>
-<div class="ttc" id="aEngine_8h_html"><div class="ttname"><a href="Engine_8h.html">Engine.h</a></div><div class="ttdoc">Public entry point for the Engine API.</div></div>
-</div><!-- fragment --> </div></div><!-- contents -->
+<div class="textblock"><p>Result of applying TMX flip flags to a UV rect. </p>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
+<li>src/engine/tilemap/<a class="el" href="Tilemap_8h_source.html">Tilemap.h</a></li>
+</ul>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="Engine_8h.html">Engine.h</a></li>
+    <li class="navelem"><b>Engine</b></li><li class="navelem"><b>Tilemap</b></li><li class="navelem"><a class="el" href="structEngine_1_1Tilemap_1_1FlippedUV.html">FlippedUV</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>

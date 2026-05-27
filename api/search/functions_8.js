@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['stoploopingvoice_0',['stopLoopingVoice',['../Audio_8h.html#a52c1639e140f089a2f99f3d221ba93ea',1,'Engine::Audio']]]
+  ['remove_0',['remove',['../Collision_8h.html#a4f35c96592f22c5944379406cef3253b',1,'Engine::Collision']]]
 ];
