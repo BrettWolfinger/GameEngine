@@ -64,11 +64,12 @@ void PacmanGame::buildDotCache() {
     const auto* layer = m_map.findLayer("Dots");
     if (!layer) return;
 
-    m_dots.resize(layer->gids.size(), CellType::Empty);
+    m_dots.assign(layer->gids.size(), CellType::Empty);
+    m_dotsRemaining = 0;
     for (size_t i = 0; i < layer->gids.size(); ++i) {
         int localId = static_cast<int>(Engine::Tilemap::stripFlips(layer->gids[i])) - kItemsFirstGid;
-        if      (localId == kDotFrameId)    m_dots[i] = CellType::Dot;
-        else if (localId == kPelletFrameId) m_dots[i] = CellType::PowerPellet;
+        if      (localId == kDotFrameId)    { m_dots[i] = CellType::Dot;         ++m_dotsRemaining; }
+        else if (localId == kPelletFrameId) { m_dots[i] = CellType::PowerPellet; ++m_dotsRemaining; }
     }
 }
 
@@ -175,6 +176,29 @@ void PacmanGame::respawnAfterDeath() {
     for (auto& ghost : m_ghosts) ghost.respawn();
 }
 
+void PacmanGame::startLevelClear() {
+    m_gameState       = GameState::LevelClear;
+    m_levelClearTimer = kLevelClearPause;
+    m_frightenedTimer = 0.f;
+    for (auto& ghost : m_ghosts)
+        ghost.endFrightened(m_currentMode);
+}
+
+void PacmanGame::restartGame() {
+    m_score                 = 0;
+    m_lives                 = kStartLives;
+    m_modePhase             = 0;
+    m_modeTimer             = kModeSchedule[0];
+    m_currentMode           = GhostMode::Scatter;
+    m_frightenedTimer       = 0.f;
+    m_ghostsEatenThisPellet = 0;
+    m_gameState             = GameState::Playing;
+
+    buildDotCache();
+    if (m_pacman) m_pacman->respawn();
+    for (auto& ghost : m_ghosts) ghost.respawn();
+}
+
 void PacmanGame::tryEatDot() {
     if (!m_pacman) return;
     const auto* layer = m_map.findLayer("Dots");
@@ -187,22 +211,37 @@ void PacmanGame::tryEatDot() {
         case CellType::Dot:
             m_dots[idx] = CellType::Empty;
             m_score += kScoreDot;
+            --m_dotsRemaining;
             break;
         case CellType::PowerPellet:
             m_dots[idx] = CellType::Empty;
             m_score += kScorePellet;
+            --m_dotsRemaining;
             triggerFrightened();
             break;
         default: break;
     }
+
+    if (m_dotsRemaining == 0)
+        startLevelClear();
 }
 
 void PacmanGame::onUpdate(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q))
         quit();
 
-    if (m_gameState == GameState::GameOver)
+    if (m_gameState == GameState::GameOver) {
+        if (Engine::Input::isKeyPressed(GLFW_KEY_R))
+            restartGame();
         return;
+    }
+
+    if (m_gameState == GameState::LevelClear) {
+        m_levelClearTimer -= dt;
+        if (m_levelClearTimer <= 0.f)
+            restartGame();
+        return;
+    }
 
     if (m_gameState == GameState::Dying) {
         handleDyingState(dt);
@@ -285,13 +324,29 @@ void PacmanGame::renderHUD() {
                                   {1.f, 1.f, 1.f, 1.f}, kLayerHUD);
     renderLives();
 
-    if (m_gameState == GameState::GameOver) {
-        constexpr float kGOScale = 3.f;
-        const std::string kGOText = "GAME OVER";
-        const float w = Engine::PixelFont::stringWidth(kGOText, kGOScale);
-        Engine::PixelFont::drawString(m_renderer, kGOText,
+    if (m_gameState == GameState::LevelClear) {
+        constexpr float kScale = 3.f;
+        const std::string text = "LEVEL CLEAR";
+        const float w = Engine::PixelFont::stringWidth(text, kScale);
+        Engine::PixelFont::drawString(m_renderer, text,
                                       (WIN_W - w) * 0.5f, WIN_H * 0.5f - 12.f,
-                                      kGOScale, {1.f, 0.f, 0.f, 1.f}, kLayerHUD);
+                                      kScale, {1.f, 1.f, 0.f, 1.f}, kLayerHUD);
+    }
+
+    if (m_gameState == GameState::GameOver) {
+        constexpr float kScale = 3.f;
+        const std::string title = "GAME OVER";
+        const float tw = Engine::PixelFont::stringWidth(title, kScale);
+        Engine::PixelFont::drawString(m_renderer, title,
+                                      (WIN_W - tw) * 0.5f, WIN_H * 0.5f - 16.f,
+                                      kScale, {1.f, 0.f, 0.f, 1.f}, kLayerHUD);
+
+        constexpr float kHintScale = 1.5f;
+        const std::string hint = "R TO RESTART";
+        const float hw = Engine::PixelFont::stringWidth(hint, kHintScale);
+        Engine::PixelFont::drawString(m_renderer, hint,
+                                      (WIN_W - hw) * 0.5f, WIN_H * 0.5f + 12.f,
+                                      kHintScale, {0.8f, 0.8f, 0.8f, 1.f}, kLayerHUD);
     }
 }
 

@@ -37,3 +37,6 @@ static constexpr int   kStartLives  = 3;
 
 // Death sequence: pause between animation end and respawn (seconds)
 static constexpr float kDeathPause  = 1.0f;
+
+// Level-clear freeze before restarting (seconds)
+static constexpr float kLevelClearPause = 3.0f;
