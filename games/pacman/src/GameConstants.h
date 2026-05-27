@@ -10,3 +10,8 @@ static constexpr int WIN_H    = MAP_ROWS * TILE * SCALE; // 992
 static constexpr int kLayerWalls  = 0;
 static constexpr int kLayerDots   = 1;
 static constexpr int kLayerPacman = 2;
+static constexpr int kLayerHUD    = 3;
+
+// Dot scoring
+static constexpr int kScoreDot    = 10;
+static constexpr int kScorePellet = 50;

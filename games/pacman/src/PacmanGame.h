@@ -24,8 +24,10 @@ protected:
 
 private:
     void buildDotCache();
+    void tryEatDot();
     void renderWalls();
     void renderDots();
+    void renderHUD();
 
     Engine::Renderer2D                    m_renderer;
     std::shared_ptr<Engine::Texture>      m_wallTex;
@@ -36,6 +38,7 @@ private:
     std::shared_ptr<Engine::SpriteSheet>  m_pacSheet;
     Engine::Tilemap::Map                  m_map;
     std::vector<CellType>                 m_dots;
+    int                                   m_score = 0;
 
     std::optional<Pacman>                 m_pacman; // constructed after map load
 };

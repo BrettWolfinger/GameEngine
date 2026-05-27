@@ -1,5 +1,6 @@
 #include "PacmanGame.h"
 #include "GameConstants.h"
+#include <engine/renderer/PixelFont.h>
 #include <GLFW/glfw3.h>
 
 // Items tileset: dot = local ID 8, power pellet = local ID 9
@@ -59,12 +60,35 @@ void PacmanGame::buildDotCache() {
     }
 }
 
+void PacmanGame::tryEatDot() {
+    if (!m_pacman) return;
+    const auto* layer = m_map.findLayer("Dots");
+    if (!layer) return;
+
+    int idx = m_pacman->row() * layer->cols + m_pacman->col();
+    if (idx < 0 || idx >= static_cast<int>(m_dots.size())) return;
+
+    switch (m_dots[idx]) {
+        case CellType::Dot:
+            m_dots[idx] = CellType::Empty;
+            m_score += kScoreDot;
+            break;
+        case CellType::PowerPellet:
+            m_dots[idx] = CellType::Empty;
+            m_score += kScorePellet;
+            break;
+        default: break;
+    }
+}
+
 void PacmanGame::onUpdate(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q))
         quit();
 
     if (m_pacman)
         m_pacman->update(dt);
+
+    tryEatDot();
 }
 
 void PacmanGame::onRender() {
@@ -73,6 +97,7 @@ void PacmanGame::onRender() {
     renderDots();
     if (m_pacman)
         m_pacman->render(m_renderer, kLayerPacman);
+    renderHUD();
 }
 
 void PacmanGame::renderWalls() {
@@ -82,6 +107,14 @@ void PacmanGame::renderWalls() {
 
     Engine::Tilemap::renderLayer(m_renderer, *layer, *m_wallSheet, *ts,
                                  static_cast<float>(TILE * SCALE), kLayerWalls);
+}
+
+void PacmanGame::renderHUD() {
+    constexpr float kFontScale = 2.f;
+    constexpr float kMargin    = 8.f;
+    Engine::PixelFont::drawString(m_renderer, std::to_string(m_score),
+                                  kMargin, kMargin, kFontScale,
+                                  {1.f, 1.f, 1.f, 1.f});
 }
 
 void PacmanGame::renderDots() {
