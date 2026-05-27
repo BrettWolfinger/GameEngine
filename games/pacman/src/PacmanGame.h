@@ -27,6 +27,9 @@ private:
     void buildDotCache();
     void tryEatDot();
     void updateModeTimer(float dt);
+    void triggerFrightened();
+    void updateFrightenedTimer(float dt);
+    void checkGhostCollision();
     void renderWalls();
     void renderDots();
     void renderGhosts();
@@ -53,4 +56,9 @@ private:
     float     m_modeTimer   = 7.f;   // seconds until next mode switch
     int       m_modePhase   = 0;     // index into schedule; even=Scatter, odd=Chase
     GhostMode m_currentMode = GhostMode::Scatter;
+
+    // Frightened mode
+    float     m_frightenedTimer        = 0.f;
+    int       m_ghostsEatenThisPellet  = 0;
+    bool      m_pacmanDead             = false;
 };

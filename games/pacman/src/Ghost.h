@@ -27,6 +27,16 @@ public:
     /// Switch scatter/chase mode and immediately reverse direction.
     void setMode(GhostMode mode);
 
+    /// Enter frightened mode: reverse direction and switch to frightened sprite.
+    /// No-op if already in Eyes mode (eaten ghosts are unaffected).
+    void frighten();
+
+    /// Exit frightened mode and return to returnMode without reversing direction.
+    void endFrightened(GhostMode returnMode);
+
+    /// Reset to spawn position and restart in Scatter mode.
+    void respawn();
+
     int       col()  const { return m_col; }
     int       row()  const { return m_row; }
     GhostType type() const { return m_type; }
@@ -54,6 +64,9 @@ private:
     /// Immediately swaps current and target cells to reverse direction.
     void reverseDirection();
 
+    /// Returns movement speed in tiles/sec for the current mode.
+    float currentSpeed() const;
+
     const Engine::Tilemap::TileLayer& m_wallLayer;
     Engine::SpriteAnimator            m_animator;
 
@@ -66,6 +79,10 @@ private:
     int       m_tgtCol    = 0;
     int       m_tgtRow    = 0;
     Dir       m_dir       = Dir::None;
+
+    // Spawn position — used by respawn().
+    int       m_startCol  = 0;
+    int       m_startRow  = 0;
 
     // Cached per-frame context set by update() and read by chaseTarget().
     int       m_pacCol    = 0;

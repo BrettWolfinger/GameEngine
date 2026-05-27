@@ -72,7 +72,15 @@ void Pacman::update(float dt) {
     }
 
     // --- advance toward target cell center ---
-    float tx   = m_tgtCol * kGridSize + kGridSize * 0.5f;
+    // Adjust target x for tunnel wrap so the sprite exits one side and enters the other,
+    // rather than sliding backwards across the screen.
+    float tx;
+    if      (m_dir == Dir::Left  && m_tgtCol > m_col)
+        tx = (m_tgtCol - m_wallLayer.cols) * kGridSize + kGridSize * 0.5f;
+    else if (m_dir == Dir::Right && m_tgtCol < m_col)
+        tx = (m_tgtCol + m_wallLayer.cols) * kGridSize + kGridSize * 0.5f;
+    else
+        tx = m_tgtCol * kGridSize + kGridSize * 0.5f;
     float ty   = m_tgtRow * kGridSize + kGridSize * 0.5f;
     float dx   = tx - m_x;
     float dy   = ty - m_y;
@@ -80,10 +88,10 @@ void Pacman::update(float dt) {
     float step = kSpeed * kGridSize * dt;
 
     if (step >= dist) {
-        m_x   = tx;
-        m_y   = ty;
         m_col = m_tgtCol;
         m_row = m_tgtRow;
+        m_x   = m_col * kGridSize + kGridSize * 0.5f; // snap to actual on-screen position
+        m_y   = m_row * kGridSize + kGridSize * 0.5f;
 
         if (m_nextDir != Dir::None && canMove(m_col, m_row, m_nextDir)) {
             m_dir = m_nextDir;
