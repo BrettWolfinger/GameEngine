@@ -48,7 +48,7 @@ static const uint8_t s_alpha[26][7] = {
     { 31,  1,  2,  4,  8, 16, 31 }, // Z
 };
 
-void drawChar(Renderer2D& r, char c, float x, float y, float s, const glm::vec4& col) {
+void drawChar(Renderer2D& r, char c, float x, float y, float s, const glm::vec4& col, int layer) {
     c = static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
     const uint8_t* rows = nullptr;
     if      (c >= '0' && c <= '9') rows = s_digits[c - '0'];
@@ -59,7 +59,7 @@ void drawChar(Renderer2D& r, char c, float x, float y, float s, const glm::vec4&
         uint8_t bits = rows[row];
         for (int px = 0; px < 5; ++px) {
             if (bits & (1 << (4 - px)))
-                r.drawRect(x + px * s, y + row * s, s, s, col);
+                r.drawRect(x + px * s, y + row * s, s, s, col, layer);
         }
     }
 }
@@ -69,21 +69,21 @@ float stringWidth(std::string_view text, float s) {
     return s * (6.f * static_cast<float>(text.size()) - 1.f);
 }
 
-float drawString(Renderer2D& r, std::string_view text, float x, float y, float s, const glm::vec4& col) {
+float drawString(Renderer2D& r, std::string_view text, float x, float y, float s, const glm::vec4& col, int layer) {
     float advance = 6.f * s;
     for (char c : text) {
-        drawChar(r, c, x, y, s, col);
+        drawChar(r, c, x, y, s, col, layer);
         x += advance;
     }
     return stringWidth(text, s);
 }
 
-void drawStringCentered(Renderer2D& r, std::string_view text, float cx, float y, float s, const glm::vec4& col) {
-    drawString(r, text, cx - stringWidth(text, s) * 0.5f, y, s, col);
+void drawStringCentered(Renderer2D& r, std::string_view text, float cx, float y, float s, const glm::vec4& col, int layer) {
+    drawString(r, text, cx - stringWidth(text, s) * 0.5f, y, s, col, layer);
 }
 
-void drawStringCentered(Renderer2D& r, int n, float cx, float y, float s, const glm::vec4& col) {
-    drawStringCentered(r, std::to_string(n), cx, y, s, col);
+void drawStringCentered(Renderer2D& r, int n, float cx, float y, float s, const glm::vec4& col, int layer) {
+    drawStringCentered(r, std::to_string(n), cx, y, s, col, layer);
 }
 
 } // namespace PixelFont

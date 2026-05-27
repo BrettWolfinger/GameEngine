@@ -114,7 +114,7 @@ void PacmanGame::renderHUD() {
     constexpr float kMargin    = 8.f;
     Engine::PixelFont::drawString(m_renderer, std::to_string(m_score),
                                   kMargin, kMargin, kFontScale,
-                                  {1.f, 1.f, 1.f, 1.f});
+                                  {1.f, 1.f, 1.f, 1.f}, kLayerHUD);
 }
 
 void PacmanGame::renderDots() {
