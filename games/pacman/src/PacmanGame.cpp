@@ -72,6 +72,23 @@ void PacmanGame::buildDotCache() {
     }
 }
 
+// Level 1 scatter/chase schedule in seconds: Scatter 7, Chase 20, Scatter 7,
+// Chase 20, Scatter 5, Chase 20, Scatter 5, then Chase permanently.
+static constexpr float kModeSchedule[] = { 7.f, 20.f, 7.f, 20.f, 5.f, 20.f, 5.f };
+static constexpr int   kModeCount      = static_cast<int>(std::size(kModeSchedule));
+
+void PacmanGame::updateModeTimer(float dt) {
+    m_modeTimer -= dt;
+    if (m_modeTimer > 0.f) return;
+
+    ++m_modePhase;
+    m_currentMode = (m_modePhase % 2 == 0) ? GhostMode::Scatter : GhostMode::Chase;
+    m_modeTimer   = (m_modePhase < kModeCount) ? kModeSchedule[m_modePhase] : 1e9f;
+
+    for (auto& ghost : m_ghosts)
+        ghost.setMode(m_currentMode);
+}
+
 void PacmanGame::tryEatDot() {
     if (!m_pacman) return;
     const auto* layer = m_map.findLayer("Dots");
@@ -100,8 +117,17 @@ void PacmanGame::onUpdate(float dt) {
     if (m_pacman)
         m_pacman->update(dt);
 
-    for (auto& ghost : m_ghosts)
-        ghost.update(dt);
+    updateModeTimer(dt);
+
+    if (!m_ghosts.empty() && m_pacman) {
+        const int  blinkyCol = m_ghosts[0].col();
+        const int  blinkyRow = m_ghosts[0].row();
+        const int  pacCol    = m_pacman->col();
+        const int  pacRow    = m_pacman->row();
+        const Dir  pacDir    = m_pacman->dir();
+        for (auto& ghost : m_ghosts)
+            ghost.update(dt, pacCol, pacRow, pacDir, blinkyCol, blinkyRow);
+    }
 
     tryEatDot();
 }
@@ -114,6 +140,9 @@ void PacmanGame::onRender() {
     if (m_pacman)
         m_pacman->render(m_renderer, kLayerPacman);
     renderHUD();
+#ifdef ENABLE_DEV_KEYS
+    renderDevHUD();
+#endif
 }
 
 void PacmanGame::renderWalls() {
@@ -128,6 +157,26 @@ void PacmanGame::renderWalls() {
 void PacmanGame::renderGhosts() {
     for (const auto& ghost : m_ghosts)
         ghost.render(m_renderer, kLayerGhosts);
+}
+
+void PacmanGame::renderDevHUD() {
+    constexpr float kScale  = 1.5f;
+    constexpr float kX      = 8.f;
+    constexpr float kY      = WIN_H - 32.f;
+    constexpr glm::vec4 kScatterCol = {0.4f, 0.8f, 1.f, 1.f}; // cyan
+    constexpr glm::vec4 kChaseCol   = {1.f, 0.4f, 0.4f, 1.f}; // red
+
+    const bool scatter = (m_currentMode == GhostMode::Scatter);
+    const glm::vec4& col = scatter ? kScatterCol : kChaseCol;
+    const std::string label = scatter ? "SCATTER" : "CHASE";
+
+    Engine::PixelFont::drawString(m_renderer, label, kX, kY, kScale, col, kLayerHUD);
+
+    // Timer countdown — show tenths of a second
+    const std::string timer = std::to_string(static_cast<int>(m_modeTimer))
+                            + "." + std::to_string(static_cast<int>(m_modeTimer * 10.f) % 10);
+    const float timerX = kX + Engine::PixelFont::stringWidth(label, kScale) + 8.f;
+    Engine::PixelFont::drawString(m_renderer, timer, timerX, kY, kScale, {0.8f, 0.8f, 0.8f, 1.f}, kLayerHUD);
 }
 
 void PacmanGame::renderHUD() {
