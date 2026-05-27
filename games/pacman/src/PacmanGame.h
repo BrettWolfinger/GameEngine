@@ -8,6 +8,7 @@
 #include <engine/tilemap/TilemapRenderer.h>
 #include "GameTypes.h"
 #include "Pacman.h"
+#include "Ghost.h"
 #include <memory>
 #include <optional>
 #include <vector>
@@ -27,6 +28,7 @@ private:
     void tryEatDot();
     void renderWalls();
     void renderDots();
+    void renderGhosts();
     void renderHUD();
 
     Engine::Renderer2D                    m_renderer;
@@ -36,9 +38,12 @@ private:
     std::shared_ptr<Engine::SpriteSheet>  m_itemsSheet;
     std::shared_ptr<Engine::Texture>      m_pacTex;
     std::shared_ptr<Engine::SpriteSheet>  m_pacSheet;
+    std::shared_ptr<Engine::Texture>      m_ghostTex;
+    std::shared_ptr<Engine::SpriteSheet>  m_ghostSheet;
     Engine::Tilemap::Map                  m_map;
     std::vector<CellType>                 m_dots;
     int                                   m_score = 0;
 
-    std::optional<Pacman>                 m_pacman; // constructed after map load
+    std::optional<Pacman>                 m_pacman;  // constructed after map load
+    std::vector<Ghost>                    m_ghosts;  // constructed after map load
 };
