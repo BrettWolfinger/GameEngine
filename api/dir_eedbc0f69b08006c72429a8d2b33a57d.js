@@ -6,5 +6,6 @@ var dir_eedbc0f69b08006c72429a8d2b33a57d =
     [ "Shader.h", "Shader_8h_source.html", null ],
     [ "SpriteAnimator.h", "SpriteAnimator_8h_source.html", null ],
     [ "SpriteSheet.h", "SpriteSheet_8h_source.html", null ],
-    [ "Texture.h", "Texture_8h_source.html", null ]
+    [ "Texture.h", "Texture_8h_source.html", null ],
+    [ "UVRect.h", "UVRect_8h_source.html", null ]
 ];
