@@ -7,5 +7,6 @@ static constexpr int MAP_ROWS = 31;
 static constexpr int WIN_W    = MAP_COLS * TILE * SCALE; // 896
 static constexpr int WIN_H    = MAP_ROWS * TILE * SCALE; // 992
 
-static constexpr int kLayerWalls = 0;
-static constexpr int kLayerDots  = 1;
+static constexpr int kLayerWalls  = 0;
+static constexpr int kLayerDots   = 1;
+static constexpr int kLayerPacman = 2;

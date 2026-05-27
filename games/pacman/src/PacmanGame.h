@@ -6,8 +6,10 @@
 #include <engine/renderer/SpriteSheet.h>
 #include <engine/tilemap/Tilemap.h>
 #include <engine/tilemap/TilemapRenderer.h>
-#include "MapTypes.h"
+#include "GameTypes.h"
+#include "Pacman.h"
 #include <memory>
+#include <optional>
 #include <vector>
 
 class PacmanGame : public Engine::Application {
@@ -25,11 +27,15 @@ private:
     void renderWalls();
     void renderDots();
 
-    Engine::Renderer2D                   m_renderer;
-    std::shared_ptr<Engine::Texture>     m_wallTex;
-    std::shared_ptr<Engine::SpriteSheet> m_wallSheet;
-    std::shared_ptr<Engine::Texture>     m_itemsTex;
-    std::shared_ptr<Engine::SpriteSheet> m_itemsSheet;
-    Engine::Tilemap::Map                 m_map;
-    std::vector<CellType>                m_dots; // derived from Dots layer at load time
+    Engine::Renderer2D                    m_renderer;
+    std::shared_ptr<Engine::Texture>      m_wallTex;
+    std::shared_ptr<Engine::SpriteSheet>  m_wallSheet;
+    std::shared_ptr<Engine::Texture>      m_itemsTex;
+    std::shared_ptr<Engine::SpriteSheet>  m_itemsSheet;
+    std::shared_ptr<Engine::Texture>      m_pacTex;
+    std::shared_ptr<Engine::SpriteSheet>  m_pacSheet;
+    Engine::Tilemap::Map                  m_map;
+    std::vector<CellType>                 m_dots;
+
+    std::optional<Pacman>                 m_pacman; // constructed after map load
 };
