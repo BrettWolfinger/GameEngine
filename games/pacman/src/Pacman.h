@@ -16,8 +16,11 @@ class Pacman {
 public:
     /// @param wallLayer  Cached Wall layer used for collision checks.
     /// @param sheet      Pac-Man spritesheet (4x3, 32x32 cells).
+    /// @param startCol   Spawn column (from object layer or fallback default).
+    /// @param startRow   Spawn row (from object layer or fallback default).
     Pacman(const Engine::Tilemap::TileLayer& wallLayer,
-           std::shared_ptr<Engine::SpriteSheet> sheet);
+           std::shared_ptr<Engine::SpriteSheet> sheet,
+           int startCol, int startRow);
 
     void update(float dt);
     void render(Engine::Renderer2D& renderer, int renderLayer) const;
@@ -35,10 +38,10 @@ private:
 
     float m_x       = 0.f;
     float m_y       = 0.f;
-    int   m_col     = 14;
-    int   m_row     = 23;
-    int   m_tgtCol  = 14;
-    int   m_tgtRow  = 23;
+    int   m_col     = 0;
+    int   m_row     = 0;
+    int   m_tgtCol  = 0;
+    int   m_tgtRow  = 0;
     Dir   m_dir     = Dir::None;
     Dir   m_nextDir = Dir::None;
 };
