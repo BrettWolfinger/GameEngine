@@ -2,6 +2,7 @@
 #include "GameConstants.h"
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <algorithm>
 
 // Tileset sheet: 20 cols × 20 rows, 320×320px
 static constexpr int kSheetCols = 20;
@@ -21,12 +22,27 @@ void MarioGame::onInit() {
     m_tilesetTex   = std::make_shared<Engine::Texture>("games/mario/assets/maps/smb1_1tileset.png");
     m_tilesetSheet = std::make_shared<Engine::SpriteSheet>(m_tilesetTex, kSheetCols, kSheetRows);
 
-    m_map = loadMap("games/mario/assets/maps/1_1map.tmx");
+    m_map    = loadMap("games/mario/assets/maps/1_1map.tmx");
+    m_marioX = 3.f * TILE * SCALE; // Mario's starting world-space X
 }
 
-void MarioGame::onUpdate(float /*dt*/) {
+void MarioGame::onUpdate(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q))
         quit();
+
+    static constexpr float kSpeed    = 200.f; // world pixels per second
+    static constexpr float kMapLeft  = 0.f;
+
+    if (Engine::Input::isKeyDown(GLFW_KEY_RIGHT)) m_marioX += kSpeed * dt;
+    if (Engine::Input::isKeyDown(GLFW_KEY_LEFT))  m_marioX -= kSpeed * dt;
+
+    // Clamp Mario to map bounds
+    float mapWidth = static_cast<float>(m_map.cols * TILE * SCALE);
+    m_marioX = std::clamp(m_marioX, kMapLeft, mapWidth);
+
+    // Camera centers on Mario, clamped so we never show outside the map
+    m_cameraX = m_marioX - WIN_W * 0.5f;
+    m_cameraX = std::clamp(m_cameraX, 0.f, mapWidth - WIN_W);
 }
 
 void MarioGame::onRender() {
