@@ -38,6 +38,7 @@ external `.tsx` files — relative to the TMX path. It populates:
 - `map.backgroundColor` — the `backgroundcolor` attribute as a `Color4` (RGBA floats)
 - `map.layers` — all tile layers in TMX order
 - `map.tilesets` — all tileset references with resolved image paths and column counts
+- `map.objectLayers` — all object layers in TMX order
 
 ---
 
@@ -50,11 +51,16 @@ struct Map {
     int    cols, rows;
     int    tileWidth, tileHeight;
     Color4 backgroundColor;
-    std::vector<TileLayer>  layers;
-    std::vector<TilesetRef> tilesets;
+    std::vector<TileLayer>   layers;
+    std::vector<TilesetRef>  tilesets;
+    std::vector<ObjectLayer> objectLayers;
 
-    const TileLayer*  findLayer(const std::string& name) const;
-    const TilesetRef* tilesetForGid(uint32_t gid) const;
+    const TileLayer*   findLayer(const std::string& name) const;
+    const TilesetRef*  tilesetForGid(uint32_t gid) const;
+
+    const ObjectLayer* findObjectLayer(const std::string& name) const;
+    const MapObject*   findObject(const std::string& name) const;
+    std::vector<const MapObject*> findObjectsByType(const std::string& type) const;
 };
 ```
 
@@ -89,12 +95,49 @@ struct TilesetRef {
 struct Color4 { float r, g, b, a; };
 ```
 
+### `MapObject`
+
+One object from a TMX `<objectgroup>` layer. Point objects (placed with Tiled's point
+tool) have `width == 0` and `height == 0`.
+
+```cpp
+struct MapObject {
+    int         id;
+    std::string name;
+    std::string type;   // "class" in Tiled 1.9+, "type" in older versions
+    float       x, y;       // position in map pixel space (col * tileWidth, row * tileHeight)
+    float       width, height;
+
+    bool isPoint() const;   // true when width == 0 && height == 0
+};
+```
+
+`x` and `y` are in map pixel space. To convert to tile coordinates use integer division:
+
+```cpp
+int col = static_cast<int>(obj->x) / map.tileWidth;
+int row = static_cast<int>(obj->y) / map.tileHeight;
+```
+
+Tiled stores point positions at exact tile boundaries when placed on a tile grid, so
+integer division is reliable. If a position looks off, check that the object is snapped to
+the grid in Tiled (View → Snapping → Snap to Grid).
+
+### `ObjectLayer`
+
+```cpp
+struct ObjectLayer {
+    std::string            name;
+    std::vector<MapObject> objects;
+};
+```
+
 ---
 
 ## Looking up layers and tilesets
 
 ```cpp
-// Find a layer by name (returns nullptr if not found)
+// Find a tile layer by name (returns nullptr if not found)
 const Engine::Tilemap::TileLayer* layer = m_map.findLayer("Terrain");
 
 // Find the tileset that owns a given GID (flip bits stripped internally)
@@ -104,6 +147,40 @@ const Engine::Tilemap::TilesetRef* ts = m_map.tilesetForGid(1);
 `tilesetForGid` finds the tileset with the highest `firstGid` that is still ≤ the
 stripped GID — making it correct for multi-tileset maps and resilient to GID
 renumbering in Tiled.
+
+---
+
+## Object layers
+
+Object layers (`<objectgroup>` in the TMX) hold named point, rect, and polygon objects
+placed in Tiled. They are commonly used for spawn positions, trigger zones, and waypoints.
+
+```cpp
+// Find the first object with a given name across all object layers
+const Engine::Tilemap::MapObject* spawn = m_map.findObject("PlayerSpawn");
+if (spawn) {
+    int col = static_cast<int>(spawn->x) / m_map.tileWidth;
+    int row = static_cast<int>(spawn->y) / m_map.tileHeight;
+}
+
+// Find an object layer by name
+const Engine::Tilemap::ObjectLayer* ol = m_map.findObjectLayer("Spawns");
+
+// Find all objects of a given type/class
+auto enemies = m_map.findObjectsByType("Enemy");
+for (const auto* e : enemies) { /* ... */ }
+```
+
+`findObjectsByType` matches the `type` attribute (Tiled ≤ 1.8) and the `class` attribute
+(Tiled ≥ 1.9) transparently — the parser normalises both into `MapObject::type`.
+
+### Setting up spawn objects in Tiled
+
+1. Open the map in Tiled and add an **Object Layer** (Layer → New → Object Layer).
+2. Name the layer (e.g. `Spawns`).
+3. Select the **Point** tool and click the spawn tile. Enable **View → Snapping → Snap to Grid** so the point lands on an exact tile boundary.
+4. In the object properties panel, set **Name** (matched by `findObject`) and optionally **Class** (matched by `findObjectsByType`).
+5. Save the TMX. The engine reads object coordinates as pixel-space floats; integer division by `tileWidth`/`tileHeight` gives the tile column and row.
 
 ---
 

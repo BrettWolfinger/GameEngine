@@ -315,3 +315,20 @@ setup, entity spawning) without pulling in the full rendering stack.
 GID, making it correct for multi-tileset maps and resilient to GID renumbering when the
 Tiled file is edited. The game-level `MapLoader` files were removed from both Pac-Man
 and Mario, replaced with the two-line engine calls.
+
+### Object layers
+
+`Engine::Tilemap` was extended with full object layer support. `MapObject` and
+`ObjectLayer` structs were added to `Tilemap.h`, and `loadMap()` now parses all
+`<objectgroup>` elements and their `<object>` children. Three query methods were added
+to `Map`: `findObjectLayer()`, `findObject()`, and `findObjectsByType()`. The parser
+normalises both Tiled's old `type` attribute (≤ 1.8) and the newer `class` attribute
+(≥ 1.9) into a single `MapObject::type` field.
+
+The immediate use case was Pac-Man's spawn position. Rather than hardcoding a fallback
+column and row in game code, the spawn is authored as a named point object (`PacmanSpawn`)
+in a `Spawns` object layer in the TMX. `onInit` calls `findObject("PacmanSpawn")` and
+converts the pixel-space coordinates to tile coordinates via integer division. The
+hardcoded fallback (col 14, row 23) is still present as a safety net if the object is
+absent. Object layers are the intended mechanism for all future entity spawning —
+ghosts, items, and trigger zones will follow the same pattern.
