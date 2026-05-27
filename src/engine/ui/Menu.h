@@ -12,7 +12,7 @@ public:
     explicit Menu(std::vector<std::string> items, float fontScale = 2.f);
 
     void update();
-    void draw(Renderer2D& r, float x, float y) const;
+    void draw(Renderer2D& r, float x, float y, int layer = 0) const;
 
     bool confirmed()    const { return m_confirmed; }
     int  selectedIndex() const { return m_index; }

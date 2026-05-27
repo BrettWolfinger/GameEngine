@@ -36,23 +36,23 @@ static const int s_alpha[26]  = {
      91, // Z  a+b+d+e+g     (same as 2)
 };
 
-static void drawSegments(Renderer2D& r, int mask, float x, float y, float s, const glm::vec4& col) {
-    if (mask &  1) r.drawRect(x,       y,     3*s,  s,  col); // a top
-    if (mask &  2) r.drawRect(x + 2*s, y,      s,  3*s, col); // b top-right
-    if (mask &  4) r.drawRect(x + 2*s, y+2*s,  s,  3*s, col); // c bottom-right
-    if (mask &  8) r.drawRect(x,       y+4*s, 3*s,  s,  col); // d bottom
-    if (mask & 16) r.drawRect(x,       y+2*s,  s,  3*s, col); // e bottom-left
-    if (mask & 32) r.drawRect(x,       y,       s,  3*s, col); // f top-left
-    if (mask & 64) r.drawRect(x,       y+2*s, 3*s,  s,  col); // g middle
+static void drawSegments(Renderer2D& r, int mask, float x, float y, float s, const glm::vec4& col, int layer) {
+    if (mask &  1) r.drawRect(x,       y,     3*s,  s,  col, layer); // a top
+    if (mask &  2) r.drawRect(x + 2*s, y,      s,  3*s, col, layer); // b top-right
+    if (mask &  4) r.drawRect(x + 2*s, y+2*s,  s,  3*s, col, layer); // c bottom-right
+    if (mask &  8) r.drawRect(x,       y+4*s, 3*s,  s,  col, layer); // d bottom
+    if (mask & 16) r.drawRect(x,       y+2*s,  s,  3*s, col, layer); // e bottom-left
+    if (mask & 32) r.drawRect(x,       y,       s,  3*s, col, layer); // f top-left
+    if (mask & 64) r.drawRect(x,       y+2*s, 3*s,  s,  col, layer); // g middle
 }
 
-void drawChar(Renderer2D& r, char c, float x, float y, float s, const glm::vec4& col) {
+void drawChar(Renderer2D& r, char c, float x, float y, float s, const glm::vec4& col, int layer) {
     c = static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
     int mask = 0;
     if      (c >= '0' && c <= '9') mask = s_digits[c - '0'];
     else if (c >= 'A' && c <= 'Z') mask = s_alpha[c - 'A'];
     else                           return; // space or unsupported — no-op
-    drawSegments(r, mask, x, y, s, col);
+    drawSegments(r, mask, x, y, s, col, layer);
 }
 
 float stringWidth(std::string_view text, float s) {
@@ -61,21 +61,21 @@ float stringWidth(std::string_view text, float s) {
     return s * (4.f * static_cast<float>(text.size()) - 1.f);
 }
 
-float drawString(Renderer2D& r, std::string_view text, float x, float y, float s, const glm::vec4& col) {
+float drawString(Renderer2D& r, std::string_view text, float x, float y, float s, const glm::vec4& col, int layer) {
     float advance = 4.f * s; // glyph width (3s) + gap (s)
     for (char c : text) {
-        drawChar(r, c, x, y, s, col);
+        drawChar(r, c, x, y, s, col, layer);
         x += advance;
     }
     return stringWidth(text, s);
 }
 
-void drawStringCentered(Renderer2D& r, std::string_view text, float cx, float y, float s, const glm::vec4& col) {
-    drawString(r, text, cx - stringWidth(text, s) * 0.5f, y, s, col);
+void drawStringCentered(Renderer2D& r, std::string_view text, float cx, float y, float s, const glm::vec4& col, int layer) {
+    drawString(r, text, cx - stringWidth(text, s) * 0.5f, y, s, col, layer);
 }
 
-void drawStringCentered(Renderer2D& r, int n, float cx, float y, float s, const glm::vec4& col) {
-    drawStringCentered(r, std::to_string(n), cx, y, s, col);
+void drawStringCentered(Renderer2D& r, int n, float cx, float y, float s, const glm::vec4& col, int layer) {
+    drawStringCentered(r, std::to_string(n), cx, y, s, col, layer);
 }
 
 } // namespace SegmentFont

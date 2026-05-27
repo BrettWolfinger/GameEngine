@@ -25,7 +25,7 @@ void Menu::update() {
     }
 }
 
-void Menu::draw(Renderer2D& r, float x, float y) const {
+void Menu::draw(Renderer2D& r, float x, float y, int layer) const {
     const float glyphH    = 7.f * m_fontScale;
     const float cursorW   = 6.f * m_fontScale;
     const float cursorPad = 4.f;
@@ -37,10 +37,10 @@ void Menu::draw(Renderer2D& r, float x, float y) const {
 
         if (selected) {
             std::string cur(1, m_cursor);
-            PixelFont::drawString(r, cur, x, itemY, m_fontScale, color);
+            PixelFont::drawString(r, cur, x, itemY, m_fontScale, color, layer);
         }
 
-        PixelFont::drawString(r, m_items[i], x + cursorW + cursorPad, itemY, m_fontScale, color);
+        PixelFont::drawString(r, m_items[i], x + cursorW + cursorPad, itemY, m_fontScale, color, layer);
     }
 }
 
