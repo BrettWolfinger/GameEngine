@@ -1,7 +1,7 @@
 #include "MarioGame.h"
 #include "GameConstants.h"
 #include <GLFW/glfw3.h>
-#include <algorithm>
+#include <algorithm> // std::clamp
 
 // Render layers
 static constexpr int kLayerBackground = 0;
@@ -53,30 +53,12 @@ void MarioGame::renderBackground() {
 }
 
 void MarioGame::renderTerrain() {
-    const Engine::Tilemap::TileLayer* layer = m_map.findLayer("Terrain");
-    if (!layer) return;
+    const auto* layer = m_map.findLayer("Terrain");
+    const auto* ts    = m_map.tilesetForGid(1);
+    if (!layer || !ts) return;
 
-    const auto* ts = m_map.tilesetForGid(1);
-    const float tileSize = static_cast<float>(TILE * SCALE);
-
-    int firstCol = std::max(0, static_cast<int>(m_cameraX / tileSize));
-    int lastCol  = std::min(layer->cols, static_cast<int>((m_cameraX + WIN_W) / tileSize) + 1);
-
-    for (int row = 0; row < layer->rows; ++row) {
-        for (int col = firstCol; col < lastCol; ++col) {
-            uint32_t raw = layer->gids[row * layer->cols + col];
-            if (Engine::Tilemap::stripFlips(raw) == 0) continue;
-
-            int localId = static_cast<int>(Engine::Tilemap::stripFlips(raw)) - ts->firstGid;
-            auto flipped = Engine::Tilemap::applyFlips(m_tilesetSheet->getFrameUVs(localId), raw);
-
-            m_renderer.drawTexturedRect(
-                col * tileSize - m_cameraX, row * tileSize, tileSize, tileSize,
-                m_tilesetSheet->texture(),
-                flipped.uv.u0, flipped.uv.v0, flipped.uv.u1, flipped.uv.v1,
-                flipped.angle, {1.f, 1.f, 1.f, 1.f},
-                kLayerTerrain
-            );
-        }
-    }
+    Engine::Tilemap::renderLayer(m_renderer, *layer, *m_tilesetSheet, *ts,
+                                 static_cast<float>(TILE * SCALE), kLayerTerrain,
+                                 m_cameraX, 0.f,
+                                 static_cast<float>(WIN_W), static_cast<float>(WIN_H));
 }

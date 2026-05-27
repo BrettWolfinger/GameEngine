@@ -55,28 +55,11 @@ void PacmanGame::onRender() {
 
 void PacmanGame::renderWalls() {
     const auto* layer = m_map.findLayer("Wall");
-    if (!layer) return;
+    const auto* ts    = m_map.tilesetForGid(1);
+    if (!layer || !ts) return;
 
-    const auto* ts = m_map.tilesetForGid(1);
-    const float tileSize = static_cast<float>(TILE * SCALE);
-
-    for (int row = 0; row < layer->rows; ++row) {
-        for (int col = 0; col < layer->cols; ++col) {
-            uint32_t raw = layer->gids[row * layer->cols + col];
-            if (Engine::Tilemap::stripFlips(raw) == 0) continue;
-
-            int localId = static_cast<int>(Engine::Tilemap::stripFlips(raw)) - ts->firstGid;
-            auto flipped = Engine::Tilemap::applyFlips(m_wallSheet->getFrameUVs(localId), raw);
-
-            m_renderer.drawTexturedRect(
-                col * tileSize, row * tileSize, tileSize, tileSize,
-                m_wallSheet->texture(),
-                flipped.uv.u0, flipped.uv.v0, flipped.uv.u1, flipped.uv.v1,
-                flipped.angle, {1.f, 1.f, 1.f, 1.f},
-                kLayerWalls
-            );
-        }
-    }
+    Engine::Tilemap::renderLayer(m_renderer, *layer, *m_wallSheet, *ts,
+                                 static_cast<float>(TILE * SCALE), kLayerWalls);
 }
 
 void PacmanGame::renderDots() {

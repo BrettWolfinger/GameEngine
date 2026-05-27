@@ -17,3 +17,4 @@
 #include <engine/facade/Config.h>
 #include <engine/facade/Particles.h>
 #include <engine/tilemap/Tilemap.h>
+#include <engine/tilemap/TilemapRenderer.h>

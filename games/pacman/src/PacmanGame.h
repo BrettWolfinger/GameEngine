@@ -5,6 +5,7 @@
 #include <engine/renderer/Texture.h>
 #include <engine/renderer/SpriteSheet.h>
 #include <engine/tilemap/Tilemap.h>
+#include <engine/tilemap/TilemapRenderer.h>
 #include "MapTypes.h"
 #include <memory>
 #include <vector>

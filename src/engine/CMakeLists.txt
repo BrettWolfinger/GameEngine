@@ -22,6 +22,7 @@ add_library(engine STATIC
     physics/CollisionWorld.cpp
     core/Services.cpp
     tilemap/Tilemap.cpp
+    tilemap/TilemapRenderer.cpp
 )
 
 # Expose src/ so consumers use #include <engine/...>

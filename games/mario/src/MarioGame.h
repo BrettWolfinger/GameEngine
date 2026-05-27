@@ -5,6 +5,7 @@
 #include <engine/renderer/Texture.h>
 #include <engine/renderer/SpriteSheet.h>
 #include <engine/tilemap/Tilemap.h>
+#include <engine/tilemap/TilemapRenderer.h>
 #include <memory>
 
 class MarioGame : public Engine::Application {
