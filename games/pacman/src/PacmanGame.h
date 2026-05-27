@@ -24,16 +24,22 @@ protected:
     Engine::Renderer2D* getRenderer() override { return &m_renderer; }
 
 private:
+    enum class GameState { Playing, Dying, GameOver };
+
     void buildDotCache();
     void tryEatDot();
     void updateModeTimer(float dt);
     void triggerFrightened();
     void updateFrightenedTimer(float dt);
     void checkGhostCollision();
+    void startDeathSequence();
+    void handleDyingState(float dt);
+    void respawnAfterDeath();
     void renderWalls();
     void renderDots();
     void renderGhosts();
     void renderHUD();
+    void renderLives();
     void renderDevHUD();
 
     Engine::Renderer2D                    m_renderer;
@@ -60,5 +66,9 @@ private:
     // Frightened mode
     float     m_frightenedTimer        = 0.f;
     int       m_ghostsEatenThisPellet  = 0;
-    bool      m_pacmanDead             = false;
+
+    // Lives and death sequence
+    int       m_lives           = kStartLives;
+    GameState m_gameState       = GameState::Playing;
+    float     m_deathPauseTimer = 0.f;
 };

@@ -30,10 +30,20 @@ Pacman::Pacman(const Engine::Tilemap::TileLayer& wallLayer,
     , m_animator(sheet)
 {
     m_animator.addClip("move", { {0, 1, 2, 3}, 0.1f, Engine::PlayMode::Loop });
+
+    // Death: 8 frames across rows 1 and 2 (frame indices 4–11)
+    m_animator.addClip("death", {
+        { kPacSheetCols*1+0, kPacSheetCols*1+1, kPacSheetCols*1+2, kPacSheetCols*1+3,
+          kPacSheetCols*2+0, kPacSheetCols*2+1, kPacSheetCols*2+2, kPacSheetCols*2+3 },
+        0.15f, Engine::PlayMode::OneShot
+    });
+
     m_animator.setClip("move");
 
-    m_col    = m_tgtCol = startCol;
-    m_row    = m_tgtRow = startRow;
+    m_startCol = startCol;
+    m_startRow = startRow;
+    m_col      = m_tgtCol = startCol;
+    m_row      = m_tgtRow = startRow;
     m_x = m_col * kGridSize + kGridSize * 0.5f;
     m_y = m_row * kGridSize + kGridSize * 0.5f;
 }
@@ -55,7 +65,35 @@ void Pacman::setTarget(int fromCol, int fromRow, Dir dir) {
     m_tgtRow = fromRow + dr;
 }
 
+void Pacman::startDeath() {
+    m_dying   = true;
+    m_dir     = Dir::None;
+    m_nextDir = Dir::None;
+    m_animator.setClip("death");
+}
+
+bool Pacman::isDeathDone() const {
+    return m_dying && m_animator.isFinished();
+}
+
+void Pacman::respawn() {
+    m_col    = m_tgtCol = m_startCol;
+    m_row    = m_tgtRow = m_startRow;
+    m_x      = m_startCol * kGridSize + kGridSize * 0.5f;
+    m_y      = m_startRow * kGridSize + kGridSize * 0.5f;
+    m_dir    = Dir::None;
+    m_nextDir = Dir::None;
+    m_dying  = false;
+    m_animator.setClip("move");
+}
+
 void Pacman::update(float dt) {
+    // During death animation only advance the animator — no input or movement.
+    if (m_dying) {
+        m_animator.update(dt);
+        return;
+    }
+
     // --- input ---
     if (Engine::Input::isKeyDown(GLFW_KEY_UP))    m_nextDir = Dir::Up;
     if (Engine::Input::isKeyDown(GLFW_KEY_DOWN))  m_nextDir = Dir::Down;
@@ -113,11 +151,14 @@ void Pacman::render(Engine::Renderer2D& renderer, int renderLayer) const {
     auto  uv    = m_animator.currentFrameUVs();
     float angle = 0.f;
 
-    switch (m_dir == Dir::None ? m_nextDir : m_dir) {
-        case Dir::Left:  std::swap(uv.u0, uv.u1); break;
-        case Dir::Up:    angle = -kHalfPi;         break;
-        case Dir::Down:  angle = +kHalfPi;         break;
-        default: break;
+    // Death animation is directional-agnostic — render without any transform.
+    if (!m_dying) {
+        switch (m_dir == Dir::None ? m_nextDir : m_dir) {
+            case Dir::Left:  std::swap(uv.u0, uv.u1); break;
+            case Dir::Up:    angle = -kHalfPi;         break;
+            case Dir::Down:  angle = +kHalfPi;         break;
+            default: break;
+        }
     }
 
     renderer.drawTexturedRect(

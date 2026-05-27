@@ -28,12 +28,17 @@ public:
     UVRect currentFrameUVs() const;
     const SpriteSheet& sheet() const { return *m_sheet; }
 
+    /// Returns true once a PlayMode::OneShot clip has played its last frame.
+    /// Always false for looping clips and while the clip is still advancing.
+    bool isFinished() const;
+
 private:
     std::shared_ptr<SpriteSheet>              m_sheet;
     std::unordered_map<std::string, AnimClip> m_clips;
     const AnimClip*                           m_current     = nullptr;
     int                                       m_frameIdx    = 0;
     float                                     m_accumulated = 0.f;
+    bool                                      m_finished    = false;
 };
 
 } // namespace Engine

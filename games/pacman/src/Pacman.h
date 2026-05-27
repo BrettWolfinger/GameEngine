@@ -25,9 +25,19 @@ public:
     void update(float dt);
     void render(Engine::Renderer2D& renderer, int renderLayer) const;
 
-    int col() const { return m_col; }
-    int row() const { return m_row; }
-    Dir dir() const { return m_dir; }
+    /// Begin the death animation; freezes movement and input.
+    void startDeath();
+
+    /// Returns true once the OneShot death animation has played through.
+    bool isDeathDone() const;
+
+    /// Reset to spawn position and resume normal movement/animation.
+    void respawn();
+
+    int col()     const { return m_col; }
+    int row()     const { return m_row; }
+    Dir dir()     const { return m_dir; }
+    bool isDying() const { return m_dying; }
 
 private:
     bool isWall(int col, int row) const;
@@ -37,12 +47,15 @@ private:
     const Engine::Tilemap::TileLayer& m_wallLayer;
     Engine::SpriteAnimator            m_animator;
 
-    float m_x       = 0.f;
-    float m_y       = 0.f;
-    int   m_col     = 0;
-    int   m_row     = 0;
-    int   m_tgtCol  = 0;
-    int   m_tgtRow  = 0;
-    Dir   m_dir     = Dir::None;
-    Dir   m_nextDir = Dir::None;
+    float m_x        = 0.f;
+    float m_y        = 0.f;
+    int   m_col      = 0;
+    int   m_row      = 0;
+    int   m_tgtCol   = 0;
+    int   m_tgtRow   = 0;
+    int   m_startCol = 0;
+    int   m_startRow = 0;
+    Dir   m_dir      = Dir::None;
+    Dir   m_nextDir  = Dir::None;
+    bool  m_dying    = false;
 };
