@@ -507,6 +507,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../engine/tilemap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tilemap System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../engine/adding-a-new-game/" class="md-nav__link">
         
   
@@ -1086,6 +1114,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#pac-man-and-super-mario-bros-tilemap-based-games" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pac-Man and Super Mario Bros — tilemap-based games
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pac-Man and Super Mario Bros — tilemap-based games">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pac-man" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pac-Man
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#super-mario-bros" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Super Mario Bros
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enginetilemap-promotion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engine::Tilemap promotion
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1430,6 +1508,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#pac-man-and-super-mario-bros-tilemap-based-games" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pac-Man and Super Mario Bros — tilemap-based games
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pac-Man and Super Mario Bros — tilemap-based games">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pac-man" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pac-Man
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#super-mario-bros" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Super Mario Bros
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enginetilemap-promotion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engine::Tilemap promotion
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1653,6 +1781,45 @@ was caught during testing — <code>PushID(i)</code> resets to zero in each sect
 multiple collapsing headers are open simultaneously the index scopes overlap. Fixed
 by wrapping each section's loop with a string-keyed <code>PushID("ufos")</code> /
 <code>PushID("asteroids")</code> / <code>PushID("ships")</code>.</p>
+<hr />
+<h2 id="pac-man-and-super-mario-bros-tilemap-based-games">Pac-Man and Super Mario Bros — tilemap-based games</h2>
+<h3 id="pac-man">Pac-Man</h3>
+<p>Pac-Man was the first game to use the <a href="https://www.mapeditor.org/">Tiled</a> map editor for
+level design. The maze was authored as a TMX file with two layers: Wall (maze tiles) and
+Dots (dot and power pellet positions). The Dots layer is not rendered directly — it is
+read at load time into a <code>std::vector&lt;CellType&gt;</code> cache, which tracks which cells still
+contain collectibles. This separates the authored level data from mutable game state
+without duplicating the coordinate system.</p>
+<p>Getting the flip/rotation orientations right was the main technical challenge. Tiled
+encodes the top three bits of each GID as flip-H, flip-V, and flip-diagonal flags.
+Eight combinations map to four reflections and four rotations. Working through the
+diagonal cases required tracking vertex positions under 90° rotations in a Y-down
+coordinate space — in OpenGL with a Y-down ortho projection, a positive <code>glm::rotate</code>
+angle produces a clockwise image rotation.</p>
+<h3 id="super-mario-bros">Super Mario Bros</h3>
+<p>Mario introduced the first scrolling camera. The approach is a bare <code>m_cameraX</code> float
+that offsets tile positions during rendering, clamped to the map bounds. A "Mario
+position" float moves left and right via held key input; the camera centers on it and
+clamps so it never shows past either edge of the map. The distinction between
+<code>isKeyDown</code> (fires every frame while held) and <code>isKeyPressed</code> (fires once on press) was
+important here — movement requires the former.</p>
+<p>Background color is authored directly in Tiled as the map's <code>backgroundcolor</code> attribute
+and parsed to a <code>Color4</code> RGBA struct. Drawing it as a full-screen rect at the lowest
+render layer keeps the color out of game code and makes it trivial to change per level
+in the editor.</p>
+<h3 id="enginetilemap-promotion">Engine::Tilemap promotion</h3>
+<p>After both games independently implemented TMX parsing and tile rendering, the shared
+code was promoted to the engine as <code>Engine::Tilemap</code> (closes issue #26).</p>
+<p>The subsystem is split across two headers. <code>Tilemap.h</code> covers the pure data model and
+parsing: <code>Map</code>, <code>TileLayer</code>, <code>TilesetRef</code>, <code>Color4</code>, flip-bit utilities, and
+<code>loadMap()</code>. <code>TilemapRenderer.h</code> covers rendering: <code>renderLayer()</code> draws a tile layer
+via <code>Renderer2D</code> with optional camera offset and viewport culling. Keeping them separate
+means <code>Tilemap.h</code> has no renderer dependency — map data can be read anywhere (collision
+setup, entity spawning) without pulling in the full rendering stack.</p>
+<p><code>tilesetForGid()</code> finds the tileset with the highest <code>firstGid</code> still ≤ the stripped
+GID, making it correct for multi-tileset maps and resilient to GID renumbering when the
+Tiled file is edited. The game-level <code>MapLoader</code> files were removed from both Pac-Man
+and Mario, replaced with the two-line engine calls.</p>
 
 
 

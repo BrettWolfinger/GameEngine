@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://brettwolfinger.github.io/GameEngine/engine/engine-facade/">
+        <link rel="canonical" href="https://brettwolfinger.github.io/GameEngine/engine/tilemap/">
       
       
-        <link rel="prev" href="../..">
+        <link rel="prev" href="../sprite-rendering-v2/">
       
       
-        <link rel="next" href="../application-game-loop/">
+        <link rel="next" href="../adding-a-new-game/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Engine Facade - Engine</title>
+        <title>Tilemap System - Engine</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#engine-facade" class="md-skip">
+        <a href="#tilemap-system" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Engine Facade
+              Tilemap System
             
           </span>
         </div>
@@ -312,37 +312,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Engine Facade
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../engine-facade/" class="md-nav__link">
         
   
   
@@ -358,153 +331,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#why" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#design" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Design
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Design">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#free-functions-in-enginesubsystem-namespaces" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Free functions in Engine::&lt;Subsystem&gt; namespaces
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#one-header-per-subsystem-one-aggregating-header" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        One header per subsystem, one aggregating header
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#what-goes-in-the-facade" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What goes in the facade
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#what-does-not-go-in-the-facade" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What does not go in the facade
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#enforcement" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Enforcement
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#adding-a-new-subsystem" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Adding a new subsystem
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#doxygen" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Doxygen
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#benefits" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Benefits
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#call-site-reference" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Call site reference
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -682,10 +508,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../tilemap/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tilemap System
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -701,6 +554,192 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-a-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loading a map
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data types
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Map
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tilelayer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TileLayer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tilesetref" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TilesetRef
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#color4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Color4
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#looking-up-layers-and-tilesets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Looking up layers and tilesets
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rendering-a-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rendering a layer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rendering a layer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#building-a-spritesheet-from-a-tileset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building a SpriteSheet from a tileset
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flip-bits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flip bits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#background-color" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Background color
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multi-tileset-maps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-tileset maps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-gids-for-game-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using GIDs for game logic
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1024,10 +1063,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#why" class="md-nav__link">
+  <a href="#overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why
+        Overview
       
     </span>
   </a>
@@ -1035,22 +1074,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#design" class="md-nav__link">
+  <a href="#loading-a-map" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Design
+        Loading a map
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Design">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data types
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data types">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#free-functions-in-enginesubsystem-namespaces" class="md-nav__link">
+  <a href="#map" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Free functions in Engine::&lt;Subsystem&gt; namespaces
+        Map
       
     </span>
   </a>
@@ -1058,10 +1108,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#one-header-per-subsystem-one-aggregating-header" class="md-nav__link">
+  <a href="#tilelayer" class="md-nav__link">
     <span class="md-ellipsis">
       
-        One header per subsystem, one aggregating header
+        TileLayer
       
     </span>
   </a>
@@ -1069,10 +1119,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#what-goes-in-the-facade" class="md-nav__link">
+  <a href="#tilesetref" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What goes in the facade
+        TilesetRef
       
     </span>
   </a>
@@ -1080,21 +1130,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#what-does-not-go-in-the-facade" class="md-nav__link">
+  <a href="#color4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What does not go in the facade
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#enforcement" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Enforcement
+        Color4
       
     </span>
   </a>
@@ -1107,10 +1146,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#adding-a-new-subsystem" class="md-nav__link">
+  <a href="#looking-up-layers-and-tilesets" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Adding a new subsystem
+        Looking up layers and tilesets
       
     </span>
   </a>
@@ -1118,10 +1157,38 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#doxygen" class="md-nav__link">
+  <a href="#rendering-a-layer" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Doxygen
+        Rendering a layer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rendering a layer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#building-a-spritesheet-from-a-tileset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building a SpriteSheet from a tileset
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flip-bits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flip bits
       
     </span>
   </a>
@@ -1129,10 +1196,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#benefits" class="md-nav__link">
+  <a href="#background-color" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Benefits
+        Background color
       
     </span>
   </a>
@@ -1140,10 +1207,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#call-site-reference" class="md-nav__link">
+  <a href="#multi-tileset-maps" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Call site reference
+        Multi-tileset maps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-gids-for-game-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using GIDs for game logic
       
     </span>
   </a>
@@ -1170,173 +1248,214 @@
   
 
 
-<h1 id="engine-facade">Engine Facade</h1>
-<p>A stable public API layer between engine internals and game code. Games program
-against the facade rather than reaching into engine subsystems directly.
-Internal refactors — renaming, restructuring, replacing subsystems — only
-require updating the facade, not every game.</p>
+<h1 id="tilemap-system">Tilemap System</h1>
+<p>The engine includes a tilemap subsystem (<code>Engine::Tilemap</code>) that loads and renders
+<a href="https://www.mapeditor.org/">Tiled</a> maps. It handles TMX/TSX file parsing, multi-tileset
+maps, and all eight Tiled flip/rotation orientations.</p>
 <hr />
-<h2 id="why">Why</h2>
-<p>Without the facade, game code calls engine internals directly:</p>
-<pre><code class="language-cpp">Engine::Services::audio().playTone(480.f, 0.05f);
-Engine::Services::particles().emit(params);
-Engine::Services::collision().add(desc, callback);
-</code></pre>
-<p><code>Services</code> is an internal registry. Exposing it to games means any refactor of
-how the engine manages subsystems forces fixes across every game file. This is
-what broke Pong and Breakout when <code>AudioManager</code> changed from static to instance
-methods.</p>
-<hr />
-<h2 id="design">Design</h2>
-<h3 id="free-functions-in-enginesubsystem-namespaces">Free functions in <code>Engine::&lt;Subsystem&gt;</code> namespaces</h3>
-<p>Games call free functions grouped by subsystem namespace. The facade owns the
-mapping to the current internal implementation.</p>
-<pre><code class="language-cpp">// Game code — stable across engine refactors
-Engine::Audio::playTone(480.f, 0.05f);
-Engine::Particles::emit(params);
-Engine::Collision::add(desc, callback);
-</code></pre>
-<p>Sub-namespaces keep the flat <code>Engine</code> namespace from crowding as more subsystems
-are added, and make call sites self-documenting without exposing implementation
-details.</p>
-<h3 id="one-header-per-subsystem-one-aggregating-header">One header per subsystem, one aggregating header</h3>
-<pre><code>src/engine/facade/
-    Audio.h       → Engine::Audio::*
-    Particles.h   → Engine::Particles::*
-    Collision.h   → Engine::Collision::*
-    Config.h      → Engine::Config::*
-
-src/engine/Engine.h   ← most game code includes this
-</code></pre>
-<p>Each facade header is a pure declaration file — no implementation, no internal
-includes. The corresponding <code>.cpp</code> in the same directory holds the
-implementation and is the only place that includes engine-internal headers.</p>
-<p><code>Engine.h</code> is a thin aggregator:</p>
-<pre><code class="language-cpp">#pragma once
-#include &lt;engine/facade/Audio.h&gt;
-#include &lt;engine/facade/Collision.h&gt;
-#include &lt;engine/facade/Config.h&gt;
-#include &lt;engine/facade/Particles.h&gt;
-</code></pre>
-<p>Game <code>.cpp</code> files that use more than one subsystem include <code>&lt;engine/Engine.h&gt;</code>.
-Game <code>.h</code> files that need a specific type (e.g. <code>ColliderHandle</code> as a member)
-include the per-subsystem header directly.</p>
-<h3 id="what-goes-in-the-facade">What goes in the facade</h3>
-<p>Operations — things games <em>do</em>:</p>
-<ul>
-<li>Play audio</li>
-<li>Emit particles (<code>emit</code>, <code>clear</code> — <code>update</code> and <code>render</code> are engine-owned)</li>
-<li>Register, update, and remove colliders</li>
-<li>Register hot-reload callbacks for config files</li>
-</ul>
-<h3 id="what-does-not-go-in-the-facade">What does not go in the facade</h3>
-<p>Types that games hold or pass around stay as direct includes — they cannot be
-hidden behind the facade without forcing games to use opaque handles for
-everything:</p>
-<ul>
-<li><code>glm::vec2</code>, <code>glm::vec4</code> — math types</li>
-<li><code>ColliderHandle</code> — stored as a member on game objects</li>
-<li><code>ParticleEmitParams</code> — constructed by game code</li>
-<li><code>Engine::Renderer2D</code> — passed to <code>render()</code> by the engine, not requested by games</li>
-</ul>
-<h3 id="enforcement">Enforcement</h3>
-<p>Internal headers are guarded with <code>ENGINE_INTERNAL</code>:</p>
-<pre><code class="language-cpp">#pragma once
-#ifndef ENGINE_INTERNAL
-#  error &quot;engine/core/Services.h is an engine-internal header. Include &lt;engine/Engine.h&gt; instead.&quot;
-#endif
-</code></pre>
-<p>The engine CMake target defines <code>ENGINE_INTERNAL</code> privately, so only engine
-translation units can include these headers. Game code that tries to include
-<code>Services.h</code>, <code>AudioManager.h</code>, <code>ParticleSystem.h</code>, or <code>CollisionWorld.h</code>
-directly gets a compile error with a clear message.</p>
-<p><code>Application</code> stores its subsystem members (<code>AudioManager</code>, <code>ParticleSystem</code>,
-<code>CollisionWorld</code>) behind a pimpl (<code>struct Application::Impl</code> in
-<code>Application.cpp</code>), so <code>Application.h</code> needs no internal includes and leaks
-nothing to games that subclass it.</p>
-<hr />
-<h2 id="adding-a-new-subsystem">Adding a new subsystem</h2>
-<ol>
-<li>Create <code>src/engine/facade/MySystem.h</code> — declarations only, no internal includes.
-   Add Doxygen <code>///</code> comments for every function.</li>
-<li>Create <code>src/engine/facade/MySystem.cpp</code> — include <code>Services.h</code> and the
-   internal subsystem header here, implement the wrappers.</li>
-<li>Add the <code>.cpp</code> to <code>src/engine/CMakeLists.txt</code>.</li>
-<li>Add <code>#include &lt;engine/facade/MySystem.h&gt;</code> to <code>src/engine/Engine.h</code>.</li>
-<li>Add <code>ENGINE_INTERNAL</code> guard to the internal subsystem header.</li>
-<li>If the subsystem is owned by <code>Application</code>, add it to <code>struct Application::Impl</code>
-   in <code>Application.cpp</code> and register it with <code>Services</code> in the constructor.</li>
-</ol>
-<hr />
-<h2 id="doxygen">Doxygen</h2>
-<p>All facade headers and shared game types are annotated with Doxygen <code>///</code>
-comments. Update comments in the same commit as any signature change — stale
-parameter docs are worse than none.</p>
-<p>Annotate:
-- <code>src/engine/facade/*.h</code> and <code>src/engine/Engine.h</code>
-- Shared types games construct directly: <code>ParticleEmitParams.h</code>, <code>Collider.h</code></p>
-<p>Do not annotate engine internals (<code>Services</code>, <code>AudioManager</code>, etc.).</p>
-<p>CI config and GitHub Pages publishing are tracked in issue #68.</p>
-<hr />
-<h2 id="benefits">Benefits</h2>
+<h2 id="overview">Overview</h2>
+<p>Two headers make up the tilemap system:</p>
 <table>
 <thead>
 <tr>
-<th>Concern</th>
-<th>Without facade</th>
-<th>With facade</th>
+<th>Header</th>
+<th>Responsibility</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Internal refactor scope</td>
-<td>All game files</td>
-<td>Facade only</td>
+<td><code>&lt;engine/tilemap/Tilemap.h&gt;</code></td>
+<td>Data types, TMX/TSX parsing, flip-bit utilities</td>
 </tr>
 <tr>
-<td>New developer onboarding</td>
-<td>Read engine source</td>
-<td>Read <code>Engine.h</code></td>
-</tr>
-<tr>
-<td>"What can a game do?"</td>
-<td>Implicit, scattered</td>
-<td>Explicit, one place</td>
-</tr>
-<tr>
-<td>Breaking change detection</td>
-<td>Build failure</td>
-<td>Build failure (same)</td>
-</tr>
-<tr>
-<td>Breaking change <em>blast radius</em></td>
-<td>All games</td>
-<td>Zero games</td>
+<td><code>&lt;engine/tilemap/TilemapRenderer.h&gt;</code></td>
+<td>Rendering a tile layer via <code>Renderer2D</code></td>
 </tr>
 </tbody>
 </table>
+<p>The split is intentional. <code>Tilemap.h</code> has no renderer dependency — it can be included
+anywhere map data is needed (game logic, collision setup, entity spawning) without pulling
+in the full rendering stack. <code>TilemapRenderer.h</code> depends on both.</p>
 <hr />
-<h2 id="call-site-reference">Call site reference</h2>
-<pre><code class="language-cpp">// Audio
-Engine::Audio::playTone(480.f, 0.05f);
-Engine::Audio::playNoise(0.40f, 0.40f, decay);
-Engine::Audio::playLoopingTone(slot, hz, amplitude);
-Engine::Audio::playLoopingNoise(slot, amplitude);
-Engine::Audio::stopLoopingVoice(slot);
+<h2 id="loading-a-map">Loading a map</h2>
+<pre><code class="language-cpp">Engine::Tilemap::Map m_map;
 
-// Particles — update/render are engine-owned; games only call emit and clear
-Engine::Particles::emit(params);
-Engine::Particles::clear();  // call on state transitions to prevent stale particles
-
-// Collision
-Engine::Collision::add(desc, callback);
-Engine::Collision::remove(handle);
-Engine::Collision::updateCircle(handle, cx, cy, r);
-Engine::Collision::updateAABB(handle, x, y, w, h);
-
-// Config — hot-reload (no-op in release builds, so no #ifdef needed at call sites)
-Engine::Config::watch(&quot;games/mygame/assets/configs/enemies.toml&quot;, loadEnemyConfigs);
+// In onInit():
+m_map = Engine::Tilemap::loadMap(&quot;games/mygame/assets/maps/level1.tmx&quot;);
 </code></pre>
+<p><code>loadMap</code> parses the TMX file and resolves all <code>&lt;tileset&gt;</code> references — both inline and
+external <code>.tsx</code> files — relative to the TMX path. It populates:</p>
+<ul>
+<li><code>map.cols</code>, <code>map.rows</code> — tile dimensions of the map</li>
+<li><code>map.tileWidth</code>, <code>map.tileHeight</code> — tile size in pixels (from the TMX)</li>
+<li><code>map.backgroundColor</code> — the <code>backgroundcolor</code> attribute as a <code>Color4</code> (RGBA floats)</li>
+<li><code>map.layers</code> — all tile layers in TMX order</li>
+<li><code>map.tilesets</code> — all tileset references with resolved image paths and column counts</li>
+</ul>
+<hr />
+<h2 id="data-types">Data types</h2>
+<h3 id="map"><code>Map</code></h3>
+<pre><code class="language-cpp">struct Map {
+    int    cols, rows;
+    int    tileWidth, tileHeight;
+    Color4 backgroundColor;
+    std::vector&lt;TileLayer&gt;  layers;
+    std::vector&lt;TilesetRef&gt; tilesets;
+
+    const TileLayer*  findLayer(const std::string&amp; name) const;
+    const TilesetRef* tilesetForGid(uint32_t gid) const;
+};
+</code></pre>
+<h3 id="tilelayer"><code>TileLayer</code></h3>
+<pre><code class="language-cpp">struct TileLayer {
+    std::string           name;
+    int                   cols, rows;
+    std::vector&lt;uint32_t&gt; gids; // cols*rows, row-major; flip bits intact
+};
+</code></pre>
+<p>GIDs are stored raw with flip bits in the top three bits. Use <code>stripFlips()</code> before
+comparing to tileset ranges.</p>
+<h3 id="tilesetref"><code>TilesetRef</code></h3>
+<pre><code class="language-cpp">struct TilesetRef {
+    int         firstGid;
+    std::string source;     // path to .tsx, relative to TMX
+    std::string imagePath;  // resolved image path (relative to working dir)
+    int         columns;
+    int         tileCount;
+};
+</code></pre>
+<h3 id="color4"><code>Color4</code></h3>
+<pre><code class="language-cpp">struct Color4 { float r, g, b, a; };
+</code></pre>
+<hr />
+<h2 id="looking-up-layers-and-tilesets">Looking up layers and tilesets</h2>
+<pre><code class="language-cpp">// Find a layer by name (returns nullptr if not found)
+const Engine::Tilemap::TileLayer* layer = m_map.findLayer(&quot;Terrain&quot;);
+
+// Find the tileset that owns a given GID (flip bits stripped internally)
+const Engine::Tilemap::TilesetRef* ts = m_map.tilesetForGid(1);
+</code></pre>
+<p><code>tilesetForGid</code> finds the tileset with the highest <code>firstGid</code> that is still ≤ the
+stripped GID — making it correct for multi-tileset maps and resilient to GID
+renumbering in Tiled.</p>
+<hr />
+<h2 id="rendering-a-layer">Rendering a layer</h2>
+<pre><code class="language-cpp">#include &lt;engine/tilemap/TilemapRenderer.h&gt;
+
+// Minimal — full layer, no camera offset
+Engine::Tilemap::renderLayer(
+    m_renderer,        // Engine::Renderer2D&amp;
+    *layer,            // const TileLayer&amp;
+    *m_tilesetSheet,   // const SpriteSheet&amp; — built from ts-&gt;imagePath
+    *ts,               // const TilesetRef&amp;
+    tileRenderSize,    // float — tile size in screen pixels (often TILE * SCALE)
+    kLayerTerrain      // int render layer (default 0)
+);
+
+// With camera and viewport culling
+Engine::Tilemap::renderLayer(
+    m_renderer, *layer, *m_tilesetSheet, *ts,
+    tileRenderSize, kLayerTerrain,
+    m_cameraX, m_cameraY,          // world-space camera offset
+    static_cast&lt;float&gt;(WIN_W),     // viewport width  — enables column culling
+    static_cast&lt;float&gt;(WIN_H)      // viewport height — enables row culling
+);
+</code></pre>
+<p>Tiles with GID 0 (empty cells) are skipped automatically. When viewport dimensions are
+provided, only tiles that intersect the visible region are submitted — a meaningful win
+for large maps.</p>
+<h3 id="building-a-spritesheet-from-a-tileset">Building a SpriteSheet from a tileset</h3>
+<pre><code class="language-cpp">const auto* ts = m_map.tilesetForGid(1);
+auto tex   = std::make_shared&lt;Engine::Texture&gt;(ts-&gt;imagePath);
+auto sheet = std::make_shared&lt;Engine::SpriteSheet&gt;(
+    tex,
+    ts-&gt;columns,
+    ts-&gt;tileCount / ts-&gt;columns
+);
+</code></pre>
+<p>For maps that hardcode a known sheet layout, columns and rows can be supplied directly as
+constants instead of reading from the <code>TilesetRef</code>.</p>
+<hr />
+<h2 id="flip-bits">Flip bits</h2>
+<p>Tiled encodes tile orientation in the top three bits of each GID:</p>
+<table>
+<thead>
+<tr>
+<th>Bit</th>
+<th>Constant</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>31</td>
+<td><code>0x80000000</code></td>
+<td>Flip horizontal</td>
+</tr>
+<tr>
+<td>30</td>
+<td><code>0x40000000</code></td>
+<td>Flip vertical</td>
+</tr>
+<tr>
+<td>29</td>
+<td><code>0x20000000</code></td>
+<td>Flip diagonal (transpose)</td>
+</tr>
+</tbody>
+</table>
+<p>The engine provides utilities for working with these:</p>
+<pre><code class="language-cpp">uint32_t rawGid = layer.gids[i];
+
+uint32_t tileId = Engine::Tilemap::stripFlips(rawGid); // strip all flip bits
+bool fH = Engine::Tilemap::hasFlipH(rawGid);
+bool fV = Engine::Tilemap::hasFlipV(rawGid);
+bool fD = Engine::Tilemap::hasFlipD(rawGid);
+</code></pre>
+<p><code>renderLayer</code> handles all eight orientations automatically by calling <code>applyFlips</code>
+internally. <code>applyFlips</code> returns a <code>FlippedUV</code> — an adjusted <code>UVRect</code> and a geometry
+rotation angle in radians (positive = CW in Y-down space) — which is passed directly to
+<code>drawTexturedRect</code>.</p>
+<p>If you're reading GIDs manually (e.g. for collision or entity spawning), always call
+<code>stripFlips</code> before comparing a GID to a tileset range or local tile ID.</p>
+<hr />
+<h2 id="background-color">Background color</h2>
+<p>The TMX <code>backgroundcolor</code> attribute (e.g. <code>backgroundcolor="#5c94fc"</code>) is parsed to a
+<code>Color4</code> and stored on <code>Map</code>. Use it to draw the background rect at startup or in
+<code>onRender</code>:</p>
+<pre><code class="language-cpp">void MyGame::renderBackground() {
+    const auto&amp; c = m_map.backgroundColor;
+    m_renderer.drawRect(0.f, 0.f, WIN_W, WIN_H, {c.r, c.g, c.b, c.a}, kLayerBackground);
+}
+</code></pre>
+<p>Set the background color in Tiled via Map → Map Properties → Background Color.</p>
+<hr />
+<h2 id="multi-tileset-maps">Multi-tileset maps</h2>
+<p>A single TMX can reference multiple tilesets. Each has its own <code>firstGid</code> range. Load
+them separately and pass the matching one to <code>renderLayer</code>:</p>
+<pre><code class="language-cpp">const auto* wallTs  = m_map.tilesetForGid(1);
+const auto* itemsTs = m_map.tilesetForGid(kItemsFirstGid);
+
+// Build sheets for each
+m_wallSheet  = std::make_shared&lt;Engine::SpriteSheet&gt;(...);
+m_itemsSheet = std::make_shared&lt;Engine::SpriteSheet&gt;(...);
+
+// Render each layer with its matching tileset
+Engine::Tilemap::renderLayer(m_renderer, *wallLayer,  *m_wallSheet,  *wallTs,  tileSize, kLayerWalls);
+Engine::Tilemap::renderLayer(m_renderer, *dotsLayer,  *m_itemsSheet, *itemsTs, tileSize, kLayerDots);
+</code></pre>
+<hr />
+<h2 id="using-gids-for-game-logic">Using GIDs for game logic</h2>
+<p>Layers don't have to be rendered — they can be read for collision setup, entity spawning,
+or game state:</p>
+<pre><code class="language-cpp">const auto* layer = m_map.findLayer(&quot;Dots&quot;);
+for (size_t i = 0; i &lt; layer-&gt;gids.size(); ++i) {
+    int localId = static_cast&lt;int&gt;(Engine::Tilemap::stripFlips(layer-&gt;gids[i])) - kItemsFirstGid;
+    if (localId == kDotTileId)   cells[i] = CellType::Dot;
+    if (localId == kPelletTileId) cells[i] = CellType::PowerPellet;
+}
+</code></pre>
+<p>The row and column for index <code>i</code> are: <code>row = i / layer-&gt;cols</code>, <code>col = i % layer-&gt;cols</code>.</p>
 
 
 
