@@ -67,22 +67,19 @@ void PacmanGame::renderDots() {
     if (!layer) return;
 
     const float tileSize = static_cast<float>(TILE * SCALE);
-
-    for (int row = 0; row < layer->rows; ++row) {
-        for (int col = 0; col < layer->cols; ++col) {
-            CellType ct = m_dots[row * layer->cols + col];
-            if (ct == CellType::Empty) continue;
-
-            int frameId = (ct == CellType::Dot) ? kDotFrameId : kPelletFrameId;
-            auto uv = m_itemsSheet->getFrameUVs(frameId);
-
-            m_renderer.drawTexturedRect(
-                col * tileSize, row * tileSize, tileSize, tileSize,
-                m_itemsSheet->texture(),
-                uv.u0, uv.v0, uv.u1, uv.v1,
-                0.f, {1.f, 1.f, 1.f, 1.f},
-                kLayerDots
-            );
-        }
+    for (int i = 0; i < static_cast<int>(m_dots.size()); ++i) {
+        if (m_dots[i] == CellType::Empty) continue;
+        int frameId = (m_dots[i] == CellType::Dot) ? kDotFrameId : kPelletFrameId;
+        auto uv = m_itemsSheet->getFrameUVs(frameId);
+        int   col = i % layer->cols;
+        int   row = i / layer->cols;
+        float x   = col * tileSize;
+        float y   = row * tileSize;
+        m_renderer.drawTexturedRect(
+            x, y, tileSize, tileSize,
+            m_itemsSheet->texture(),
+            uv.u0, uv.v0, uv.u1, uv.v1,
+            0.f, {1.f, 1.f, 1.f, 1.f}, kLayerDots
+        );
     }
 }
