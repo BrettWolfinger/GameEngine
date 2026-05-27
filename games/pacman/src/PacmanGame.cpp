@@ -110,7 +110,7 @@ void PacmanGame::updateFrightenedTimer(float dt) {
 }
 
 void PacmanGame::checkGhostCollision() {
-    if (!m_pacman || m_pacmanDead) return;
+    if (!m_pacman || m_gameState != GameState::Playing) return;
     const int pc = m_pacman->col();
     const int pr = m_pacman->row();
 
@@ -123,10 +123,56 @@ void PacmanGame::checkGhostCollision() {
             m_score += kGhostScoreBase << (m_ghostsEatenThisPellet - 1);
             ghost.respawn();
         } else if (ghost.mode() != GhostMode::Eyes) {
-            // Pac-Man is caught — freeze until lives/death sequence added in a later phase.
-            m_pacmanDead = true;
+            // Pac-Man is caught — begin death sequence.
+            startDeathSequence();
+            return; // stop checking remaining ghosts
         }
     }
+}
+
+void PacmanGame::startDeathSequence() {
+    m_gameState       = GameState::Dying;
+    m_deathPauseTimer = kDeathPause;
+    m_frightenedTimer = 0.f;
+    for (auto& ghost : m_ghosts)
+        ghost.endFrightened(m_currentMode); // snap all ghosts out of frightened
+    if (m_pacman) m_pacman->startDeath();
+}
+
+void PacmanGame::handleDyingState(float dt) {
+    // Phase 1: death animation still playing.
+    if (m_pacman && !m_pacman->isDeathDone()) {
+        m_pacman->update(dt);
+        return;
+    }
+
+    // Phase 2: animation done — wait out the pause before respawning.
+    if (m_deathPauseTimer > 0.f) {
+        m_deathPauseTimer -= dt;
+        return;
+    }
+
+    // Phase 3: consume a life then respawn or end the game.
+    --m_lives;
+    if (m_lives <= 0) {
+        m_gameState = GameState::GameOver;
+        return;
+    }
+    respawnAfterDeath();
+}
+
+void PacmanGame::respawnAfterDeath() {
+    m_gameState       = GameState::Playing;
+    m_frightenedTimer = 0.f;
+    m_ghostsEatenThisPellet = 0;
+
+    // Reset mode schedule to the start of Level 1.
+    m_modePhase   = 0;
+    m_modeTimer   = kModeSchedule[0];
+    m_currentMode = GhostMode::Scatter;
+
+    if (m_pacman) m_pacman->respawn();
+    for (auto& ghost : m_ghosts) ghost.respawn();
 }
 
 void PacmanGame::tryEatDot() {
@@ -155,10 +201,19 @@ void PacmanGame::onUpdate(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q))
         quit();
 
+    if (m_gameState == GameState::GameOver)
+        return;
+
+    if (m_gameState == GameState::Dying) {
+        handleDyingState(dt);
+        return;
+    }
+
+    // --- Normal Playing state ---
     updateModeTimer(dt);
     updateFrightenedTimer(dt);
 
-    if (!m_pacmanDead && m_pacman)
+    if (m_pacman)
         m_pacman->update(dt);
 
     if (!m_ghosts.empty() && m_pacman) {
@@ -228,6 +283,35 @@ void PacmanGame::renderHUD() {
     Engine::PixelFont::drawString(m_renderer, std::to_string(m_score),
                                   kMargin, kMargin, kFontScale,
                                   {1.f, 1.f, 1.f, 1.f}, kLayerHUD);
+    renderLives();
+
+    if (m_gameState == GameState::GameOver) {
+        constexpr float kGOScale = 3.f;
+        const std::string kGOText = "GAME OVER";
+        const float w = Engine::PixelFont::stringWidth(kGOText, kGOScale);
+        Engine::PixelFont::drawString(m_renderer, kGOText,
+                                      (WIN_W - w) * 0.5f, WIN_H * 0.5f - 12.f,
+                                      kGOScale, {1.f, 0.f, 0.f, 1.f}, kLayerHUD);
+    }
+}
+
+void PacmanGame::renderLives() {
+    // Draw one Pac-Man icon per spare life (lives - 1; current life not shown as an icon).
+    constexpr float kIconSize = static_cast<float>(TILE * SCALE); // 32 px
+    constexpr float kMargin   = 8.f;
+    constexpr float kY        = kMargin;
+
+    const int spares = std::max(0, m_lives - 1);
+    const auto uv = m_pacSheet->getFrameUVs(1); // frame 1: half-open right-facing Pac-Man
+
+    for (int i = 0; i < spares; ++i) {
+        // Pack icons right-to-left from the right edge
+        const float x = WIN_W - kMargin - (i + 1) * (kIconSize + 4.f) + 4.f;
+        m_renderer.drawTexturedRect(x, kY, kIconSize, kIconSize,
+                                    m_pacSheet->texture(),
+                                    uv.u0, uv.v0, uv.u1, uv.v1,
+                                    0.f, {1.f, 1.f, 1.f, 1.f}, kLayerHUD);
+    }
 }
 
 void PacmanGame::renderDots() {

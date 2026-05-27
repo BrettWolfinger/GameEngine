@@ -31,3 +31,9 @@ static constexpr int kGhostScoreBase = 200;
 
 // Frightened mode duration (seconds, Level 1)
 static constexpr float kFrightenedDuration = 7.f;
+
+// Lives
+static constexpr int   kStartLives  = 3;
+
+// Death sequence: pause between animation end and respawn (seconds)
+static constexpr float kDeathPause  = 1.0f;

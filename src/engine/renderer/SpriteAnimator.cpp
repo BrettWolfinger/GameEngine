@@ -20,6 +20,7 @@ void SpriteAnimator::setClip(const std::string& name) {
     m_current     = &it->second;
     m_frameIdx    = 0;
     m_accumulated = 0.f;
+    m_finished    = false;
 }
 
 void SpriteAnimator::update(float dt) {
@@ -34,12 +35,17 @@ void SpriteAnimator::update(float dt) {
             if (m_current->mode == PlayMode::Loop) {
                 m_frameIdx = 0;
             } else {
-                m_frameIdx = count - 1; // clamp on last frame for OneShot
+                m_frameIdx    = count - 1; // clamp on last frame for OneShot
                 m_accumulated = 0.f;
+                m_finished    = true;
                 break;
             }
         }
     }
+}
+
+bool SpriteAnimator::isFinished() const {
+    return m_finished;
 }
 
 UVRect SpriteAnimator::currentFrameUVs() const {
