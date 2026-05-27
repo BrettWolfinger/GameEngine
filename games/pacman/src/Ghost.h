@@ -21,9 +21,13 @@ public:
     void update(float dt);
     void render(Engine::Renderer2D& renderer, int renderLayer) const;
 
+    /// Switch scatter/chase mode and immediately reverse direction.
+    void setMode(GhostMode mode);
+
     int       col()  const { return m_col; }
     int       row()  const { return m_row; }
     GhostType type() const { return m_type; }
+    GhostMode mode() const { return m_mode; }
 
 private:
     bool isWall(int col, int row) const;
@@ -38,10 +42,14 @@ private:
 
     void setTarget(Dir dir);
 
+    /// Immediately swaps current and target cells to reverse direction.
+    void reverseDirection();
+
     const Engine::Tilemap::TileLayer& m_wallLayer;
     Engine::SpriteAnimator            m_animator;
 
     GhostType m_type;
+    GhostMode m_mode   = GhostMode::Scatter;
     float     m_x      = 0.f;
     float     m_y      = 0.f;
     int       m_col    = 0;

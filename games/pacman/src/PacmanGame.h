@@ -26,6 +26,7 @@ protected:
 private:
     void buildDotCache();
     void tryEatDot();
+    void updateModeTimer(float dt);
     void renderWalls();
     void renderDots();
     void renderGhosts();
@@ -46,4 +47,9 @@ private:
 
     std::optional<Pacman>                 m_pacman;  // constructed after map load
     std::vector<Ghost>                    m_ghosts;  // constructed after map load
+
+    // Scatter/chase mode cycling (Level 1 schedule)
+    float     m_modeTimer   = 7.f;   // seconds until next mode switch
+    int       m_modePhase   = 0;     // index into schedule; even=Scatter, odd=Chase
+    GhostMode m_currentMode = GhostMode::Scatter;
 };

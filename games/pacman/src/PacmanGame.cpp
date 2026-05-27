@@ -72,6 +72,23 @@ void PacmanGame::buildDotCache() {
     }
 }
 
+// Level 1 scatter/chase schedule in seconds: Scatter 7, Chase 20, Scatter 7,
+// Chase 20, Scatter 5, Chase 20, Scatter 5, then Chase permanently.
+static constexpr float kModeSchedule[] = { 7.f, 20.f, 7.f, 20.f, 5.f, 20.f, 5.f };
+static constexpr int   kModeCount      = static_cast<int>(std::size(kModeSchedule));
+
+void PacmanGame::updateModeTimer(float dt) {
+    m_modeTimer -= dt;
+    if (m_modeTimer > 0.f) return;
+
+    ++m_modePhase;
+    m_currentMode = (m_modePhase % 2 == 0) ? GhostMode::Scatter : GhostMode::Chase;
+    m_modeTimer   = (m_modePhase < kModeCount) ? kModeSchedule[m_modePhase] : 1e9f;
+
+    for (auto& ghost : m_ghosts)
+        ghost.setMode(m_currentMode);
+}
+
 void PacmanGame::tryEatDot() {
     if (!m_pacman) return;
     const auto* layer = m_map.findLayer("Dots");
@@ -99,6 +116,8 @@ void PacmanGame::onUpdate(float dt) {
 
     if (m_pacman)
         m_pacman->update(dt);
+
+    updateModeTimer(dt);
 
     for (auto& ghost : m_ghosts)
         ghost.update(dt);

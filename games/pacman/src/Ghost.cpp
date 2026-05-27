@@ -97,6 +97,20 @@ Dir Ghost::chooseDirection() const {
     return bestDir;
 }
 
+void Ghost::reverseDirection() {
+    // Guard: if already at cell center (e.g. first frame), nothing to reverse.
+    if (m_col == m_tgtCol && m_row == m_tgtRow) return;
+    std::swap(m_col, m_tgtCol);
+    std::swap(m_row, m_tgtRow);
+    m_dir = opposite(m_dir);
+}
+
+void Ghost::setMode(GhostMode mode) {
+    if (m_mode == mode) return;
+    m_mode = mode;
+    reverseDirection();
+}
+
 void Ghost::setTarget(Dir dir) {
     auto [dc, dr] = dirOffset(dir);
     m_tgtCol = (m_col + dc + m_wallLayer.cols) % m_wallLayer.cols;
