@@ -264,3 +264,54 @@ was caught during testing — `PushID(i)` resets to zero in each section, so whe
 multiple collapsing headers are open simultaneously the index scopes overlap. Fixed
 by wrapping each section's loop with a string-keyed `PushID("ufos")` /
 `PushID("asteroids")` / `PushID("ships")`.
+
+---
+
+## Pac-Man and Super Mario Bros — tilemap-based games
+
+### Pac-Man
+
+Pac-Man was the first game to use the [Tiled](https://www.mapeditor.org/) map editor for
+level design. The maze was authored as a TMX file with two layers: Wall (maze tiles) and
+Dots (dot and power pellet positions). The Dots layer is not rendered directly — it is
+read at load time into a `std::vector<CellType>` cache, which tracks which cells still
+contain collectibles. This separates the authored level data from mutable game state
+without duplicating the coordinate system.
+
+Getting the flip/rotation orientations right was the main technical challenge. Tiled
+encodes the top three bits of each GID as flip-H, flip-V, and flip-diagonal flags.
+Eight combinations map to four reflections and four rotations. Working through the
+diagonal cases required tracking vertex positions under 90° rotations in a Y-down
+coordinate space — in OpenGL with a Y-down ortho projection, a positive `glm::rotate`
+angle produces a clockwise image rotation.
+
+### Super Mario Bros
+
+Mario introduced the first scrolling camera. The approach is a bare `m_cameraX` float
+that offsets tile positions during rendering, clamped to the map bounds. A "Mario
+position" float moves left and right via held key input; the camera centers on it and
+clamps so it never shows past either edge of the map. The distinction between
+`isKeyDown` (fires every frame while held) and `isKeyPressed` (fires once on press) was
+important here — movement requires the former.
+
+Background color is authored directly in Tiled as the map's `backgroundcolor` attribute
+and parsed to a `Color4` RGBA struct. Drawing it as a full-screen rect at the lowest
+render layer keeps the color out of game code and makes it trivial to change per level
+in the editor.
+
+### Engine::Tilemap promotion
+
+After both games independently implemented TMX parsing and tile rendering, the shared
+code was promoted to the engine as `Engine::Tilemap` (closes issue #26).
+
+The subsystem is split across two headers. `Tilemap.h` covers the pure data model and
+parsing: `Map`, `TileLayer`, `TilesetRef`, `Color4`, flip-bit utilities, and
+`loadMap()`. `TilemapRenderer.h` covers rendering: `renderLayer()` draws a tile layer
+via `Renderer2D` with optional camera offset and viewport culling. Keeping them separate
+means `Tilemap.h` has no renderer dependency — map data can be read anywhere (collision
+setup, entity spawning) without pulling in the full rendering stack.
+
+`tilesetForGid()` finds the tileset with the highest `firstGid` still ≤ the stripped
+GID, making it correct for multi-tileset maps and resilient to GID renumbering when the
+Tiled file is edited. The game-level `MapLoader` files were removed from both Pac-Man
+and Mario, replaced with the two-line engine calls.
