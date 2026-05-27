@@ -27,7 +27,13 @@ void PacmanGame::onInit() {
     m_itemsTex   = std::make_shared<Engine::Texture>(itemsTs->imagePath);
     m_itemsSheet = std::make_shared<Engine::SpriteSheet>(m_itemsTex, itemsTs->columns,
                                                           itemsTs->tileCount / itemsTs->columns);
+
     buildDotCache();
+
+    // Construct Pac-Man after the map is loaded (needs a stable wall layer reference)
+    const auto* wallLayer = m_map.findLayer("Wall");
+    if (wallLayer)
+        m_pacman.emplace(*wallLayer);
 }
 
 void PacmanGame::buildDotCache() {
@@ -42,15 +48,20 @@ void PacmanGame::buildDotCache() {
     }
 }
 
-void PacmanGame::onUpdate(float /*dt*/) {
+void PacmanGame::onUpdate(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q))
         quit();
+
+    if (m_pacman)
+        m_pacman->update(dt);
 }
 
 void PacmanGame::onRender() {
     m_renderer.beginScene(WIN_W, WIN_H);
     renderWalls();
     renderDots();
+    if (m_pacman)
+        m_pacman->render(m_renderer, kLayerPacman);
 }
 
 void PacmanGame::renderWalls() {
@@ -75,11 +86,9 @@ void PacmanGame::renderDots() {
         int   row = i / layer->cols;
         float x   = col * tileSize;
         float y   = row * tileSize;
-        m_renderer.drawTexturedRect(
-            x, y, tileSize, tileSize,
-            m_itemsSheet->texture(),
-            uv.u0, uv.v0, uv.u1, uv.v1,
-            0.f, {1.f, 1.f, 1.f, 1.f}, kLayerDots
-        );
+        m_renderer.drawTexturedRect(x, y, tileSize, tileSize,
+                                    m_itemsSheet->texture(),
+                                    uv.u0, uv.v0, uv.u1, uv.v1,
+                                    0.f, {1.f, 1.f, 1.f, 1.f}, kLayerDots);
     }
 }
