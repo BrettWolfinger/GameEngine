@@ -1,7 +1,6 @@
 add_executable(pacman
     src/main.cpp
     src/PacmanGame.cpp
-    src/MapLoader.cpp
 )
 
 target_include_directories(pacman PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
