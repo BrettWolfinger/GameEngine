@@ -31,6 +31,7 @@ private:
     void renderDots();
     void renderGhosts();
     void renderHUD();
+    void renderDevHUD();
 
     Engine::Renderer2D                    m_renderer;
     std::shared_ptr<Engine::Texture>      m_wallTex;

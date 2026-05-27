@@ -133,6 +133,9 @@ void PacmanGame::onRender() {
     if (m_pacman)
         m_pacman->render(m_renderer, kLayerPacman);
     renderHUD();
+#ifdef ENABLE_DEV_KEYS
+    renderDevHUD();
+#endif
 }
 
 void PacmanGame::renderWalls() {
@@ -147,6 +150,26 @@ void PacmanGame::renderWalls() {
 void PacmanGame::renderGhosts() {
     for (const auto& ghost : m_ghosts)
         ghost.render(m_renderer, kLayerGhosts);
+}
+
+void PacmanGame::renderDevHUD() {
+    constexpr float kScale  = 1.5f;
+    constexpr float kX      = 8.f;
+    constexpr float kY      = WIN_H - 32.f;
+    constexpr glm::vec4 kScatterCol = {0.4f, 0.8f, 1.f, 1.f}; // cyan
+    constexpr glm::vec4 kChaseCol   = {1.f, 0.4f, 0.4f, 1.f}; // red
+
+    const bool scatter = (m_currentMode == GhostMode::Scatter);
+    const glm::vec4& col = scatter ? kScatterCol : kChaseCol;
+    const std::string label = scatter ? "SCATTER" : "CHASE";
+
+    Engine::PixelFont::drawString(m_renderer, label, kX, kY, kScale, col, kLayerHUD);
+
+    // Timer countdown — show tenths of a second
+    const std::string timer = std::to_string(static_cast<int>(m_modeTimer))
+                            + "." + std::to_string(static_cast<int>(m_modeTimer * 10.f) % 10);
+    const float timerX = kX + Engine::PixelFont::stringWidth(label, kScale) + 8.f;
+    Engine::PixelFont::drawString(m_renderer, timer, timerX, kY, kScale, {0.8f, 0.8f, 0.8f, 1.f}, kLayerHUD);
 }
 
 void PacmanGame::renderHUD() {
