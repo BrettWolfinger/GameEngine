@@ -113,12 +113,6 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>ListenerId</b> = uin
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aeec104326e1990c0b6509925ea50e9d3" id="r_aeec104326e1990c0b6509925ea50e9d3"><td class="memTemplParams" colspan="2">template&lt;typename EventT &gt; </td></tr>
-<tr class="memitem:aeec104326e1990c0b6509925ea50e9d3"><td class="memTemplItemLeft" align="right" valign="top">ListenerId&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classEngine_1_1EventDispatcher.html#aeec104326e1990c0b6509925ea50e9d3">subscribe</a> (std::function&lt; void(const EventT &amp;)&gt; fn)</td></tr>
-<tr class="separator:aeec104326e1990c0b6509925ea50e9d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a641c03f1d2f4ab043cee1e3bfbc2eee1" id="r_a641c03f1d2f4ab043cee1e3bfbc2eee1"><td class="memTemplParams" colspan="2">template&lt;typename EventT &gt; </td></tr>
-<tr class="memitem:a641c03f1d2f4ab043cee1e3bfbc2eee1"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classEngine_1_1EventDispatcher.html#a641c03f1d2f4ab043cee1e3bfbc2eee1">emit</a> (const EventT &amp;event)</td></tr>
-<tr class="separator:a641c03f1d2f4ab043cee1e3bfbc2eee1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2af750f6090e5d59877ca5c7e1a1c31c" id="r_a2af750f6090e5d59877ca5c7e1a1c31c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEngine_1_1ListenerHandle.html">ListenerHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEngine_1_1EventDispatcher.html#a2af750f6090e5d59877ca5c7e1a1c31c">subscribeErased</a> (std::type_index type, std::function&lt; void(const void *)&gt; fn)</td></tr>
 <tr class="separator:a2af750f6090e5d59877ca5c7e1a1c31c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a44ce240420bda3dcffd0f74840505476" id="r_a44ce240420bda3dcffd0f74840505476"><td class="memItemLeft" align="right" valign="top"><a id="a44ce240420bda3dcffd0f74840505476" name="a44ce240420bda3dcffd0f74840505476"></a>
@@ -132,64 +126,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>emitErased</b> (std::
 <div class="textblock"><p>Core event dispatcher — typed publish/subscribe with re-entrancy safety. </p>
 <p>Owned by Application::Impl and exposed through Services::events(). Game code never touches this class directly; use the Engine::Events facade. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a641c03f1d2f4ab043cee1e3bfbc2eee1" name="a641c03f1d2f4ab043cee1e3bfbc2eee1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a641c03f1d2f4ab043cee1e3bfbc2eee1">&#9670;&#160;</a></span>emit()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename EventT &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Engine::EventDispatcher::emit </td>
-          <td>(</td>
-          <td class="paramtype">const EventT &amp;&#160;</td>
-          <td class="paramname"><em>event</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Emit an event, invoking all registered listeners synchronously. Re-entrant calls are safe: listeners removed during dispatch are lazily swept after the outermost emit returns. </p>
-
-</div>
-</div>
-<a id="aeec104326e1990c0b6509925ea50e9d3" name="aeec104326e1990c0b6509925ea50e9d3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeec104326e1990c0b6509925ea50e9d3">&#9670;&#160;</a></span>subscribe()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename EventT &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">ListenerId Engine::EventDispatcher::subscribe </td>
-          <td>(</td>
-          <td class="paramtype">std::function&lt; void(const EventT &amp;)&gt;&#160;</td>
-          <td class="paramname"><em>fn</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Subscribe a callback for events of type EventT. Returns the new listener's id; the caller is responsible for wrapping it in a <a class="el" href="classEngine_1_1ListenerHandle.html" title="RAII subscription token returned by Engine::Events::on&lt;T&gt;().">ListenerHandle</a>. </p>
-
-</div>
-</div>
 <a id="a2af750f6090e5d59877ca5c7e1a1c31c" name="a2af750f6090e5d59877ca5c7e1a1c31c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2af750f6090e5d59877ca5c7e1a1c31c">&#9670;&#160;</a></span>subscribeErased()</h2>
 
@@ -215,7 +151,7 @@ template&lt;typename EventT &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Subscribe using a pre-type-erased callback and return a ready-to-store <a class="el" href="classEngine_1_1ListenerHandle.html" title="RAII subscription token returned by Engine::Events::on&lt;T&gt;().">ListenerHandle</a>. Used by the Events facade so that the facade .cpp does not need to instantiate the subscribe&lt;T&gt; template. </p>
+<p>Subscribe using a pre-type-erased callback and return a ready-to-store <a class="el" href="classEngine_1_1ListenerHandle.html" title="RAII subscription token returned by Engine::Events::on&lt;T&gt;().">ListenerHandle</a>. Used by the Events facade. </p>
 
 </div>
 </div>
