@@ -31,6 +31,8 @@ private:
         ConfigGroup* group;
     };
 
+    void saveEntry(const Entry& entry);
+
     ConfigWatcher&     m_watcher;
     std::vector<Entry> m_entries;
 };

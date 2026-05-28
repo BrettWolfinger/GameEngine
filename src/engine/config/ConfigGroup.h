@@ -99,7 +99,8 @@ public:
 
 #ifdef ENABLE_TOOLS
     /// Render a collapsing ImGui section for all registered fields.
-    void renderImGui(const std::string& label);
+    /// Returns true if the header is open (so callers can append extra widgets).
+    bool renderImGui(const std::string& label);
 #endif
 
 private:

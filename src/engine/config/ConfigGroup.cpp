@@ -29,11 +29,13 @@ void ConfigGroup::writeToToml(toml::table& t) const {
 
 #ifdef ENABLE_TOOLS
 
-void ConfigGroup::renderImGui(const std::string& label) {
-    if (ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+bool ConfigGroup::renderImGui(const std::string& label) {
+    const bool open = ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
+    if (open) {
         for (auto* field : m_fields)
             field->renderImGui();
     }
+    return open;
 }
 
 // ──────────────── Field<T>::renderImGui explicit specialisations ──────────────

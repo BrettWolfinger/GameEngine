@@ -43,11 +43,24 @@ void ConfigRegistry::registerConfig(std::string_view path, ConfigGroup* group) {
     m_entries.push_back({pathStr, label, group});
 }
 
+void ConfigRegistry::saveEntry(const Entry& entry) {
+    toml::table table;
+    entry.group->writeToToml(table);
+    std::ofstream out(entry.path);
+    if (out) out << table;
+}
+
 #ifdef ENABLE_TOOLS
 void ConfigRegistry::renderImGuiEditor() {
     ImGui::Begin("Config Editor");
-    for (auto& entry : m_entries)
-        entry.group->renderImGui(entry.label);
+    for (auto& entry : m_entries) {
+        if (entry.group->renderImGui(entry.label)) {
+            ImGui::Spacing();
+            if (ImGui::Button(("Save##" + entry.label).c_str()))
+                saveEntry(entry);
+            ImGui::Spacing();
+        }
+    }
     ImGui::End();
 }
 #endif
