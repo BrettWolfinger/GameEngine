@@ -61,6 +61,8 @@ private:
     std::shared_ptr<Engine::SpriteSheet>  m_pacSheet;
     std::shared_ptr<Engine::Texture>      m_ghostTex;
     std::shared_ptr<Engine::SpriteSheet>  m_ghostSheet;
+    std::shared_ptr<Engine::Texture>      m_facesTex;
+    std::shared_ptr<Engine::SpriteSheet>  m_facesSheet;
     Engine::Tilemap::Map                  m_map;
     const Engine::Tilemap::TileLayer*     m_dotsLayer = nullptr; // cached after map load
     std::vector<CellType>                 m_dots;
