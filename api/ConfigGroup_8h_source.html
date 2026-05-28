@@ -173,56 +173,56 @@ $(document).ready(function(){initNavTree('ConfigGroup_8h_source.html',''); initR
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classEngine_1_1ConfigGroup.html#a555e85ae64c85a6573f4a06aaf8ac72a">   98</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classEngine_1_1ConfigGroup.html#a555e85ae64c85a6573f4a06aaf8ac72a">writeToToml</a>(toml::table&amp; t) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="preprocessor">#ifdef ENABLE_TOOLS</span></div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordtype">void</span> renderImGui(<span class="keyword">const</span> std::string&amp; label);</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    std::vector&lt;FieldBase*&gt; m_fields;</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>};</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordtype">bool</span> renderImGui(<span class="keyword">const</span> std::string&amp; label);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    std::vector&lt;FieldBase*&gt; m_fields;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>};</div>
 </div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span><span class="comment">// ──────────────────────── Field&lt;T&gt; inline implementations ────────────────────</span></div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span><span class="comment">// readFromToml and writeToToml only need toml++, which is already included.</span></div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="keywordtype">void</span> <a class="code hl_class" href="classEngine_1_1Field.html">Field&lt;T&gt;::readFromToml</a>(<span class="keyword">const</span> toml::table&amp; t) {</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, float&gt;) {</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordflow">if</span> (<span class="keyword">auto</span> v = t[m_name].<span class="keyword">template</span> value&lt;double&gt;())      m_value = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(*v);</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, int&gt;) {</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        <span class="keywordflow">if</span> (<span class="keyword">auto</span> v = t[m_name].<span class="keyword">template</span> value&lt;int64_t&gt;())     m_value = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(*v);</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, bool&gt;) {</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        <span class="keywordflow">if</span> (<span class="keyword">auto</span> v = t[m_name].<span class="keyword">template</span> value&lt;bool&gt;())        m_value = *v;</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, std::string&gt;) {</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <span class="keywordflow">if</span> (<span class="keyword">auto</span> v = t[m_name].<span class="keyword">template</span> value&lt;std::string&gt;()) m_value = *v;</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    }</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>}</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span><span class="keywordtype">void</span> Field&lt;T&gt;::writeToToml(toml::table&amp; t)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, float&gt;) {</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        t.insert_or_assign(m_name, <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(m_value));</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, int&gt;) {</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        t.insert_or_assign(m_name, <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(m_value));</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, bool&gt;) {</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        t.insert_or_assign(m_name, m_value);</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, std::string&gt;) {</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        t.insert_or_assign(m_name, m_value);</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    }</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>}</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span><span class="preprocessor">#ifdef ENABLE_TOOLS</span></div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span><span class="comment">// Primary template — no-op fallback for unsupported types.</span></div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span><span class="comment">// Explicit specialisations for float/int/bool/string live in ConfigGroup.cpp.</span></div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span><span class="keywordtype">void</span> Field&lt;T&gt;::renderImGui() {}</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span><span class="keyword">template</span>&lt;&gt; <span class="keywordtype">void</span> Field&lt;float&gt;::renderImGui();</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span><span class="keyword">template</span>&lt;&gt; <span class="keywordtype">void</span> Field&lt;int&gt;::renderImGui();</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span><span class="keyword">template</span>&lt;&gt; <span class="keywordtype">void</span> Field&lt;bool&gt;::renderImGui();</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span><span class="keyword">template</span>&lt;&gt; <span class="keywordtype">void</span> Field&lt;std::string&gt;::renderImGui();</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>} <span class="comment">// namespace Engine</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span><span class="comment">// ──────────────────────── Field&lt;T&gt; inline implementations ────────────────────</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span><span class="comment">// readFromToml and writeToToml only need toml++, which is already included.</span></div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="keywordtype">void</span> <a class="code hl_class" href="classEngine_1_1Field.html">Field&lt;T&gt;::readFromToml</a>(<span class="keyword">const</span> toml::table&amp; t) {</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, float&gt;) {</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keywordflow">if</span> (<span class="keyword">auto</span> v = t[m_name].<span class="keyword">template</span> value&lt;double&gt;())      m_value = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(*v);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, int&gt;) {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keywordflow">if</span> (<span class="keyword">auto</span> v = t[m_name].<span class="keyword">template</span> value&lt;int64_t&gt;())     m_value = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(*v);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, bool&gt;) {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <span class="keywordflow">if</span> (<span class="keyword">auto</span> v = t[m_name].<span class="keyword">template</span> value&lt;bool&gt;())        m_value = *v;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, std::string&gt;) {</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        <span class="keywordflow">if</span> (<span class="keyword">auto</span> v = t[m_name].<span class="keyword">template</span> value&lt;std::string&gt;()) m_value = *v;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    }</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>}</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span><span class="keywordtype">void</span> Field&lt;T&gt;::writeToToml(toml::table&amp; t)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, float&gt;) {</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        t.insert_or_assign(m_name, <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(m_value));</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, int&gt;) {</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        t.insert_or_assign(m_name, <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(m_value));</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, bool&gt;) {</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        t.insert_or_assign(m_name, m_value);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;T, std::string&gt;) {</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        t.insert_or_assign(m_name, m_value);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    }</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>}</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span><span class="preprocessor">#ifdef ENABLE_TOOLS</span></div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span><span class="comment">// Primary template — no-op fallback for unsupported types.</span></div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span><span class="comment">// Explicit specialisations for float/int/bool/string live in ConfigGroup.cpp.</span></div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span><span class="keywordtype">void</span> Field&lt;T&gt;::renderImGui() {}</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span><span class="keyword">template</span>&lt;&gt; <span class="keywordtype">void</span> Field&lt;float&gt;::renderImGui();</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span><span class="keyword">template</span>&lt;&gt; <span class="keywordtype">void</span> Field&lt;int&gt;::renderImGui();</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span><span class="keyword">template</span>&lt;&gt; <span class="keywordtype">void</span> Field&lt;bool&gt;::renderImGui();</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span><span class="keyword">template</span>&lt;&gt; <span class="keywordtype">void</span> Field&lt;std::string&gt;::renderImGui();</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>} <span class="comment">// namespace Engine</span></div>
 <div class="ttc" id="aclassEngine_1_1ConfigGroup_html"><div class="ttname"><a href="classEngine_1_1ConfigGroup.html">Engine::ConfigGroup</a></div><div class="ttdef"><b>Definition</b> ConfigGroup.h:87</div></div>
 <div class="ttc" id="aclassEngine_1_1ConfigGroup_html_a555e85ae64c85a6573f4a06aaf8ac72a"><div class="ttname"><a href="classEngine_1_1ConfigGroup.html#a555e85ae64c85a6573f4a06aaf8ac72a">Engine::ConfigGroup::writeToToml</a></div><div class="ttdeci">void writeToToml(toml::table &amp;t) const</div><div class="ttdoc">Serialise all registered fields into a TOML table.</div></div>
 <div class="ttc" id="aclassEngine_1_1ConfigGroup_html_a77bef663606c04b370c4fa61992c9fe0"><div class="ttname"><a href="classEngine_1_1ConfigGroup.html#a77bef663606c04b370c4fa61992c9fe0">Engine::ConfigGroup::readFromToml</a></div><div class="ttdeci">void readFromToml(const toml::table &amp;t)</div><div class="ttdoc">Populate all registered fields from a parsed TOML table.</div></div>
