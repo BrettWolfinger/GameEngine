@@ -25,6 +25,7 @@ var hierarchy =
     [ "Engine::SaveData", "classEngine_1_1SaveData.html", null ],
     [ "Engine::Services", "classEngine_1_1Services.html", null ],
     [ "Engine::Shader", "classEngine_1_1Shader.html", null ],
+    [ "Engine::Audio::SoundHandle", "structEngine_1_1Audio_1_1SoundHandle.html", null ],
     [ "Engine::SpriteAnimator", "classEngine_1_1SpriteAnimator.html", null ],
     [ "Engine::SpriteSheet", "classEngine_1_1SpriteSheet.html", null ],
     [ "Engine::Texture", "classEngine_1_1Texture.html", null ],

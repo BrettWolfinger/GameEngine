@@ -114,12 +114,29 @@ $(document).ready(function(){initNavTree('Audio_8h_source.html',''); initResizab
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="Audio_8h.html#a52c1639e140f089a2f99f3d221ba93ea">   41</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="Audio_8h.html#a52c1639e140f089a2f99f3d221ba93ea">stopLoopingVoice</a>(<span class="keywordtype">int</span> slot);</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>} <span class="comment">// namespace Engine::Audio</span></div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="};">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structEngine_1_1Audio_1_1SoundHandle.html">   45</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structEngine_1_1Audio_1_1SoundHandle.html">SoundHandle</a> {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">int</span> index = -1;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">bool</span> valid() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>};</div>
+</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="Audio_8h.html#a0ad094e6e52004895bf86cfc54e28dc7">   53</a></span><a class="code hl_struct" href="structEngine_1_1Audio_1_1SoundHandle.html">SoundHandle</a> <a class="code hl_function" href="Audio_8h.html#a0ad094e6e52004895bf86cfc54e28dc7">loadSound</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* path);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="Audio_8h.html#a528d7e58048b138f93e2455eab611034">   57</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="Audio_8h.html#a528d7e58048b138f93e2455eab611034">playSound</a>(<a class="code hl_struct" href="structEngine_1_1Audio_1_1SoundHandle.html">SoundHandle</a> handle);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="Audio_8h.html#a396e2cc302d4fe9c9f0808fa0c6aee2e">   61</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="Audio_8h.html#a396e2cc302d4fe9c9f0808fa0c6aee2e">isPlaying</a>(<a class="code hl_struct" href="structEngine_1_1Audio_1_1SoundHandle.html">SoundHandle</a> handle);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>} <span class="comment">// namespace Engine::Audio</span></div>
+<div class="ttc" id="aAudio_8h_html_a0ad094e6e52004895bf86cfc54e28dc7"><div class="ttname"><a href="Audio_8h.html#a0ad094e6e52004895bf86cfc54e28dc7">Engine::Audio::loadSound</a></div><div class="ttdeci">SoundHandle loadSound(const char *path)</div></div>
+<div class="ttc" id="aAudio_8h_html_a396e2cc302d4fe9c9f0808fa0c6aee2e"><div class="ttname"><a href="Audio_8h.html#a396e2cc302d4fe9c9f0808fa0c6aee2e">Engine::Audio::isPlaying</a></div><div class="ttdeci">bool isPlaying(SoundHandle handle)</div></div>
 <div class="ttc" id="aAudio_8h_html_a46ac87749b4dac4e6dccf036870a1ee8"><div class="ttname"><a href="Audio_8h.html#a46ac87749b4dac4e6dccf036870a1ee8">Engine::Audio::playNoise</a></div><div class="ttdeci">void playNoise(float durationSec, float amplitude=0.4f, float decayFactor=1.f)</div></div>
+<div class="ttc" id="aAudio_8h_html_a528d7e58048b138f93e2455eab611034"><div class="ttname"><a href="Audio_8h.html#a528d7e58048b138f93e2455eab611034">Engine::Audio::playSound</a></div><div class="ttdeci">void playSound(SoundHandle handle)</div></div>
 <div class="ttc" id="aAudio_8h_html_a52c1639e140f089a2f99f3d221ba93ea"><div class="ttname"><a href="Audio_8h.html#a52c1639e140f089a2f99f3d221ba93ea">Engine::Audio::stopLoopingVoice</a></div><div class="ttdeci">void stopLoopingVoice(int slot)</div></div>
 <div class="ttc" id="aAudio_8h_html_a5b7c20e92a39d2751fbee08b44518d22"><div class="ttname"><a href="Audio_8h.html#a5b7c20e92a39d2751fbee08b44518d22">Engine::Audio::playLoopingTone</a></div><div class="ttdeci">void playLoopingTone(int slot, float frequencyHz, float amplitude)</div></div>
 <div class="ttc" id="aAudio_8h_html_a6aa10a8a9e7a23e9980706696199602d"><div class="ttname"><a href="Audio_8h.html#a6aa10a8a9e7a23e9980706696199602d">Engine::Audio::playLoopingNoise</a></div><div class="ttdeci">void playLoopingNoise(int slot, float amplitude)</div></div>
 <div class="ttc" id="aAudio_8h_html_adce9da74a36910c050722d903c88eca9"><div class="ttname"><a href="Audio_8h.html#adce9da74a36910c050722d903c88eca9">Engine::Audio::playTone</a></div><div class="ttdeci">void playTone(float frequencyHz, float durationSec, float amplitude=0.4f)</div></div>
+<div class="ttc" id="astructEngine_1_1Audio_1_1SoundHandle_html"><div class="ttname"><a href="structEngine_1_1Audio_1_1SoundHandle.html">Engine::Audio::SoundHandle</a></div><div class="ttdef"><b>Definition</b> Audio.h:45</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

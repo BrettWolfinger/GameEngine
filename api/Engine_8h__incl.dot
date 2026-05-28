@@ -6,7 +6,7 @@ digraph "src/engine/Engine.h"
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   Node1 [id="Node000001",label="src/engine/Engine.h",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Public entry point for the Engine API."];
   Node1 -> Node2 [id="edge1_Node000001_Node000002",color="steelblue1",style="solid",tooltip=" "];
-  Node2 [id="Node000002",label="engine/facade/Audio.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$Audio_8h.html",tooltip="Engine audio facade — synthesized tones and noise."];
+  Node2 [id="Node000002",label="engine/facade/Audio.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$Audio_8h.html",tooltip="Engine audio facade — synthesized tones, noise, and .wav file playback."];
   Node1 -> Node3 [id="edge2_Node000001_Node000003",color="steelblue1",style="solid",tooltip=" "];
   Node3 [id="Node000003",label="engine/facade/Collision.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$Collision_8h.html",tooltip="Engine collision facade — register, update, and remove colliders."];
   Node3 -> Node4 [id="edge3_Node000003_Node000004",color="steelblue1",style="solid",tooltip=" "];

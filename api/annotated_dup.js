@@ -1,6 +1,9 @@
 var annotated_dup =
 [
     [ "Engine", null, [
+      [ "Audio", null, [
+        [ "SoundHandle", "structEngine_1_1Audio_1_1SoundHandle.html", null ]
+      ] ],
       [ "Tilemap", null, [
         [ "Color4", "structEngine_1_1Tilemap_1_1Color4.html", null ],
         [ "FlippedUV", "structEngine_1_1Tilemap_1_1FlippedUV.html", null ],

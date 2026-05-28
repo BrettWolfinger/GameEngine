@@ -92,12 +92,13 @@ $(document).ready(function(){initNavTree('Audio_8h.html',''); initResizable(); }
 
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">Audio.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Engine audio facade — synthesized tones and noise.  
+<p>Engine audio facade — synthesized tones, noise, and .wav file playback.  
 <a href="#details">More...</a></p>
 <div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
@@ -107,6 +108,11 @@ This graph shows which files directly or indirectly include this file:</div>
 </div>
 <p><a href="Audio_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEngine_1_1Audio_1_1SoundHandle.html">Engine::Audio::SoundHandle</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:adce9da74a36910c050722d903c88eca9" id="r_adce9da74a36910c050722d903c88eca9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Audio_8h.html#adce9da74a36910c050722d903c88eca9">Engine::Audio::playTone</a> (float frequencyHz, float durationSec, float amplitude=0.4f)</td></tr>
@@ -119,11 +125,66 @@ Functions</h2></td></tr>
 <tr class="separator:a6aa10a8a9e7a23e9980706696199602d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a52c1639e140f089a2f99f3d221ba93ea" id="r_a52c1639e140f089a2f99f3d221ba93ea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Audio_8h.html#a52c1639e140f089a2f99f3d221ba93ea">Engine::Audio::stopLoopingVoice</a> (int slot)</td></tr>
 <tr class="separator:a52c1639e140f089a2f99f3d221ba93ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ad094e6e52004895bf86cfc54e28dc7" id="r_a0ad094e6e52004895bf86cfc54e28dc7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structEngine_1_1Audio_1_1SoundHandle.html">SoundHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Audio_8h.html#a0ad094e6e52004895bf86cfc54e28dc7">Engine::Audio::loadSound</a> (const char *path)</td></tr>
+<tr class="separator:a0ad094e6e52004895bf86cfc54e28dc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a528d7e58048b138f93e2455eab611034" id="r_a528d7e58048b138f93e2455eab611034"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Audio_8h.html#a528d7e58048b138f93e2455eab611034">Engine::Audio::playSound</a> (<a class="el" href="structEngine_1_1Audio_1_1SoundHandle.html">SoundHandle</a> handle)</td></tr>
+<tr class="separator:a528d7e58048b138f93e2455eab611034"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a396e2cc302d4fe9c9f0808fa0c6aee2e" id="r_a396e2cc302d4fe9c9f0808fa0c6aee2e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Audio_8h.html#a396e2cc302d4fe9c9f0808fa0c6aee2e">Engine::Audio::isPlaying</a> (<a class="el" href="structEngine_1_1Audio_1_1SoundHandle.html">SoundHandle</a> handle)</td></tr>
+<tr class="separator:a396e2cc302d4fe9c9f0808fa0c6aee2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Engine audio facade — synthesized tones and noise. </p>
+<div class="textblock"><p>Engine audio facade — synthesized tones, noise, and .wav file playback. </p>
 <p>All functions route through the engine's internal AudioManager. Game code should not include AudioManager.h directly. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="a396e2cc302d4fe9c9f0808fa0c6aee2e" name="a396e2cc302d4fe9c9f0808fa0c6aee2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a396e2cc302d4fe9c9f0808fa0c6aee2e">&#9670;&#160;</a></span>isPlaying()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Engine::Audio::isPlaying </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structEngine_1_1Audio_1_1SoundHandle.html">SoundHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Returns true if any voice is currently playing the given sound. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>A handle returned by loadSound. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a0ad094e6e52004895bf86cfc54e28dc7" name="a0ad094e6e52004895bf86cfc54e28dc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ad094e6e52004895bf86cfc54e28dc7">&#9670;&#160;</a></span>loadSound()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">SoundHandle Engine::Audio::loadSound </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Load a .wav file into memory for later playback. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td>Path to the .wav file, relative to the working directory. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A handle for use with playSound. Check handle.valid() before use. </dd></dl>
+
+</div>
+</div>
 <a id="a6aa10a8a9e7a23e9980706696199602d" name="a6aa10a8a9e7a23e9980706696199602d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6aa10a8a9e7a23e9980706696199602d">&#9670;&#160;</a></span>playLoopingNoise()</h2>
 
@@ -237,6 +298,30 @@ Functions</h2></td></tr>
     <tr><td class="paramname">durationSec</td><td>Duration in seconds. </td></tr>
     <tr><td class="paramname">amplitude</td><td>Volume in the range 0.0–1.0. Defaults to 0.4. </td></tr>
     <tr><td class="paramname">decayFactor</td><td>Per-sample amplitude multiplier for natural fade-out. Use <code>std::pow(0.001f, 1.f / (44100.f * fadeTimeSec))</code> to derive a value from a desired fade time. 1.0 = no decay (flat burst). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a528d7e58048b138f93e2455eab611034" name="a528d7e58048b138f93e2455eab611034"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a528d7e58048b138f93e2455eab611034">&#9670;&#160;</a></span>playSound()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Engine::Audio::playSound </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structEngine_1_1Audio_1_1SoundHandle.html">SoundHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Play a previously loaded sound, fire-and-forget. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>A handle returned by loadSound. </td></tr>
   </table>
   </dd>
 </dl>

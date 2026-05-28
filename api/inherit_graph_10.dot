@@ -5,5 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="Engine::ListenerHandle",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classEngine_1_1ListenerHandle.html",tooltip="RAII subscription token returned by Engine::Events::on<T>()."];
+  Node0 [id="Node000000",label="Engine::Input",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classEngine_1_1Input.html",tooltip=" "];
 }
