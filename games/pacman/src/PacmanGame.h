@@ -31,6 +31,12 @@ protected:
 private:
     enum class GameState { Playing, Dying, LevelClear, GameOver };
 
+    struct ScorePopup {
+        float x, y;
+        float timer;
+        int   points;
+    };
+
     void buildDotCache();
     void tryEatDot();
     void updateModeTimer(float dt);
@@ -55,6 +61,9 @@ private:
     void renderOverlay();
     void renderLives();
     void renderDevHUD();
+    void checkExtraLife();
+    void tickPopups(float dt);
+    void renderPopups();
 
     Engine::Renderer2D                    m_renderer;
     std::shared_ptr<Engine::Texture>      m_wallTex;
@@ -95,6 +104,10 @@ private:
 
     // Scoring
     int       m_highScore        = 0;
+
+    // Score popups and extra life
+    std::vector<ScorePopup>        m_popups;
+    bool                           m_extraLifeAwarded = false;
 
     // Event listener handles — auto-unsubscribe on destruction.
     Engine::ListenerHandle m_dotEatenHandle;

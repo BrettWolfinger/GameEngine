@@ -3,7 +3,8 @@
 
 struct DotEaten         { int col; int row; int points; };
 struct PowerPelletEaten { int col; int row; int points; };
-struct GhostEaten       { GhostType type; int multiplier; int points; };
+struct GhostEaten       { GhostType type; int multiplier; int points; int col; int row; };
+struct ExtraLifeAwarded {};
 struct PacmanCaught     {};
 struct LevelCleared     {};
 struct DeathStarted     {};

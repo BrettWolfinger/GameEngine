@@ -14,4 +14,5 @@ struct PacmanConfig : Engine::ConfigGroup {
     Engine::Field<int>   startLives           { this, "start_lives",            3    };
     Engine::Field<float> deathPause           { this, "death_pause",            1.0f };
     Engine::Field<float> levelClearPause      { this, "level_clear_pause",      3.0f };
+    Engine::Field<int>   extraLifeThreshold   { this, "extra_life_threshold",   10000 };
 };
