@@ -4,6 +4,7 @@
 #include "../audio/AudioManager.h"
 #include "../config/ConfigWatcher.h"
 #include "../config/ConfigRegistry.h"
+#include "../events/EventDispatcher.h"
 #include "../particles/ParticleSystem.h"
 #include "../physics/CollisionWorld.h"
 #include "../renderer/Renderer2D.h"
@@ -21,11 +22,12 @@
 namespace Engine {
 
 struct Application::Impl {
-    AudioManager   audioManager;
-    ConfigWatcher  configWatcher;
-    ConfigRegistry configRegistry { configWatcher };
-    ParticleSystem particleSystem;
-    CollisionWorld collisionWorld;
+    AudioManager    audioManager;
+    ConfigWatcher   configWatcher;
+    ConfigRegistry  configRegistry { configWatcher };
+    EventDispatcher eventDispatcher;
+    ParticleSystem  particleSystem;
+    CollisionWorld  collisionWorld;
 
 #ifdef ENABLE_TOOLS
     bool showImGui = false;
@@ -41,6 +43,7 @@ Application::Application(const char* title, int width, int height)
     m_impl->audioManager.init();
     Services::setAudio(&m_impl->audioManager);
     Services::setConfigWatcher(&m_impl->configWatcher);
+    Services::setEvents(&m_impl->eventDispatcher);
     Services::setParticles(&m_impl->particleSystem);
     Services::setCollision(&m_impl->collisionWorld);
 #ifdef ENABLE_TOOLS
