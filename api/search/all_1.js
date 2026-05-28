@@ -11,8 +11,11 @@ var searchData=
   ['color_8',['color',['../structEngine_1_1ParticleEmitParams.html#a70141a461c9bbe4b80279513c80fb0cf',1,'Engine::ParticleEmitParams']]],
   ['color4_9',['Color4',['../structEngine_1_1Tilemap_1_1Color4.html',1,'Engine::Tilemap']]],
   ['config_2eh_10',['Config.h',['../Config_8h.html',1,'']]],
-  ['configloader_11',['ConfigLoader',['../classEngine_1_1ConfigLoader.html',1,'Engine']]],
-  ['configloader_2eh_12',['ConfigLoader.h',['../ConfigLoader_8h.html',1,'']]],
-  ['configwatcher_13',['ConfigWatcher',['../classEngine_1_1ConfigWatcher.html',1,'Engine']]],
-  ['count_14',['count',['../structEngine_1_1ParticleEmitParams.html#a4bc4b1caf06203fa8982ba751f5e9ac9',1,'Engine::ParticleEmitParams']]]
+  ['configgroup_11',['ConfigGroup',['../classEngine_1_1ConfigGroup.html',1,'Engine']]],
+  ['configgroup_2eh_12',['ConfigGroup.h',['../ConfigGroup_8h.html',1,'']]],
+  ['configloader_13',['ConfigLoader',['../classEngine_1_1ConfigLoader.html',1,'Engine']]],
+  ['configloader_2eh_14',['ConfigLoader.h',['../ConfigLoader_8h.html',1,'']]],
+  ['configregistry_15',['ConfigRegistry',['../classEngine_1_1ConfigRegistry.html',1,'Engine']]],
+  ['configwatcher_16',['ConfigWatcher',['../classEngine_1_1ConfigWatcher.html',1,'Engine']]],
+  ['count_17',['count',['../structEngine_1_1ParticleEmitParams.html#a4bc4b1caf06203fa8982ba751f5e9ac9',1,'Engine::ParticleEmitParams']]]
 ];

@@ -110,6 +110,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>run</b> ()</td></tr>
 <tr class="memitem:a30284ab61409a6b3865f38a4982ce14c" id="r_a30284ab61409a6b3865f38a4982ce14c"><td class="memItemLeft" align="right" valign="top"><a id="a30284ab61409a6b3865f38a4982ce14c" name="a30284ab61409a6b3865f38a4982ce14c"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>quit</b> ()</td></tr>
 <tr class="separator:a30284ab61409a6b3865f38a4982ce14c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa216249ce63024a77d718eba3b01021f" id="r_aa216249ce63024a77d718eba3b01021f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEngine_1_1Application.html#aa216249ce63024a77d718eba3b01021f">registerConfig</a> (std::string_view path, <a class="el" href="classEngine_1_1ConfigGroup.html">ConfigGroup</a> *group)</td></tr>
+<tr class="separator:aa216249ce63024a77d718eba3b01021f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a593c69616481796e7c781d21fd3f41" id="r_a2a593c69616481796e7c781d21fd3f41"><td class="memItemLeft" align="right" valign="top"><a id="a2a593c69616481796e7c781d21fd3f41" name="a2a593c69616481796e7c781d21fd3f41"></a>
 <a class="el" href="classEngine_1_1Window.html">Window</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getWindow</b> ()</td></tr>
 <tr class="separator:a2a593c69616481796e7c781d21fd3f41"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -164,6 +166,35 @@ virtual <a class="el" href="classEngine_1_1Renderer2D.html">Renderer2D</a> *&#16
 </table>
 </div><div class="memdoc">
 <p>Override to render ImGui widgets. Called after onOverlayRender() when the F1 overlay is toggled on. No-op in release builds — the engine never calls it when ENABLE_TOOLS is not defined. </p>
+
+</div>
+</div>
+<a id="aa216249ce63024a77d718eba3b01021f" name="aa216249ce63024a77d718eba3b01021f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa216249ce63024a77d718eba3b01021f">&#9670;&#160;</a></span>registerConfig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Engine::Application::registerConfig </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classEngine_1_1ConfigGroup.html">ConfigGroup</a> *&#160;</td>
+          <td class="paramname"><em>group</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Register a <a class="el" href="classEngine_1_1ConfigGroup.html">ConfigGroup</a> for automatic TOML load/save, hot-reload, and ImGui editing. If the file does not exist it is auto-generated from the Field&lt;T&gt; defaults and written to disk. Safe to call from onInit(). </p>
 
 </div>
 </div>

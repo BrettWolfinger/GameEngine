@@ -876,7 +876,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../roadmap/runtime-config-system/" class="md-nav__link">
+      <a href="../../roadmap/runtime-config-system.md" class="md-nav__link">
         
   
   
@@ -1261,15 +1261,26 @@ inline constexpr uint32_t kPlayerLayer = 1 &lt;&lt; 0;
 inline constexpr uint32_t kEnemyLayer  = 1 &lt;&lt; 1;
 </code></pre>
 <p>Keeping <code>SCALE</code> here and deriving all render sizes from it (<code>16.f * SCALE</code>) means you can resize sprites globally without hunting through source files.</p>
-<p><strong><code>ConfigInit.h/.cpp</code></strong> — runtime-loaded per-entity tuning data (speeds, scores, particle params, etc.) stored in TOML files. See <code>docs/engine/runtime-config.md</code> for the full pattern.</p>
-<pre><code class="language-cpp">// ConfigInit.h
-void loadAllConfigs();   // call once at startup
-void watchAllConfigs();  // registers hot-reload callbacks (no-op in release)
+<p><strong><code>GameConfig.h</code></strong> — runtime-tunable values (speeds, timers, lives, etc.) declared as <code>Engine::Field&lt;T&gt;</code> members in a <code>ConfigGroup</code> subclass. The engine auto-generates the TOML file on first run from the field defaults, watches it for hot-reload, and renders it in the F1 ImGui editor — no boilerplate needed.</p>
+<pre><code class="language-cpp">// GameConfig.h
+#pragma once
+#include &lt;engine/config/ConfigGroup.h&gt;
 
-#ifdef ENABLE_TOOLS
-void renderConfigEditor(); // ImGui editor window; call from onImGuiRender()
-#endif
+struct GameConfig : Engine::ConfigGroup {
+    Engine::Field&lt;float&gt; playerSpeed { this, &quot;player_speed&quot;, 200.f };
+    Engine::Field&lt;int&gt;   lives       { this, &quot;lives&quot;,        3     };
+};
 </code></pre>
+<p>Register it once in <code>onInit()</code>:</p>
+<pre><code class="language-cpp">// MyGame.h
+GameConfig m_config;
+
+// MyGame.cpp
+void MyGame::onInit() {
+    registerConfig(&quot;games/mygame/assets/configs/game.toml&quot;, &amp;m_config);
+}
+</code></pre>
+<p>See <a href="../runtime-config/"><code>docs/engine/runtime-config.md</code></a> for the full reference.</p>
 
 
 

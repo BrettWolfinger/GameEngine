@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://brettwolfinger.github.io/GameEngine/devlog/">
       
       
-        <link rel="prev" href="../roadmap/runtime-config-system/">
+        <link rel="prev" href="../roadmap/engine-facade/">
       
       
       
@@ -737,7 +737,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../roadmap/runtime-config-system/" class="md-nav__link">
+      <a href="../roadmap/runtime-config-system.md" class="md-nav__link">
         
   
   
@@ -1160,6 +1160,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#self-registering-fieldt-config-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-registering Field&lt;T&gt; config system
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#object-layers" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1565,6 +1576,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#self-registering-fieldt-config-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-registering Field&lt;T&gt; config system
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#object-layers" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1842,6 +1864,34 @@ setup, entity spawning) without pulling in the full rendering stack.</p>
 GID, making it correct for multi-tileset maps and resilient to GID renumbering when the
 Tiled file is edited. The game-level <code>MapLoader</code> files were removed from both Pac-Man
 and Mario, replaced with the two-line engine calls.</p>
+<h3 id="self-registering-fieldt-config-system">Self-registering <code>Field&lt;T&gt;</code> config system</h3>
+<p>The <code>ConfigInit.h/.cpp</code> pattern from Asteroids required manual wiring for every
+new config type: write a <code>fromToml()</code> deserializer, add a <code>loadXxxConfigs()</code>
+call, add a <code>watchAllConfigs()</code> entry, and add an ImGui section in
+<code>renderConfigEditor()</code>. It was easy to forget one step, and the editor file
+grew with each new entity type.</p>
+<p>The root problem was that the struct and its I/O were disconnected. Fixing it
+meant making the struct the single source of truth.</p>
+<p><code>Field&lt;T&gt;</code> is a self-registering config field. Declare it as a member of a
+<code>ConfigGroup</code> subclass and it registers itself automatically at construction —
+no <code>fromToml()</code>, no <code>toToml()</code>, no <code>ConfigInit.cpp</code>. Supported types: <code>float</code>,
+<code>int</code>, <code>bool</code>, <code>std::string</code>. <code>if constexpr</code> in the header keeps I/O inline
+without adding a <code>.cpp</code> per type; <code>renderImGui</code> specialisations live in
+<code>ConfigGroup.cpp</code> to prevent <code>imgui.h</code> from leaking into game headers.</p>
+<p><code>Application::registerConfig(path, group)</code> is the one call games make. It
+loads the TOML if present, auto-generates it from <code>Field&lt;T&gt;</code> defaults if not,
+registers the watcher, and adds the group to the F1 editor — all in one line.
+The TOML file is no longer hand-authored; the struct drives it.</p>
+<p><code>ConfigRegistry</code> owns the entry collection, the load/auto-generate/watch logic,
+and the ImGui editor rendering. It lives in <code>src/engine/config/</code> alongside the
+other config modules. <code>Application</code> holds one (injecting its <code>ConfigWatcher</code>
+reference) and delegates <code>registerConfig()</code> to it — consistent with how
+<code>AudioManager</code>, <code>CollisionWorld</code>, and <code>ParticleSystem</code> are handled.</p>
+<p><code>ConfigInit.h/.cpp</code> no longer exists. Pac-Man was the first game wired to the
+new system: <code>PacmanConfig.h</code> declares seven <code>Field&lt;T&gt;</code> members (speeds, timers,
+lives); <code>onInit()</code> registers it in one line; <code>pacman.toml</code> auto-generates on
+first run. Entity speed params are threaded through <code>Pacman::update()</code> and
+<code>Ghost::update()</code> so hot-reloaded values take effect each frame without caching.</p>
 <h3 id="object-layers">Object layers</h3>
 <p><code>Engine::Tilemap</code> was extended with full object layer support. <code>MapObject</code> and
 <code>ObjectLayer</code> structs were added to <code>Tilemap.h</code>, and <code>loadMap()</code> now parses all
