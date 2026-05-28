@@ -91,6 +91,33 @@ void PacmanGame::onInit() {
         // Release any ghosts whose dot threshold is already met (Pinky releases immediately).
         checkGhostRelease();
     }
+
+    // Wire event reactions as listeners.
+    m_dotEatenHandle = Engine::Events::on<DotEaten>([this](const DotEaten& e) {
+        m_score += e.points;
+        updateHighScore();
+        checkGhostRelease();
+    });
+
+    m_pelletEatenHandle = Engine::Events::on<PowerPelletEaten>([this](const PowerPelletEaten& e) {
+        m_score += e.points;
+        updateHighScore();
+        checkGhostRelease();
+        triggerFrightened();
+    });
+
+    m_ghostEatenHandle = Engine::Events::on<GhostEaten>([this](const GhostEaten& e) {
+        m_score += e.points;
+        updateHighScore();
+    });
+
+    m_pacmanCaughtHandle = Engine::Events::on<PacmanCaught>([this](const PacmanCaught&) {
+        startDeathSequence();
+    });
+
+    m_levelClearedHandle = Engine::Events::on<LevelCleared>([this](const LevelCleared&) {
+        startLevelClear();
+    });
 }
 
 void PacmanGame::buildDotCache() {
@@ -150,22 +177,21 @@ void PacmanGame::checkGhostCollision() {
         if (ghost.col() != pc || ghost.row() != pr) continue;
 
         if (ghost.mode() == GhostMode::Frightened) {
-            // Eat the ghost — score doubles per ghost eaten this pellet.
             m_ghostsEatenThisPellet++;
-            m_score += kGhostScoreBase << (m_ghostsEatenThisPellet - 1);
-            updateHighScore();
+            const int points = kGhostScoreBase << (m_ghostsEatenThisPellet - 1);
             ghost.startEyes();
+            Engine::Events::emit(GhostEaten{ ghost.type(), m_ghostsEatenThisPellet, points });
         } else if (ghost.mode() != GhostMode::Eyes &&
                    ghost.mode() != GhostMode::House &&
                    ghost.mode() != GhostMode::Leaving) {
-            // Pac-Man is caught — begin death sequence.
-            startDeathSequence();
-            return; // stop checking remaining ghosts
+            Engine::Events::emit(PacmanCaught{});
+            return;
         }
     }
 }
 
 void PacmanGame::startDeathSequence() {
+    Engine::Events::emit(DeathStarted{});
     m_gameState       = GameState::Dying;
     m_deathPauseTimer = m_config.deathPause;
     m_frightenedTimer = 0.f;
@@ -190,9 +216,11 @@ void PacmanGame::handleDyingState(float dt) {
     // Phase 3: consume a life then respawn or end the game.
     --m_lives;
     if (m_lives <= 0) {
+        Engine::Events::emit(GameOverEvent{ m_score, m_highScore });
         m_gameState = GameState::GameOver;
         return;
     }
+    Engine::Events::emit(LifeLost{ m_lives });
     respawnAfterDeath();
 }
 
@@ -276,33 +304,29 @@ void PacmanGame::saveHighScore() {
 
 void PacmanGame::tryEatDot() {
     if (!m_pacman || !m_dotsLayer) return;
-
     int idx = m_pacman->row() * m_dotsLayer->cols + m_pacman->col();
     if (idx < 0 || idx >= static_cast<int>(m_dots.size())) return;
 
     switch (m_dots[idx]) {
         case CellType::Dot:
             m_dots[idx] = CellType::Empty;
-            m_score += kScoreDot;
             --m_dotsRemaining;
             ++m_dotsEaten;
-            checkGhostRelease();
+            Engine::Events::emit(DotEaten{ m_pacman->col(), m_pacman->row(), kScoreDot });
             break;
         case CellType::PowerPellet:
             m_dots[idx] = CellType::Empty;
-            m_score += kScorePellet;
             --m_dotsRemaining;
             ++m_dotsEaten;
-            checkGhostRelease();
-            triggerFrightened();
+            Engine::Events::emit(PowerPelletEaten{ m_pacman->col(), m_pacman->row(), kScorePellet });
             break;
         default: break;
     }
 
-    updateHighScore();
-
+    // LevelCleared emitted after DotEaten/PowerPelletEaten so scoring fires first
+    // (dispatch is synchronous, so emit order is the execution order).
     if (m_dotsRemaining == 0)
-        startLevelClear();
+        Engine::Events::emit(LevelCleared{});
 }
 
 void PacmanGame::onUpdate(float dt) {
