@@ -96,12 +96,14 @@ void PacmanGame::onInit() {
     m_dotEatenHandle = Engine::Events::on<DotEaten>([this](const DotEaten& e) {
         m_score += e.points;
         updateHighScore();
+        checkExtraLife();
         checkGhostRelease();
     });
 
     m_pelletEatenHandle = Engine::Events::on<PowerPelletEaten>([this](const PowerPelletEaten& e) {
         m_score += e.points;
         updateHighScore();
+        checkExtraLife();
         checkGhostRelease();
         triggerFrightened();
     });
@@ -109,6 +111,13 @@ void PacmanGame::onInit() {
     m_ghostEatenHandle = Engine::Events::on<GhostEaten>([this](const GhostEaten& e) {
         m_score += e.points;
         updateHighScore();
+        checkExtraLife();
+        m_popups.push_back({
+            e.col * static_cast<float>(TILE * SCALE),
+            e.row * static_cast<float>(TILE * SCALE) + static_cast<float>(HUD_H),
+            1.0f,
+            e.points
+        });
     });
 
     m_pacmanCaughtHandle = Engine::Events::on<PacmanCaught>([this](const PacmanCaught&) {
@@ -183,7 +192,8 @@ void PacmanGame::checkGhostCollision() {
             m_ghostsEatenThisPellet++;
             const int points = kGhostScoreBase << (m_ghostsEatenThisPellet - 1);
             ghost.startEyes();
-            Engine::Events::emit(GhostEaten{ ghost.type(), m_ghostsEatenThisPellet, points });
+            Engine::Events::emit(GhostEaten{ ghost.type(), m_ghostsEatenThisPellet, points,
+                                             ghost.col(), ghost.row() });
         } else if (ghost.mode() != GhostMode::Eyes &&
                    ghost.mode() != GhostMode::House &&
                    ghost.mode() != GhostMode::Leaving) {
@@ -262,7 +272,23 @@ void PacmanGame::startNextLevel() {
     checkGhostRelease();
 }
 
+void PacmanGame::tickPopups(float dt) {
+    for (auto& p : m_popups) p.timer -= dt;
+    m_popups.erase(
+        std::remove_if(m_popups.begin(), m_popups.end(),
+                       [](const ScorePopup& p) { return p.timer <= 0.f; }),
+        m_popups.end());
+}
+
+void PacmanGame::checkExtraLife() {
+    if (m_extraLifeAwarded || m_score < m_config.extraLifeThreshold) return;
+    m_extraLifeAwarded = true;
+    ++m_lives;
+    Engine::Events::emit(ExtraLifeAwarded{});
+}
+
 void PacmanGame::restartGame() {
+    m_extraLifeAwarded = false;
     m_score     = 0;
     m_dotsEaten = 0;
     m_lives     = m_config.startLives;
@@ -376,6 +402,7 @@ void PacmanGame::onUpdate(float dt) {
 
     tryEatDot();
     checkGhostCollision();
+    tickPopups(dt);
 }
 
 void PacmanGame::onRender() {
@@ -386,6 +413,7 @@ void PacmanGame::onRender() {
     if (m_pacman)
         m_pacman->render(m_renderer, kLayerPacman, static_cast<float>(HUD_H));
     renderHUD();
+    renderPopups();
 #ifdef ENABLE_DEV_KEYS
     renderDevHUD();
 #endif
@@ -492,6 +520,17 @@ void PacmanGame::renderLives() {
                                     m_pacSheet->texture(),
                                     uv.u0, uv.v0, uv.u1, uv.v1,
                                     0.f, {1.f, 1.f, 1.f, 1.f}, kLayerHUD);
+    }
+}
+
+void PacmanGame::renderPopups() {
+    constexpr float kScale = 2.f;
+    for (const auto& p : m_popups) {
+        const std::string text = std::to_string(p.points);
+        const float w = Engine::PixelFont::stringWidth(text, kScale);
+        Engine::PixelFont::drawString(m_renderer, text,
+                                      p.x - w * 0.5f, p.y - 4.f,
+                                      kScale, {1.f, 1.f, 1.f, 1.f}, kLayerHUD);
     }
 }
 

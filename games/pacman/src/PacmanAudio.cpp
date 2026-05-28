@@ -5,6 +5,7 @@ PacmanAudio::PacmanAudio() {
     m_eatGhost  = Engine::Audio::loadSound("games/pacman/assets/audio/pacman_eatghost.wav");
     m_death     = Engine::Audio::loadSound("games/pacman/assets/audio/pacman_death.wav");
     m_beginning = Engine::Audio::loadSound("games/pacman/assets/audio/pacman_beginning.wav");
+    m_extraPac  = Engine::Audio::loadSound("games/pacman/assets/audio/pacman_extrapac.wav");
 
     m_dotHandle = Engine::Events::on<DotEaten>([this](const DotEaten&) {
         if (!Engine::Audio::isPlaying(m_chomp))
@@ -30,5 +31,9 @@ PacmanAudio::PacmanAudio() {
 
     m_startHandle = Engine::Events::on<GameStarted>([this](const GameStarted&) {
         Engine::Audio::playSound(m_beginning);
+    });
+
+    m_extraLifeHandle = Engine::Events::on<ExtraLifeAwarded>([this](const ExtraLifeAwarded&) {
+        Engine::Audio::playSound(m_extraPac);
     });
 }
