@@ -17,6 +17,8 @@ PacmanGame::PacmanGame()
 {}
 
 void PacmanGame::onInit() {
+    registerConfig("games/pacman/assets/configs/pacman.toml", &m_config);
+    m_lives = m_config.startLives;
     loadHighScore();
     m_map = Engine::Tilemap::loadMap("games/pacman/assets/maps/PacManMap.tmx");
 
@@ -92,7 +94,7 @@ void PacmanGame::updateModeTimer(float dt) {
 }
 
 void PacmanGame::triggerFrightened() {
-    m_frightenedTimer       = kFrightenedDuration;
+    m_frightenedTimer       = m_config.frightenedDuration;
     m_ghostsEatenThisPellet = 0;
     for (auto& ghost : m_ghosts)
         ghost.frighten();
@@ -132,7 +134,7 @@ void PacmanGame::checkGhostCollision() {
 
 void PacmanGame::startDeathSequence() {
     m_gameState       = GameState::Dying;
-    m_deathPauseTimer = kDeathPause;
+    m_deathPauseTimer = m_config.deathPause;
     m_frightenedTimer = 0.f;
     for (auto& ghost : m_ghosts)
         ghost.endFrightened(m_currentMode); // snap all ghosts out of frightened
@@ -142,7 +144,7 @@ void PacmanGame::startDeathSequence() {
 void PacmanGame::handleDyingState(float dt) {
     // Phase 1: death animation still playing.
     if (m_pacman && !m_pacman->isDeathDone()) {
-        m_pacman->update(dt);
+        m_pacman->update(dt, 0.f);
         return;
     }
 
@@ -178,7 +180,7 @@ void PacmanGame::respawnAfterDeath() {
 
 void PacmanGame::startLevelClear() {
     m_gameState       = GameState::LevelClear;
-    m_levelClearTimer = kLevelClearPause;
+    m_levelClearTimer = m_config.levelClearPause;
     m_frightenedTimer = 0.f;
     for (auto& ghost : m_ghosts)
         ghost.endFrightened(m_currentMode);
@@ -195,7 +197,7 @@ void PacmanGame::startNextLevel() {
 
 void PacmanGame::restartGame() {
     m_score  = 0;
-    m_lives  = kStartLives;
+    m_lives  = m_config.startLives;
     resetModeSchedule();
     m_gameState = GameState::Playing;
     buildDotCache();
@@ -274,7 +276,7 @@ void PacmanGame::onUpdate(float dt) {
     updateFrightenedTimer(dt);
 
     if (m_pacman)
-        m_pacman->update(dt);
+        m_pacman->update(dt, m_config.pacmanSpeed);
 
     if (!m_ghosts.empty() && m_pacman) {
         const int  blinkyCol = m_ghosts[0].col();
@@ -283,7 +285,8 @@ void PacmanGame::onUpdate(float dt) {
         const int  pacRow    = m_pacman->row();
         const Dir  pacDir    = m_pacman->dir();
         for (auto& ghost : m_ghosts)
-            ghost.update(dt, pacCol, pacRow, pacDir, blinkyCol, blinkyRow);
+            ghost.update(dt, pacCol, pacRow, pacDir, blinkyCol, blinkyRow,
+                         m_config.ghostSpeed, m_config.ghostSpeedFrightened);
     }
 
     tryEatDot();

@@ -1,172 +1,197 @@
 # Runtime Config System
 
-Per-entity tuning data (speeds, scores, particle parameters, etc.) loads from
-TOML files at runtime rather than being hardcoded as `constexpr` tables. In
-debug builds, files are watched for changes and hot-reloaded automatically. An
-ImGui editor lets you adjust values live and save them back to disk.
+Per-entity tuning data (speeds, timers, lives, particle parameters, etc.) loads
+from TOML files at runtime rather than being hardcoded. In debug builds, files
+are watched for changes and hot-reloaded automatically. An ImGui editor lets you
+adjust values live without restarting. The struct is the single source of truth
+— the TOML file is auto-generated on first run from the struct's defaults.
+
+---
+
+## Quick Start
+
+1. Define a config struct that inherits `Engine::ConfigGroup` and declares
+   `Engine::Field<T>` members:
+
+```cpp
+// PacmanConfig.h
+#pragma once
+#include <engine/config/ConfigGroup.h>
+
+struct PacmanConfig : Engine::ConfigGroup {
+    Engine::Field<float> pacmanSpeed        { this, "pacman_speed",         7.5f };
+    Engine::Field<float> ghostSpeed         { this, "ghost_speed",          6.0f };
+    Engine::Field<float> frightenedDuration { this, "frightened_duration",  7.0f };
+    Engine::Field<int>   startLives         { this, "start_lives",          3    };
+};
+```
+
+2. Add a member to your game class and register it in `onInit()`:
+
+```cpp
+// MyGame.h
+#include "PacmanConfig.h"
+PacmanConfig m_config;
+
+// MyGame.cpp
+void MyGame::onInit() {
+    registerConfig("games/mygame/assets/configs/pacman.toml", &m_config);
+}
+```
+
+3. Use the fields anywhere in game code — they convert implicitly to their
+   underlying type:
+
+```cpp
+pacman.update(dt, m_config.pacmanSpeed);
+m_frightenedTimer = m_config.frightenedDuration;
+```
+
+That's it. The engine handles the rest.
+
+---
+
+## What `registerConfig` Does
+
+When you call `Application::registerConfig(path, group)`:
+
+1. **If the TOML file exists** — parses it and populates the `Field<T>` members.
+2. **If the TOML file does not exist** — serialises the `Field<T>` defaults to a
+   new TOML file on disk. No hand-authoring required; the struct drives
+   everything.
+3. **Registers a hot-reload watcher** — whenever the file changes on disk
+   (debug builds only), all `Field<T>` values are updated automatically on the
+   next frame.
+4. **Registers the group with the ImGui editor** — the "Config Editor" window
+   (F1) shows a collapsing section for every registered group, with drag widgets
+   for each field.
+
+---
+
+## `Field<T>`
+
+`Field<T>` is a self-registering config field. Supported types: `float`, `int`,
+`bool`, `std::string`.
+
+```cpp
+Engine::Field<float> speed { this, "speed", 7.5f };
+//                          ^     ^          ^
+//                          |     |          default value
+//                          |     TOML key
+//                          parent ConfigGroup (always `this`)
+```
+
+Fields convert implicitly to `T` on read and accept `T` on write:
+
+```cpp
+float s = m_config.speed;   // implicit read
+m_config.speed = 8.0f;      // write (persisted on next save)
+```
+
+`Field<T>` is not copyable — it holds a raw pointer to its parent and registers
+itself at construction. Always declare fields as direct members of a
+`ConfigGroup` subclass, never in a vector or dynamically allocated.
 
 ---
 
 ## TOML Files
 
-One file per config type under `games/<game>/assets/configs/`. Human-readable,
-comment-friendly. The loader applies `SCALE` to size values on load — the files
-store raw pixel-agnostic values.
+Files live under `games/<game>/assets/configs/`. They are auto-generated on the
+first run, human-readable, and comment-friendly.
 
 ```toml
-# ufo_sizes.toml
-[large]
-render_size  = 32.0   # raw; loader multiplies by SCALE
-speed        = 80.0
-score        = 200
-fire_rate    = 2.0
-# ...
-
-[small]
-render_size  = 16.0
-speed        = 120.0
-score        = 1000
-# ...
+# pacman.toml — auto-generated; edit freely
+pacman_speed = 7.5
+ghost_speed = 6.0
+frightened_duration = 7.0
+start_lives = 3
 ```
+
+Keys match the second argument of each `Field<T>` constructor. Adding a new
+field to the struct and deleting the old TOML file regenerates it cleanly;
+unknown keys in an existing file are silently ignored.
 
 ---
 
-## Config Structs
+## Multiple Config Groups
 
-Each entity type gets a header with a plain struct and a namespace holding the
-runtime array:
+Register as many groups as you like — each with its own path:
 
 ```cpp
-// UfoConfig.h
-struct UfoConfig {
-    float renderSize;
-    float speed;
-    int   score;
-    // ...
-};
-
-namespace UfoConfigs {
-inline std::vector<UfoConfig> All;  // populated by loadAllConfigs()
-}
+registerConfig("games/mygame/assets/configs/entities.toml", &m_entityConfig);
+registerConfig("games/mygame/assets/configs/gameplay.toml", &m_gameplayConfig);
 ```
 
-`inline std::vector<T> All` is an ODR-safe C++17 inline variable — no extern
-declaration needed. Size is driven entirely by the TOML file, not by a C++
-constant.
+Each group appears as a separate collapsing section in the F1 editor, labelled
+with the file stem (`entities`, `gameplay`).
 
 ---
 
 ## Engine Modules
 
+### `Engine::ConfigGroup`
+
+Base class for declarative config structs. `Field<T>` members self-register on
+construction. You never call `ConfigGroup` methods directly — `registerConfig`
+drives everything.
+
+### `Engine::Field<T>`
+
+Type-safe, self-registering config field. Declared as a member of a
+`ConfigGroup` subclass.
+
 ### `Engine::ConfigLoader`
 
 Loads and parses a TOML file. Returns a `toml::table`; throws
-`std::runtime_error` on missing file or parse failure.
+`std::runtime_error` on failure. Used internally by `ConfigRegistry`; games
+rarely need to call it directly.
 
 ```cpp
 #include <engine/config/ConfigLoader.h>
-
-toml::table root = Engine::ConfigLoader::load("games/mygame/assets/configs/enemies.toml");
+toml::table root = Engine::ConfigLoader::load("path/to/file.toml");
 ```
 
 ### `Engine::Config::watch` (facade)
 
-Registers a callback to fire whenever a file changes on disk. No-op in release
-builds — call sites need no `#ifdef`:
+Registers a raw callback to fire whenever a file changes on disk. No-op in
+release builds. Prefer `registerConfig` for standard config groups — `watch` is
+for custom reload logic that doesn't fit the `Field<T>` model.
 
 ```cpp
 #include <engine/Engine.h>
-
-Engine::Config::watch("games/mygame/assets/configs/enemies.toml", loadEnemyConfigs);
-```
-
-The watcher polls `std::filesystem::last_write_time` once per frame (before
-game logic). When a change is detected, the callback runs immediately —
-typically the same `loadXxxConfigs()` function used at startup.
-
----
-
-## ConfigInit Pattern
-
-Each game centralises its config loading in two files:
-
-**`ConfigInit.h`**
-```cpp
-void loadAllConfigs();   // parse TOML → populate All vectors
-void watchAllConfigs();  // register hot-reload callbacks
-
-#ifdef ENABLE_TOOLS
-void renderConfigEditor(); // ImGui editor; call from onImGuiRender()
-#endif
-```
-
-**`ConfigInit.cpp`**
-
-Three sections per config type:
-
-1. **`fromToml()`** — deserializer. Reads a `toml::table`, applies `SCALE` to
-   size fields, returns the struct.
-2. **`loadXxxConfigs()`** — clears `All`, calls `ConfigLoader::load()`, pushes
-   entries built with `fromToml()`.
-3. **`ENABLE_TOOLS` block** — `toToml()` serializer, `saveXxxConfigs()` writer,
-   and the `renderConfigEditor()` ImGui implementation.
-
-Call both entry points from the game constructor:
-
-```cpp
-AsteroidsGame::AsteroidsGame() : Engine::Application("Asteroids", W, H) {
-    loadAllConfigs();
-    watchAllConfigs();
-}
+Engine::Config::watch("path/to/file.toml", myReloadCallback);
 ```
 
 ---
 
 ## ImGui Editor
 
-In non-Release builds, `renderConfigEditor()` renders a window with collapsing
-headers per config type. Each entry expands to show drag widgets for every
-tunable field. **Save** writes the current values back to TOML; the watcher
-detects the change and hot-reloads it on the next frame, closing the loop.
+Press **F1** in a debug build to open the overlay. The "Config Editor" window
+shows one `CollapsingHeader` per registered group. Drag any field to change its
+value; the change takes effect immediately in game code (fields are read each
+frame). Changes are **not** automatically written back to disk — edit the TOML
+file directly if you want to persist a value, and the watcher will hot-reload it.
 
 Ctrl+click (or double-click) any drag widget to type a value directly.
 
-Wire it up via the `onImGuiRender()` hook:
+---
 
-```cpp
-// MyGame.h
-void onImGuiRender() override;
+## Hot-Reload
 
-// MyGame.cpp
-void MyGame::onImGuiRender() {
-#ifdef ENABLE_TOOLS
-    renderConfigEditor();
-#endif
-}
-```
+The file watcher polls `std::filesystem::last_write_time` once per frame. When
+a change is detected, all `Field<T>` values in the group are updated from the
+new file contents. Because game code reads `m_config.field` each frame (not a
+cached copy), the change is visible on the very next update tick.
 
-Press **F1** in a debug build to toggle the overlay.
+Hot-reload is **debug-only** (`ENABLE_TOOLS` is undefined in Release). The
+`Config::watch` facade call compiles in all configurations but is a no-op in
+Release, so no `#ifdef` is needed at call sites.
 
 ---
 
 ## Release Builds
 
-- `Engine::Config::watch()` is a no-op — no `ConfigWatcher` overhead.
-- `onImGuiRender()` is declared but never called by the engine.
-- `renderConfigEditor()` is not compiled — `ENABLE_TOOLS` is undefined.
-- TOML files remain on disk (not embedded); config values are loaded once at
-  startup and never change.
-
----
-
-## Adding a New Config Type
-
-1. Create `MyConfig.h` — plain struct + `namespace MyConfigs { inline std::vector<MyConfig> All; }`.
-2. Create a TOML file under `assets/configs/`.
-3. In `ConfigInit.cpp`:
-   - Write `myConfigFromToml(const toml::table&)` to deserialize one entry.
-   - Write `loadMyConfigs()` to clear `All` and populate it.
-   - Add `loadMyConfigs()` to `loadAllConfigs()`.
-   - Add `Engine::Config::watch(kMyPath, loadMyConfigs)` to `watchAllConfigs()`.
-   - In the `ENABLE_TOOLS` block, add `myConfigToToml()`, `saveMyConfigs()`, and
-     a collapsing header in `renderConfigEditor()`.
+- TOML files are still loaded once at startup — config is not hardcoded.
+- Hot-reload and `ConfigWatcher` are disabled — no polling overhead.
+- The ImGui editor is not compiled — `ENABLE_TOOLS` is undefined.
+- `Field<T>` values are set at startup and remain constant for the session.

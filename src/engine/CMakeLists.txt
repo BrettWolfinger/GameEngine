@@ -1,5 +1,7 @@
 add_library(engine STATIC
+    config/ConfigGroup.cpp
     config/ConfigLoader.cpp
+    config/ConfigRegistry.cpp
     config/ConfigWatcher.cpp
     facade/Audio.cpp
     facade/Config.cpp

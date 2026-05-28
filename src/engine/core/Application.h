@@ -1,10 +1,12 @@
 #pragma once
 #include <memory>
+#include <string_view>
 #include "Window.h"
 
 namespace Engine {
 
 class Renderer2D;
+class ConfigGroup;
 
 class Application {
 public:
@@ -13,6 +15,11 @@ public:
 
     void run();
     void quit() { m_running = false; }
+
+    /// Register a ConfigGroup for automatic TOML load/save, hot-reload, and
+    /// ImGui editing. If the file does not exist it is auto-generated from the
+    /// Field<T> defaults and written to disk. Safe to call from onInit().
+    void registerConfig(std::string_view path, ConfigGroup* group);
 
     Window& getWindow() { return *m_window; }
 

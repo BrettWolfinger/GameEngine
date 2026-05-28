@@ -177,14 +177,29 @@ inline constexpr uint32_t kEnemyLayer  = 1 << 1;
 
 Keeping `SCALE` here and deriving all render sizes from it (`16.f * SCALE`) means you can resize sprites globally without hunting through source files.
 
-**`ConfigInit.h/.cpp`** — runtime-loaded per-entity tuning data (speeds, scores, particle params, etc.) stored in TOML files. See `docs/engine/runtime-config.md` for the full pattern.
+**`GameConfig.h`** — runtime-tunable values (speeds, timers, lives, etc.) declared as `Engine::Field<T>` members in a `ConfigGroup` subclass. The engine auto-generates the TOML file on first run from the field defaults, watches it for hot-reload, and renders it in the F1 ImGui editor — no boilerplate needed.
 
 ```cpp
-// ConfigInit.h
-void loadAllConfigs();   // call once at startup
-void watchAllConfigs();  // registers hot-reload callbacks (no-op in release)
+// GameConfig.h
+#pragma once
+#include <engine/config/ConfigGroup.h>
 
-#ifdef ENABLE_TOOLS
-void renderConfigEditor(); // ImGui editor window; call from onImGuiRender()
-#endif
+struct GameConfig : Engine::ConfigGroup {
+    Engine::Field<float> playerSpeed { this, "player_speed", 200.f };
+    Engine::Field<int>   lives       { this, "lives",        3     };
+};
 ```
+
+Register it once in `onInit()`:
+
+```cpp
+// MyGame.h
+GameConfig m_config;
+
+// MyGame.cpp
+void MyGame::onInit() {
+    registerConfig("games/mygame/assets/configs/game.toml", &m_config);
+}
+```
+
+See [`docs/engine/runtime-config.md`](../engine/runtime-config.md) for the full reference.

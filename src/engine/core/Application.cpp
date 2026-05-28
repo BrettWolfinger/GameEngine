@@ -3,11 +3,13 @@
 #include "Input.h"
 #include "../audio/AudioManager.h"
 #include "../config/ConfigWatcher.h"
+#include "../config/ConfigRegistry.h"
 #include "../particles/ParticleSystem.h"
 #include "../physics/CollisionWorld.h"
 #include "../renderer/Renderer2D.h"
 #include <GLFW/glfw3.h>
 #include <algorithm>
+#include <string>
 
 #ifdef ENABLE_TOOLS
 #include <glad/gl.h>
@@ -21,8 +23,10 @@ namespace Engine {
 struct Application::Impl {
     AudioManager   audioManager;
     ConfigWatcher  configWatcher;
+    ConfigRegistry configRegistry { configWatcher };
     ParticleSystem particleSystem;
     CollisionWorld collisionWorld;
+
 #ifdef ENABLE_TOOLS
     bool showImGui = false;
     bool f1Prev    = false;
@@ -55,6 +59,10 @@ Application::~Application() {
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 #endif
+}
+
+void Application::registerConfig(std::string_view path, ConfigGroup* group) {
+    m_impl->configRegistry.registerConfig(path, group);
 }
 
 void Application::run() {
@@ -103,7 +111,10 @@ void Application::run() {
             r->endScene();
 
 #ifdef ENABLE_TOOLS
-        if (m_impl->showImGui) onImGuiRender();
+        if (m_impl->showImGui) {
+            m_impl->configRegistry.renderImGuiEditor();
+            onImGuiRender();
+        }
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 #endif

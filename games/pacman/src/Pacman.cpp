@@ -4,7 +4,6 @@
 #include <cmath>
 #include <cstdlib>
 
-static constexpr float kSpeed   = 7.5f;
 static constexpr float kHalfPi  = 1.5707963268f;
 
 // Grid tile size in pixels — used for all position and movement math.
@@ -87,7 +86,7 @@ void Pacman::respawn() {
     m_animator.setClip("move");
 }
 
-void Pacman::update(float dt) {
+void Pacman::update(float dt, float speed) {
     // During death animation only advance the animator — no input or movement.
     if (m_dying) {
         m_animator.update(dt);
@@ -123,7 +122,7 @@ void Pacman::update(float dt) {
     float dx   = tx - m_x;
     float dy   = ty - m_y;
     float dist = std::abs(dx) + std::abs(dy);
-    float step = kSpeed * kGridSize * dt;
+    float step = speed * kGridSize * dt;
 
     if (step >= dist) {
         m_col = m_tgtCol;
