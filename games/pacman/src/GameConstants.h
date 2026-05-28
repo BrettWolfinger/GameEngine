@@ -32,6 +32,15 @@ static constexpr int kGhostFlashRow      = 9;
 static constexpr int kFaceSheetCols      = 8;
 static constexpr int kFaceSheetRows      = 2;
 
+// Ghost house geometry
+static constexpr int kGhostHouseRow     = 12;  // door row; row < this = outside
+static constexpr int kGhostHouseExitCol = 13;  // Leaving mode target column
+static constexpr int kGhostHouseExitRow = 11;  // Leaving mode target row
+
+// Dot-counter ghost release thresholds (dots eaten before ghost is released)
+static constexpr int kReleaseDotsInky   = 30;
+static constexpr int kReleaseDotsClyde  = 60;
+
 // Dot scoring
 static constexpr int kScoreDot    = 10;
 static constexpr int kScorePellet = 50;

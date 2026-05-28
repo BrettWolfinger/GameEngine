@@ -3,6 +3,7 @@
 #include <engine/renderer/PixelFont.h>
 #include <GLFW/glfw3.h>
 #include <algorithm>
+#include <cassert>
 #include <fstream>
 
 // Items tileset: dot = local ID 8, power pellet = local ID 9
@@ -54,18 +55,41 @@ void PacmanGame::onInit() {
         spawnRow = static_cast<int>(spawn->y) / m_map.tileHeight;
     }
 
-    // Construct Pac-Man and ghosts after map and spritesheets are ready
+    // Resolve ghost house door layer.
+    const auto* doorLayer = m_map.findLayer("Door");
+    assert(doorLayer && "Ghost house Door layer not found in map");
+    m_doorLayer = doorLayer;
+
+    // Construct Pac-Man and ghosts after map and spritesheets are ready.
     const auto* wallLayer = m_map.findLayer("Wall");
     if (wallLayer) {
         m_pacman.emplace(*wallLayer, m_pacSheet, spawnCol, spawnRow);
 
-        // All four ghosts start just above the ghost house (col 14, row 11).
-        // Spawn positions and exit logic are added in a later phase.
+        // Resolve ghost spawn positions from map objects; fall back to classic positions.
+        auto ghostSpawn = [&](const char* name, int defCol, int defRow) -> std::pair<int,int> {
+            if (const auto* obj = m_map.findObject(name))
+                return { static_cast<int>(obj->x) / m_map.tileWidth,
+                         static_cast<int>(obj->y) / m_map.tileHeight };
+            return { defCol, defRow };
+        };
+        auto [blinkyCol, blinkyRow] = ghostSpawn("BlinkySpawn", 13, 11);
+        auto [pinkyCol,  pinkyRow]  = ghostSpawn("PinkySpawn",  13, 14);
+        auto [inkyCol,   inkyRow]   = ghostSpawn("InkySpawn",   11, 14);
+        auto [clydeCol,  clydeRow]  = ghostSpawn("ClydeSpawn",  15, 14);
+
+        // Blinky starts just outside the house; Pinky/Inky/Clyde start inside.
         m_ghosts.reserve(4);
-        m_ghosts.emplace_back(*wallLayer, m_ghostSheet, m_facesSheet, GhostType::Blinky, 14, 11);
-        m_ghosts.emplace_back(*wallLayer, m_ghostSheet, m_facesSheet, GhostType::Pinky,  14, 11);
-        m_ghosts.emplace_back(*wallLayer, m_ghostSheet, m_facesSheet, GhostType::Inky,   14, 11);
-        m_ghosts.emplace_back(*wallLayer, m_ghostSheet, m_facesSheet, GhostType::Clyde,  14, 11);
+        m_ghosts.emplace_back(*wallLayer, doorLayer, m_ghostSheet, m_facesSheet,
+                              GhostType::Blinky, blinkyCol, blinkyRow, GhostMode::Scatter);
+        m_ghosts.emplace_back(*wallLayer, doorLayer, m_ghostSheet, m_facesSheet,
+                              GhostType::Pinky,  pinkyCol,  pinkyRow,  GhostMode::House);
+        m_ghosts.emplace_back(*wallLayer, doorLayer, m_ghostSheet, m_facesSheet,
+                              GhostType::Inky,   inkyCol,   inkyRow,   GhostMode::House);
+        m_ghosts.emplace_back(*wallLayer, doorLayer, m_ghostSheet, m_facesSheet,
+                              GhostType::Clyde,  clydeCol,  clydeRow,  GhostMode::House);
+
+        // Release any ghosts whose dot threshold is already met (Pinky releases immediately).
+        checkGhostRelease();
     }
 }
 
@@ -131,7 +155,9 @@ void PacmanGame::checkGhostCollision() {
             m_score += kGhostScoreBase << (m_ghostsEatenThisPellet - 1);
             updateHighScore();
             ghost.startEyes();
-        } else if (ghost.mode() != GhostMode::Eyes) {
+        } else if (ghost.mode() != GhostMode::Eyes &&
+                   ghost.mode() != GhostMode::House &&
+                   ghost.mode() != GhostMode::Leaving) {
             // Pac-Man is caught — begin death sequence.
             startDeathSequence();
             return; // stop checking remaining ghosts
@@ -183,6 +209,7 @@ void PacmanGame::respawnAfterDeath() {
     m_gameState = GameState::Playing;
     if (m_pacman) m_pacman->respawn();
     for (auto& ghost : m_ghosts) ghost.respawn();
+    checkGhostRelease(); // Pinky re-releases immediately after respawn
 }
 
 void PacmanGame::startLevelClear() {
@@ -196,26 +223,44 @@ void PacmanGame::startLevelClear() {
 void PacmanGame::startNextLevel() {
     // Score and lives carry over; everything else resets.
     resetModeSchedule();
+    m_dotsEaten = 0;
     m_gameState = GameState::Playing;
     buildDotCache();
     if (m_pacman) m_pacman->respawn();
     for (auto& ghost : m_ghosts) ghost.respawn();
+    checkGhostRelease();
 }
 
 void PacmanGame::restartGame() {
-    m_score  = 0;
-    m_lives  = m_config.startLives;
+    m_score     = 0;
+    m_dotsEaten = 0;
+    m_lives     = m_config.startLives;
     resetModeSchedule();
     m_gameState = GameState::Playing;
     buildDotCache();
     if (m_pacman) m_pacman->respawn();
     for (auto& ghost : m_ghosts) ghost.respawn();
+    checkGhostRelease();
 }
 
 void PacmanGame::updateHighScore() {
     if (m_score > m_highScore) {
         m_highScore = m_score;
         saveHighScore();
+    }
+}
+
+void PacmanGame::checkGhostRelease() {
+    for (auto& ghost : m_ghosts) {
+        if (ghost.mode() != GhostMode::House) continue;
+        bool release = false;
+        switch (ghost.type()) {
+            case GhostType::Pinky:  release = true;                                 break;
+            case GhostType::Inky:   release = (m_dotsEaten >= kReleaseDotsInky);   break;
+            case GhostType::Clyde:  release = (m_dotsEaten >= kReleaseDotsClyde);  break;
+            default:                break;
+        }
+        if (release) ghost.release(m_currentMode);
     }
 }
 
@@ -240,11 +285,15 @@ void PacmanGame::tryEatDot() {
             m_dots[idx] = CellType::Empty;
             m_score += kScoreDot;
             --m_dotsRemaining;
+            ++m_dotsEaten;
+            checkGhostRelease();
             break;
         case CellType::PowerPellet:
             m_dots[idx] = CellType::Empty;
             m_score += kScorePellet;
             --m_dotsRemaining;
+            ++m_dotsEaten;
+            checkGhostRelease();
             triggerFrightened();
             break;
         default: break;
