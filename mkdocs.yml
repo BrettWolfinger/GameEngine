@@ -31,6 +31,8 @@ nav:
     - Application & Game Loop: engine/application-game-loop.md
     - Runtime Config System: engine/runtime-config.md
     - Collision System: engine/collision-system.md
+    - Event System: engine/event-system.md
+    - Audio System: engine/audio.md
     - Input: engine/input.md
     - Renderer2D: engine/renderer2d.md
     - Sprite Rendering: engine/sprite-rendering-v2.md
@@ -38,8 +40,5 @@ nav:
     - Adding a New Game: engine/adding-a-new-game.md
   - Patterns:
     - Screen System: patterns/screen-system.md
-  - Roadmap:
-    - Engine Facade: roadmap/engine-facade.md
-    - Runtime Config System: roadmap/runtime-config-system.md
   - Devlog: devlog.md
   - API Reference: https://brettwolfinger.github.io/GameEngine/api/

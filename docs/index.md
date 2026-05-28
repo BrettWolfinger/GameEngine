@@ -16,8 +16,10 @@ Games shipped on the engine: **Pong**, **Breakout**, **Frogger**, **Asteroids**,
 | Add a new game | [Adding a New Game](engine/adding-a-new-game.md) |
 | Learn the main loop and lifecycle hooks | [Application & Game Loop](engine/application-game-loop.md) |
 | Set up colliders and callbacks | [Collision System](engine/collision-system.md) |
+| Publish and subscribe to game events | [Event System](engine/event-system.md) |
 | Draw sprites | [Renderer2D](engine/renderer2d.md) |
 | Load and render Tiled maps | [Tilemap System](engine/tilemap.md) |
 | Handle keyboard input | [Input](engine/input.md) |
+| Play synthesized tones or .wav files | [Audio System](engine/audio.md) |
 | See the full history of the project | [Devlog](devlog.md) |
 | Browse the generated API reference | [API Reference](https://brettwolfinger.github.io/GameEngine/api/){target="_blank" rel="noopener noreferrer"} |

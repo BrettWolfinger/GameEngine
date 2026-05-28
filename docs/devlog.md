@@ -351,6 +351,24 @@ lives); `onInit()` registers it in one line; `pacman.toml` auto-generates on
 first run. Entity speed params are threaded through `Pacman::update()` and
 `Ghost::update()` so hot-reloaded values take effect each frame without caching.
 
+### Event/listener system
+
+As Pac-Man grew, `PacmanGame` was increasingly acting as a message router — scoring, ghost release, frightened mode, death, and level-clear were all triggered inline inside `tryEatDot()` and `checkGhostCollision()`. Each new feature added another direct call and tightened coupling between concerns with no business knowing about each other.
+
+The solution was a typed publish/subscribe bus: `EventDispatcher` backed by a static `Engine::Events` facade (consistent with `Engine::Audio`, `Engine::Collision`, etc.). Any system emits with `Engine::Events::emit(MyEvent{...})`; any other system subscribes with `Engine::Events::on<MyEvent>(callback)`. Neither needs a reference to the other.
+
+Subscriptions are managed with RAII `ListenerHandle` tokens — the subscription cancels automatically when the handle is destroyed. Dispatch is immediate and synchronous (matching the collision callback model), with a mark-then-sweep pass for re-entrancy safety. Type erasure via `std::type_index` and `void*` callbacks keeps the internal `EventDispatcher` non-template; the public `on<T>` / `emit<T>` templates in `Events.h` are thin wrappers that erase the type at the call site.
+
+The first real demonstration of cross-system value was `PacmanAudio` — a standalone class that subscribes to game events and plays sounds without `PacmanGame` having any audio knowledge.
+
+### Wav audio and polyphonic playback
+
+Pac-Man has iconic sampled audio that procedural tones cannot replicate. The existing `AudioManager` only generated synthesized waveforms from a fixed voice pool. Two additions were needed: file loading and PCM playback.
+
+`loadSound(path)` decodes .wav files to float32 PCM buffers at startup using `ma_decode_file` (miniaudio, already in the project), resampling to the device sample rate automatically. `playSound(handle)` picks a free voice from the existing pool and activates it as a new `VoiceType::PCM` — the audio callback already switched on voice type, so adding a PCM branch was additive. `isPlaying(handle)` lets callers gate repeated plays (e.g. preventing chomp sounds from stacking) by checking whether any voice is still playing a given buffer.
+
+A latent memory safety bug was also fixed: `m_soundBuffers` was a `std::vector<SoundBuffer>`. Reallocation on push_back would invalidate the `pcmData` pointers stored in playing voices. Changing to `std::deque` gives stable element addresses on push_back without any other behavioral change.
+
 ### Object layers
 
 `Engine::Tilemap` was extended with full object layer support. `MapObject` and

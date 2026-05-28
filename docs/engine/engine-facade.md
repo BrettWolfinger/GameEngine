@@ -160,12 +160,17 @@ CI config and GitHub Pages publishing are tracked in issue #68.
 ## Call site reference
 
 ```cpp
-// Audio
+// Audio — synthesized
 Engine::Audio::playTone(480.f, 0.05f);
 Engine::Audio::playNoise(0.40f, 0.40f, decay);
 Engine::Audio::playLoopingTone(slot, hz, amplitude);
 Engine::Audio::playLoopingNoise(slot, amplitude);
 Engine::Audio::stopLoopingVoice(slot);
+
+// Audio — file-based (.wav)
+Engine::Audio::SoundHandle h = Engine::Audio::loadSound("assets/audio/foo.wav");
+Engine::Audio::playSound(h);
+bool playing = Engine::Audio::isPlaying(h);
 
 // Particles — update/render are engine-owned; games only call emit and clear
 Engine::Particles::emit(params);
