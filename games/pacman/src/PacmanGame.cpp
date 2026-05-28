@@ -64,22 +64,17 @@ void PacmanGame::onInit() {
 }
 
 void PacmanGame::buildDotCache() {
-    const auto* layer = m_map.findLayer("Dots");
-    if (!layer) return;
+    m_dotsLayer = m_map.findLayer("Dots");
+    if (!m_dotsLayer) return;
 
-    m_dots.assign(layer->gids.size(), CellType::Empty);
+    m_dots.assign(m_dotsLayer->gids.size(), CellType::Empty);
     m_dotsRemaining = 0;
-    for (size_t i = 0; i < layer->gids.size(); ++i) {
-        int localId = static_cast<int>(Engine::Tilemap::stripFlips(layer->gids[i])) - kItemsFirstGid;
+    for (size_t i = 0; i < m_dotsLayer->gids.size(); ++i) {
+        int localId = static_cast<int>(Engine::Tilemap::stripFlips(m_dotsLayer->gids[i])) - kItemsFirstGid;
         if      (localId == kDotFrameId)    { m_dots[i] = CellType::Dot;         ++m_dotsRemaining; }
         else if (localId == kPelletFrameId) { m_dots[i] = CellType::PowerPellet; ++m_dotsRemaining; }
     }
 }
-
-// Level 1 scatter/chase schedule in seconds: Scatter 7, Chase 20, Scatter 7,
-// Chase 20, Scatter 5, Chase 20, Scatter 5, then Chase permanently.
-static constexpr float kModeSchedule[] = { 7.f, 20.f, 7.f, 20.f, 5.f, 20.f, 5.f };
-static constexpr int   kModeCount      = static_cast<int>(std::size(kModeSchedule));
 
 void PacmanGame::updateModeTimer(float dt) {
     // Mode timer is paused while ghosts are frightened.
@@ -166,16 +161,17 @@ void PacmanGame::handleDyingState(float dt) {
     respawnAfterDeath();
 }
 
-void PacmanGame::respawnAfterDeath() {
-    m_gameState       = GameState::Playing;
-    m_frightenedTimer = 0.f;
+void PacmanGame::resetModeSchedule() {
+    m_modePhase             = 0;
+    m_modeTimer             = kModeSchedule[0];
+    m_currentMode           = GhostMode::Scatter;
+    m_frightenedTimer       = 0.f;
     m_ghostsEatenThisPellet = 0;
+}
 
-    // Reset mode schedule to the start of Level 1.
-    m_modePhase   = 0;
-    m_modeTimer   = kModeSchedule[0];
-    m_currentMode = GhostMode::Scatter;
-
+void PacmanGame::respawnAfterDeath() {
+    resetModeSchedule();
+    m_gameState = GameState::Playing;
     if (m_pacman) m_pacman->respawn();
     for (auto& ghost : m_ghosts) ghost.respawn();
 }
@@ -190,28 +186,18 @@ void PacmanGame::startLevelClear() {
 
 void PacmanGame::startNextLevel() {
     // Score and lives carry over; everything else resets.
-    m_modePhase             = 0;
-    m_modeTimer             = kModeSchedule[0];
-    m_currentMode           = GhostMode::Scatter;
-    m_frightenedTimer       = 0.f;
-    m_ghostsEatenThisPellet = 0;
-    m_gameState             = GameState::Playing;
-
+    resetModeSchedule();
+    m_gameState = GameState::Playing;
     buildDotCache();
     if (m_pacman) m_pacman->respawn();
     for (auto& ghost : m_ghosts) ghost.respawn();
 }
 
 void PacmanGame::restartGame() {
-    m_score                 = 0;
-    m_lives                 = kStartLives;
-    m_modePhase             = 0;
-    m_modeTimer             = kModeSchedule[0];
-    m_currentMode           = GhostMode::Scatter;
-    m_frightenedTimer       = 0.f;
-    m_ghostsEatenThisPellet = 0;
-    m_gameState             = GameState::Playing;
-
+    m_score  = 0;
+    m_lives  = kStartLives;
+    resetModeSchedule();
+    m_gameState = GameState::Playing;
     buildDotCache();
     if (m_pacman) m_pacman->respawn();
     for (auto& ghost : m_ghosts) ghost.respawn();
@@ -235,11 +221,9 @@ void PacmanGame::saveHighScore() {
 }
 
 void PacmanGame::tryEatDot() {
-    if (!m_pacman) return;
-    const auto* layer = m_map.findLayer("Dots");
-    if (!layer) return;
+    if (!m_pacman || !m_dotsLayer) return;
 
-    int idx = m_pacman->row() * layer->cols + m_pacman->col();
+    int idx = m_pacman->row() * m_dotsLayer->cols + m_pacman->col();
     if (idx < 0 || idx >= static_cast<int>(m_dots.size())) return;
 
     switch (m_dots[idx]) {
@@ -367,10 +351,10 @@ void PacmanGame::renderHUD() {
     // High score — top-center (label row + value row, 1px gap)
     const std::string hiLabel = "HI";
     const std::string hiValue = std::to_string(m_highScore);
-    const float labelW  = Engine::PixelFont::stringWidth(hiLabel, kFontScale);
-    const float valueW  = Engine::PixelFont::stringWidth(hiValue, kFontScale);
+    const float labelW   = Engine::PixelFont::stringWidth(hiLabel, kFontScale);
+    const float valueW   = Engine::PixelFont::stringWidth(hiValue, kFontScale);
     const float hiBlockW = std::max(labelW, valueW);
-    const float hiX = (WIN_W - hiBlockW) * 0.5f;
+    const float hiX      = (WIN_W - hiBlockW) * 0.5f;
     Engine::PixelFont::drawString(m_renderer, hiLabel,
                                   hiX + (hiBlockW - labelW) * 0.5f, kMargin,
                                   kFontScale, {1.f, 0.8f, 0.f, 1.f}, kLayerHUD);
@@ -380,7 +364,10 @@ void PacmanGame::renderHUD() {
                                   kFontScale, {1.f, 1.f, 1.f, 1.f}, kLayerHUD);
 
     renderLives();
+    renderOverlay();
+}
 
+void PacmanGame::renderOverlay() {
     if (m_gameState == GameState::LevelClear) {
         constexpr float kScale = 3.f;
         const std::string text = "LEVEL CLEAR";
@@ -388,19 +375,19 @@ void PacmanGame::renderHUD() {
         Engine::PixelFont::drawString(m_renderer, text,
                                       (WIN_W - w) * 0.5f, WIN_H * 0.5f - 12.f,
                                       kScale, {1.f, 1.f, 0.f, 1.f}, kLayerHUD);
+        return;
     }
 
     if (m_gameState == GameState::GameOver) {
-        constexpr float kScale = 3.f;
+        constexpr float kScale     = 3.f;
+        constexpr float kHintScale = 1.5f;
         const std::string title = "GAME OVER";
+        const std::string hint  = "R TO RESTART";
         const float tw = Engine::PixelFont::stringWidth(title, kScale);
+        const float hw = Engine::PixelFont::stringWidth(hint, kHintScale);
         Engine::PixelFont::drawString(m_renderer, title,
                                       (WIN_W - tw) * 0.5f, WIN_H * 0.5f - 16.f,
                                       kScale, {1.f, 0.f, 0.f, 1.f}, kLayerHUD);
-
-        constexpr float kHintScale = 1.5f;
-        const std::string hint = "R TO RESTART";
-        const float hw = Engine::PixelFont::stringWidth(hint, kHintScale);
         Engine::PixelFont::drawString(m_renderer, hint,
                                       (WIN_W - hw) * 0.5f, WIN_H * 0.5f + 12.f,
                                       kHintScale, {0.8f, 0.8f, 0.8f, 1.f}, kLayerHUD);
@@ -427,16 +414,15 @@ void PacmanGame::renderLives() {
 }
 
 void PacmanGame::renderDots() {
-    const auto* layer = m_map.findLayer("Dots");
-    if (!layer) return;
+    if (!m_dotsLayer) return;
 
     const float tileSize = static_cast<float>(TILE * SCALE);
     for (int i = 0; i < static_cast<int>(m_dots.size()); ++i) {
         if (m_dots[i] == CellType::Empty) continue;
         int frameId = (m_dots[i] == CellType::Dot) ? kDotFrameId : kPelletFrameId;
         auto uv = m_itemsSheet->getFrameUVs(frameId);
-        int   col = i % layer->cols;
-        int   row = i / layer->cols;
+        int   col = i % m_dotsLayer->cols;
+        int   row = i / m_dotsLayer->cols;
         float x   = col * tileSize;
         float y   = row * tileSize + static_cast<float>(HUD_H);
         m_renderer.drawTexturedRect(x, y, tileSize, tileSize,
