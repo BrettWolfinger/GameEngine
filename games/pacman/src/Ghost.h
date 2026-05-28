@@ -32,6 +32,10 @@ public:
     /// No-op if already in Eyes mode (eaten ghosts are unaffected).
     void frighten();
 
+    /// Switch to the flashing sprite to warn that frightened mode is ending.
+    /// No-op if not currently frightened or already flashing.
+    void startFlash();
+
     /// Exit frightened mode and return to returnMode without reversing direction.
     void endFrightened(GhostMode returnMode);
 
@@ -80,6 +84,7 @@ private:
     int       m_tgtCol    = 0;
     int       m_tgtRow    = 0;
     Dir       m_dir       = Dir::None;
+    bool      m_flashing  = false;
 
     // Spawn position — used by respawn().
     int       m_startCol  = 0;

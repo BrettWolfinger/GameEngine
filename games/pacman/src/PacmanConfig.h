@@ -9,6 +9,7 @@ struct PacmanConfig : Engine::ConfigGroup {
     Engine::Field<float> ghostSpeed           { this, "ghost_speed",            6.0f };
     Engine::Field<float> ghostSpeedFrightened { this, "ghost_speed_frightened", 3.0f };
     Engine::Field<float> frightenedDuration   { this, "frightened_duration",    7.0f };
+    Engine::Field<float> flashThreshold       { this, "flash_threshold",        2.0f };
     Engine::Field<int>   startLives           { this, "start_lives",            3    };
     Engine::Field<float> deathPause           { this, "death_pause",            1.0f };
     Engine::Field<float> levelClearPause      { this, "level_clear_pause",      3.0f };

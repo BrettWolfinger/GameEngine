@@ -23,6 +23,7 @@ static constexpr int kLayerHUD    = 4;
 static constexpr int kGhostSheetCols     = 4;
 static constexpr int kGhostSheetRows     = 11;
 static constexpr int kGhostFrightenedRow = 8;
+static constexpr int kGhostFlashRow      = 9;
 
 // Dot scoring
 static constexpr int kScoreDot    = 10;

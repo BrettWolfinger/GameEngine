@@ -40,8 +40,13 @@ Ghost::Ghost(const Engine::Tilemap::TileLayer& wallLayer,
     // Each ghost type occupies one row; columns are animation frames.
     const int base  = static_cast<int>(m_type) * kGhostSheetCols;
     const int fBase = kGhostFrightenedRow * kGhostSheetCols;
+    const int wBase = kGhostFlashRow      * kGhostSheetCols;
     m_animator.addClip("move",       { {base,  base+1,  base+2,  base+3},  0.15f, Engine::PlayMode::Loop });
     m_animator.addClip("frightened", { {fBase, fBase+1, fBase+2, fBase+3}, 0.2f,  Engine::PlayMode::Loop });
+    // Flash clip interleaves blue and white frames for the alternating warning effect.
+    m_animator.addClip("frightened_flash", {
+        {fBase, wBase, fBase+1, wBase+1, fBase+2, wBase+2, fBase+3, wBase+3}, 0.1f, Engine::PlayMode::Loop
+    });
     m_animator.setClip("move");
 
     m_x = m_col * kGridSize + kGridSize * 0.5f;
@@ -169,13 +174,21 @@ void Ghost::setMode(GhostMode mode) {
 
 void Ghost::frighten() {
     if (m_mode == GhostMode::Eyes) return; // eaten ghosts are unaffected
-    m_mode = GhostMode::Frightened;
+    m_mode     = GhostMode::Frightened;
+    m_flashing = false;
     reverseDirection();
     m_animator.setClip("frightened");
 }
 
+void Ghost::startFlash() {
+    if (m_mode != GhostMode::Frightened || m_flashing) return;
+    m_flashing = true;
+    m_animator.setClip("frightened_flash");
+}
+
 void Ghost::endFrightened(GhostMode returnMode) {
-    m_mode = returnMode;
+    m_mode     = returnMode;
+    m_flashing = false;
     m_animator.setClip("move");
 }
 

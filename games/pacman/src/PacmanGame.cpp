@@ -108,6 +108,9 @@ void PacmanGame::updateFrightenedTimer(float dt) {
         m_frightenedTimer = 0.f;
         for (auto& ghost : m_ghosts)
             ghost.endFrightened(m_currentMode);
+    } else if (m_frightenedTimer <= m_config.flashThreshold) {
+        for (auto& ghost : m_ghosts)
+            ghost.startFlash();
     }
 }
 
