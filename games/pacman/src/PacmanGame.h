@@ -9,6 +9,7 @@
 #include "GameTypes.h"
 #include "Pacman.h"
 #include "Ghost.h"
+#include "PacmanConfig.h"
 #include <memory>
 #include <optional>
 #include <vector>
@@ -85,4 +86,6 @@ private:
 
     // Scoring
     int       m_highScore        = 0;
+
+    PacmanConfig m_config;
 };

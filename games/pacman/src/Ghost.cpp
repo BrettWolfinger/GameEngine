@@ -3,8 +3,6 @@
 #include <climits>
 #include <cstdlib>
 
-static constexpr float kGhostSpeed           = 6.0f; // tiles per second
-static constexpr float kGhostSpeedFrightened = 3.0f;
 static constexpr float kGridSize    = static_cast<float>(TILE * SCALE);
 static constexpr float kRenderSize  = static_cast<float>(TILE * 2 * SCALE);
 
@@ -194,8 +192,8 @@ void Ghost::respawn() {
     m_animator.setClip("move");
 }
 
-float Ghost::currentSpeed() const {
-    return (m_mode == GhostMode::Frightened) ? kGhostSpeedFrightened : kGhostSpeed;
+float Ghost::currentSpeed(float normalSpeed, float frightenedSpeed) const {
+    return (m_mode == GhostMode::Frightened) ? frightenedSpeed : normalSpeed;
 }
 
 void Ghost::setTarget(Dir dir) {
@@ -204,7 +202,8 @@ void Ghost::setTarget(Dir dir) {
     m_tgtRow = m_row + dr;
 }
 
-void Ghost::update(float dt, int pacCol, int pacRow, Dir pacDir, int blinkyCol, int blinkyRow) {
+void Ghost::update(float dt, int pacCol, int pacRow, Dir pacDir, int blinkyCol, int blinkyRow,
+                   float normalSpeed, float frightenedSpeed) {
     m_pacCol    = pacCol;
     m_pacRow    = pacRow;
     m_pacDir    = pacDir;
@@ -222,7 +221,7 @@ void Ghost::update(float dt, int pacCol, int pacRow, Dir pacDir, int blinkyCol, 
     float dx   = tx - m_x;
     float dy   = ty - m_y;
     float dist = std::abs(dx) + std::abs(dy);
-    float step = currentSpeed() * kGridSize * dt;
+    float step = currentSpeed(normalSpeed, frightenedSpeed) * kGridSize * dt;
 
     if (step >= dist) {
         m_col = m_tgtCol;

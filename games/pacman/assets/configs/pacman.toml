@@ -1,0 +1,7 @@
+death_pause = 1.0
+frightened_duration = 7.0
+ghost_speed = 6.0
+ghost_speed_frightened = 3.0
+level_clear_pause = 3.0
+pacman_speed = 7.5
+start_lives = 3

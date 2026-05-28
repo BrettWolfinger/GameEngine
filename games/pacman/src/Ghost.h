@@ -21,7 +21,8 @@ public:
     /// @param pacCol/pacRow  Pac-Man's current tile.
     /// @param pacDir        Pac-Man's current direction (used by Pinky and Inky).
     /// @param blinkyCol/Row Blinky's current tile (used by Inky).
-    void update(float dt, int pacCol, int pacRow, Dir pacDir, int blinkyCol, int blinkyRow);
+    void update(float dt, int pacCol, int pacRow, Dir pacDir, int blinkyCol, int blinkyRow,
+                float normalSpeed, float frightenedSpeed);
     void render(Engine::Renderer2D& renderer, int renderLayer, float offsetY = 0.f) const;
 
     /// Switch scatter/chase mode and immediately reverse direction.
@@ -65,7 +66,7 @@ private:
     void reverseDirection();
 
     /// Returns movement speed in tiles/sec for the current mode.
-    float currentSpeed() const;
+    float currentSpeed(float normalSpeed, float frightenedSpeed) const;
 
     const Engine::Tilemap::TileLayer& m_wallLayer;
     Engine::SpriteAnimator            m_animator;
