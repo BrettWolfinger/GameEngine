@@ -10,6 +10,7 @@
 #include "Pacman.h"
 #include "Ghost.h"
 #include "PacmanConfig.h"
+#include "PacmanHudConfig.h"
 #include <memory>
 #include <optional>
 #include <vector>
@@ -87,5 +88,6 @@ private:
     // Scoring
     int       m_highScore        = 0;
 
-    PacmanConfig m_config;
+    PacmanConfig    m_config;
+    PacmanHudConfig m_hudConfig;
 };
