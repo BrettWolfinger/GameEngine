@@ -13,6 +13,7 @@
 #include "Ghost.h"
 #include "PacmanConfig.h"
 #include "PacmanHudConfig.h"
+#include "PacmanAudio.h"
 #include <memory>
 #include <optional>
 #include <vector>
@@ -102,6 +103,7 @@ private:
     Engine::ListenerHandle m_pacmanCaughtHandle;
     Engine::ListenerHandle m_levelClearedHandle;
 
-    PacmanConfig    m_config;
-    PacmanHudConfig m_hudConfig;
+    PacmanConfig              m_config;
+    PacmanHudConfig           m_hudConfig;
+    std::optional<PacmanAudio> m_audio;
 };

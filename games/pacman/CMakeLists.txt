@@ -3,6 +3,7 @@ add_executable(pacman
     src/PacmanGame.cpp
     src/Pacman.cpp
     src/Ghost.cpp
+    src/PacmanAudio.cpp
 )
 
 target_include_directories(pacman PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)

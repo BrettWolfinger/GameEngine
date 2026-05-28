@@ -24,4 +24,18 @@ void stopLoopingVoice(int slot) {
     Services::audio().stopLoopingVoice(slot);
 }
 
+bool SoundHandle::valid() const { return index >= 0; }
+
+SoundHandle loadSound(const char* path) {
+    return SoundHandle{ Services::audio().loadSound(path) };
+}
+
+void playSound(SoundHandle handle) {
+    Services::audio().playSound(handle.index);
+}
+
+bool isPlaying(SoundHandle handle) {
+    return Services::audio().isPlaying(handle.index);
+}
+
 } // namespace Engine::Audio

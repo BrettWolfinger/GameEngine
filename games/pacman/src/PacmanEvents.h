@@ -9,3 +9,4 @@ struct LevelCleared     {};
 struct DeathStarted     {};
 struct LifeLost         { int livesRemaining; };
 struct GameOverEvent    { int finalScore; int highScore; };
+struct GameStarted      {};
