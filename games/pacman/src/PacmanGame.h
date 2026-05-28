@@ -38,6 +38,7 @@ private:
     void startLevelClear();
     void startNextLevel();
     void restartGame();
+    void resetModeSchedule();
     void loadHighScore();
     void saveHighScore();
     void updateHighScore();
@@ -45,6 +46,7 @@ private:
     void renderDots();
     void renderGhosts();
     void renderHUD();
+    void renderOverlay();
     void renderLives();
     void renderDevHUD();
 
@@ -58,6 +60,7 @@ private:
     std::shared_ptr<Engine::Texture>      m_ghostTex;
     std::shared_ptr<Engine::SpriteSheet>  m_ghostSheet;
     Engine::Tilemap::Map                  m_map;
+    const Engine::Tilemap::TileLayer*     m_dotsLayer = nullptr; // cached after map load
     std::vector<CellType>                 m_dots;
     int                                   m_score = 0;
 

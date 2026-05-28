@@ -1,4 +1,5 @@
 #pragma once
+#include <iterator> // std::size
 
 static constexpr int TILE     = 16;
 static constexpr int SCALE    = 2;
@@ -41,3 +42,8 @@ static constexpr float kDeathPause  = 1.0f;
 
 // Level-clear freeze before restarting (seconds)
 static constexpr float kLevelClearPause = 3.0f;
+
+// Level 1 scatter/chase schedule (seconds): Scatter 7, Chase 20, Scatter 7,
+// Chase 20, Scatter 5, Chase 20, Scatter 5, then Chase permanently.
+static constexpr float kModeSchedule[] = { 7.f, 20.f, 7.f, 20.f, 5.f, 20.f, 5.f };
+static constexpr int   kModeCount      = static_cast<int>(std::size(kModeSchedule));

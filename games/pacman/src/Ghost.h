@@ -10,7 +10,7 @@
 class Ghost {
 public:
     /// @param wallLayer  Cached Wall layer used for collision checks.
-    /// @param sheet      Shared ghost spritesheet (8x22, 16px native cells).
+    /// @param sheet      Shared ghost spritesheet (4x11, 32px native cells).
     /// @param type       Ghost identity — determines scatter corner and later chase target.
     /// @param startCol   Spawn column.
     /// @param startRow   Spawn row.
