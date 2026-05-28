@@ -3,8 +3,11 @@ add_library(engine STATIC
     config/ConfigLoader.cpp
     config/ConfigRegistry.cpp
     config/ConfigWatcher.cpp
+    events/EventDispatcher.cpp
+    events/ListenerHandle.cpp
     facade/Audio.cpp
     facade/Config.cpp
+    facade/Events.cpp
     facade/Particles.cpp
     facade/Collision.cpp
     ui/Menu.cpp

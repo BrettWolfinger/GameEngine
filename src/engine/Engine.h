@@ -15,6 +15,7 @@
 #include <engine/facade/Audio.h>
 #include <engine/facade/Collision.h>
 #include <engine/facade/Config.h>
+#include <engine/facade/Events.h>
 #include <engine/facade/Particles.h>
 #include <engine/renderer/UVRect.h>
 #include <engine/tilemap/Tilemap.h>
