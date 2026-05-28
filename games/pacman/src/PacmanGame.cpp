@@ -41,6 +41,9 @@ void PacmanGame::onInit() {
     m_ghostTex   = std::make_shared<Engine::Texture>("games/pacman/assets/sprites/PacManAssets-Ghosts.png");
     m_ghostSheet = std::make_shared<Engine::SpriteSheet>(m_ghostTex, kGhostSheetCols, kGhostSheetRows);
 
+    m_facesTex   = std::make_shared<Engine::Texture>("games/pacman/assets/sprites/PacManFaces.png");
+    m_facesSheet = std::make_shared<Engine::SpriteSheet>(m_facesTex, kFaceSheetCols, kFaceSheetRows);
+
     buildDotCache();
 
     // Resolve spawn position from object layer, fall back to classic Pac-Man start
@@ -59,10 +62,10 @@ void PacmanGame::onInit() {
         // All four ghosts start just above the ghost house (col 14, row 11).
         // Spawn positions and exit logic are added in a later phase.
         m_ghosts.reserve(4);
-        m_ghosts.emplace_back(*wallLayer, m_ghostSheet, GhostType::Blinky, 14, 11);
-        m_ghosts.emplace_back(*wallLayer, m_ghostSheet, GhostType::Pinky,  14, 11);
-        m_ghosts.emplace_back(*wallLayer, m_ghostSheet, GhostType::Inky,   14, 11);
-        m_ghosts.emplace_back(*wallLayer, m_ghostSheet, GhostType::Clyde,  14, 11);
+        m_ghosts.emplace_back(*wallLayer, m_ghostSheet, m_facesSheet, GhostType::Blinky, 14, 11);
+        m_ghosts.emplace_back(*wallLayer, m_ghostSheet, m_facesSheet, GhostType::Pinky,  14, 11);
+        m_ghosts.emplace_back(*wallLayer, m_ghostSheet, m_facesSheet, GhostType::Inky,   14, 11);
+        m_ghosts.emplace_back(*wallLayer, m_ghostSheet, m_facesSheet, GhostType::Clyde,  14, 11);
     }
 }
 
@@ -108,6 +111,9 @@ void PacmanGame::updateFrightenedTimer(float dt) {
         m_frightenedTimer = 0.f;
         for (auto& ghost : m_ghosts)
             ghost.endFrightened(m_currentMode);
+    } else if (m_frightenedTimer <= m_config.flashThreshold) {
+        for (auto& ghost : m_ghosts)
+            ghost.startFlash();
     }
 }
 
@@ -124,7 +130,7 @@ void PacmanGame::checkGhostCollision() {
             m_ghostsEatenThisPellet++;
             m_score += kGhostScoreBase << (m_ghostsEatenThisPellet - 1);
             updateHighScore();
-            ghost.respawn();
+            ghost.startEyes();
         } else if (ghost.mode() != GhostMode::Eyes) {
             // Pac-Man is caught — begin death sequence.
             startDeathSequence();
@@ -287,7 +293,8 @@ void PacmanGame::onUpdate(float dt) {
         const Dir  pacDir    = m_pacman->dir();
         for (auto& ghost : m_ghosts)
             ghost.update(dt, pacCol, pacRow, pacDir, blinkyCol, blinkyRow,
-                         m_config.ghostSpeed, m_config.ghostSpeedFrightened);
+                         m_config.ghostSpeed, m_config.ghostSpeedFrightened,
+                         m_config.ghostSpeedEyes);
     }
 
     tryEatDot();
