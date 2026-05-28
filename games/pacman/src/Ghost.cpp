@@ -31,13 +31,17 @@ static Dir opposite(Dir d) {
 }
 
 Ghost::Ghost(const Engine::Tilemap::TileLayer& wallLayer,
+             const Engine::Tilemap::TileLayer* doorLayer,
              std::shared_ptr<Engine::SpriteSheet> sheet,
              std::shared_ptr<Engine::SpriteSheet> faceSheet,
-             GhostType type, int startCol, int startRow)
+             GhostType type, int startCol, int startRow,
+             GhostMode homeMode)
     : m_wallLayer(wallLayer)
+    , m_doorLayer(doorLayer)
     , m_animator(sheet)
     , m_faceSheet(std::move(faceSheet))
     , m_type(type)
+    , m_homeMode(homeMode)
     , m_col(startCol)
     , m_row(startRow)
     , m_startCol(startCol)
@@ -56,15 +60,9 @@ Ghost::Ghost(const Engine::Tilemap::TileLayer& wallLayer,
     m_x = m_col * kGridSize + kGridSize * 0.5f;
     m_y = m_row * kGridSize + kGridSize * 0.5f;
 
-    m_dir    = chooseDirection();
-    m_tgtCol = m_col;
-    m_tgtRow = m_row;
-    setTarget(m_dir);
-
     // Precompute BFS distances from spawn for Eyes-mode shortest-path navigation.
-    // A BFS flood-fill from the spawn tile assigns every reachable tile its true
-    // shortest step-count, which chooseDirection() uses instead of Manhattan distance
-    // when in Eyes mode.
+    // BFS must pass through the door (ignoreDoor=true) so Eyes ghosts can return home
+    // even when the spawn tile is inside the ghost house.
     const int totalTiles = m_wallLayer.rows * m_wallLayer.cols;
     m_eyesDist.assign(totalTiles, -1);
     m_eyesDist[m_startRow * m_wallLayer.cols + m_startCol] = 0;
@@ -78,18 +76,40 @@ Ghost::Ghost(const Engine::Tilemap::TileLayer& wallLayer,
             int nc = (c + dc + m_wallLayer.cols) % m_wallLayer.cols;
             int nr = r + dr;
             if (nr < 0 || nr >= m_wallLayer.rows) continue;
-            if (isWall(nc, nr)) continue;
+            if (isWall(nc, nr, /*ignoreDoor=*/true)) continue;
             const int idx = nr * m_wallLayer.cols + nc;
             if (m_eyesDist[idx] != -1) continue;
             m_eyesDist[idx] = m_eyesDist[r * m_wallLayer.cols + c] + 1;
             frontier.push({nc, nr});
         }
     }
+
+    // Set initial mode and starting direction.
+    m_mode = m_homeMode;
+    if (m_mode == GhostMode::House) {
+        m_dir    = Dir::Down;
+        m_tgtCol = m_col;
+        m_tgtRow = m_row;
+        setTarget(Dir::Down);
+    } else {
+        m_dir    = chooseDirection();
+        m_tgtCol = m_col;
+        m_tgtRow = m_row;
+        setTarget(m_dir);
+    }
 }
 
-bool Ghost::isWall(int col, int row) const {
+bool Ghost::isDoorTile(int col, int row) const {
+    if (!m_doorLayer) return false;
+    if (row < 0 || row >= m_doorLayer->rows) return false;
+    col = (col + m_doorLayer->cols) % m_doorLayer->cols;
+    return Engine::Tilemap::stripFlips(m_doorLayer->gids[row * m_doorLayer->cols + col]) != 0;
+}
+
+bool Ghost::isWall(int col, int row, bool ignoreDoor) const {
     if (row < 0 || row >= m_wallLayer.rows) return true;
     col = (col + m_wallLayer.cols) % m_wallLayer.cols;
+    if (ignoreDoor && isDoorTile(col, row)) return false;
     return Engine::Tilemap::stripFlips(m_wallLayer.gids[row * m_wallLayer.cols + col]) != 0;
 }
 
@@ -132,9 +152,10 @@ std::pair<int,int> Ghost::chaseTarget() const {
 
 std::pair<int,int> Ghost::targetTile() const {
     switch (m_mode) {
-        case GhostMode::Chase: return chaseTarget();
-        case GhostMode::Eyes:  return { m_startCol, m_startRow };
-        default:               return scatterCorner();
+        case GhostMode::Chase:   return chaseTarget();
+        case GhostMode::Eyes:    return { m_startCol, m_startRow };
+        case GhostMode::Leaving: return { kGhostHouseExitCol, kGhostHouseExitRow };
+        default:                 return scatterCorner();
     }
 }
 
@@ -160,6 +181,9 @@ Dir Ghost::chooseDirection() const {
     // reverse only at a true dead end (all three other directions are walls).
     const Dir rev = opposite(m_dir);
 
+    // Leaving and Eyes modes can pass through the door; normal modes cannot.
+    const bool doorPassable = (m_mode == GhostMode::Leaving || m_mode == GhostMode::Eyes);
+
     // Eyes mode: use precomputed BFS distances for true shortest-path navigation
     // so the ghost always takes the optimal route home regardless of maze topology.
     // Other modes: use the classic Manhattan-distance heuristic toward the target tile.
@@ -174,7 +198,7 @@ Dir Ghost::chooseDirection() const {
         auto [dc, dr] = dirOffset(d);
         int nc = (m_col + dc + m_wallLayer.cols) % m_wallLayer.cols;
         int nr = m_row + dr;
-        if (isWall(nc, nr)) continue;
+        if (isWall(nc, nr, doorPassable)) continue;
 
         int dist;
         if (eyesMode) {
@@ -205,12 +229,13 @@ void Ghost::reverseDirection() {
 
 void Ghost::setMode(GhostMode mode) {
     if (m_mode == mode) return;
+    if (m_mode == GhostMode::Eyes || m_mode == GhostMode::House || m_mode == GhostMode::Leaving) return;
     m_mode = mode;
     reverseDirection();
 }
 
 void Ghost::frighten() {
-    if (m_mode == GhostMode::Eyes) return;
+    if (m_mode == GhostMode::Eyes || m_mode == GhostMode::House || m_mode == GhostMode::Leaving) return;
     m_mode     = GhostMode::Frightened;
     m_flashing = false;
     reverseDirection();
@@ -224,7 +249,7 @@ void Ghost::startFlash() {
 }
 
 void Ghost::endFrightened(GhostMode returnMode) {
-    if (m_mode == GhostMode::Eyes) return;  // eaten ghosts finish navigating home unaffected
+    if (m_mode == GhostMode::Eyes || m_mode == GhostMode::House || m_mode == GhostMode::Leaving) return;
     m_mode     = returnMode;
     m_flashing = false;
     m_animator.setClip("move");
@@ -236,6 +261,16 @@ void Ghost::startEyes() {
     m_animator.setClip("move"); // body hidden in Eyes mode; animator still ticks
 }
 
+void Ghost::release(GhostMode returnMode) {
+    if (m_mode != GhostMode::House) return;
+    m_mode        = GhostMode::Leaving;
+    m_releaseMode = returnMode;
+    m_dir         = Dir::Up;
+    m_tgtCol      = m_col;
+    m_tgtRow      = m_row;
+    setTarget(Dir::Up);
+}
+
 void Ghost::respawn() {
     m_col    = m_startCol;
     m_row    = m_startRow;
@@ -243,10 +278,15 @@ void Ghost::respawn() {
     m_tgtRow = m_startRow;
     m_x      = m_startCol * kGridSize + kGridSize * 0.5f;
     m_y      = m_startRow * kGridSize + kGridSize * 0.5f;
-    m_mode   = GhostMode::Scatter;
+    m_mode   = m_homeMode;
     m_flashing = false;
-    m_dir    = chooseDirection();
-    setTarget(m_dir);
+    if (m_mode == GhostMode::House) {
+        m_dir = Dir::Down;
+        setTarget(Dir::Down);
+    } else {
+        m_dir = chooseDirection();
+        setTarget(m_dir);
+    }
     m_animator.setClip("move");
 }
 
@@ -254,6 +294,8 @@ float Ghost::currentSpeed(float normalSpeed, float frightenedSpeed, float eyesSp
     switch (m_mode) {
         case GhostMode::Frightened: return frightenedSpeed;
         case GhostMode::Eyes:       return eyesSpeed;
+        case GhostMode::House:      return normalSpeed * 0.5f; // slow bob inside house
+        case GhostMode::Leaving:    return normalSpeed;
         default:                    return normalSpeed;
     }
 }
@@ -293,10 +335,35 @@ void Ghost::update(float dt, int pacCol, int pacRow, Dir pacDir, int blinkyCol, 
 
         // Eyes: respawn automatically on reaching spawn tile.
         if (m_mode == GhostMode::Eyes && m_col == m_startCol && m_row == m_startRow) {
-            respawn();
+            m_mode     = m_homeMode;
+            m_flashing = false;
+            m_animator.setClip("move");
+            if (m_mode == GhostMode::House) {
+                m_dir = Dir::Down;
+                setTarget(Dir::Down);
+            } else {
+                m_dir = chooseDirection();
+                setTarget(m_dir);
+            }
             return;
         }
 
+        // Leaving: transition to normal mode once the ghost has cleared the door row.
+        if (m_mode == GhostMode::Leaving && m_row < kGhostHouseRow) {
+            m_mode = m_releaseMode;
+            m_dir  = chooseDirection();
+            setTarget(m_dir);
+            return;
+        }
+
+        // House: bob up and down between the spawn row and one tile above.
+        if (m_mode == GhostMode::House) {
+            m_dir = (m_row <= m_startRow - 1) ? Dir::Down : Dir::Up;
+            setTarget(m_dir);
+            return;
+        }
+
+        // Normal scatter/chase/frightened: pick next direction and advance.
         m_dir = chooseDirection();
         setTarget(m_dir);
     } else {
@@ -323,6 +390,7 @@ void Ghost::render(Engine::Renderer2D& renderer, int renderLayer, float offsetY)
     // Face: drawn centred on the body during normal movement and Eyes mode.
     // Hidden during frightened/flash — the frightened sprite already has a face.
     // Eyes mode uses the row-1 frames (offset by kFaceSheetCols) for better visibility.
+    // House and Leaving modes use row 0 (normal face, same as Scatter/Chase).
     if (m_mode != GhostMode::Frightened && m_faceSheet) {
         const float faceOffset = (kRenderSize - kFaceSize) * 0.5f;
         const int   faceRow    = (m_mode == GhostMode::Eyes) ? kFaceSheetCols : 0;

@@ -34,6 +34,7 @@ private:
     void triggerFrightened();
     void updateFrightenedTimer(float dt);
     void checkGhostCollision();
+    void checkGhostRelease();
     void startDeathSequence();
     void handleDyingState(float dt);
     void respawnAfterDeath();
@@ -65,8 +66,10 @@ private:
     std::shared_ptr<Engine::SpriteSheet>  m_facesSheet;
     Engine::Tilemap::Map                  m_map;
     const Engine::Tilemap::TileLayer*     m_dotsLayer = nullptr; // cached after map load
+    const Engine::Tilemap::TileLayer*     m_doorLayer = nullptr; // ghost house door layer
     std::vector<CellType>                 m_dots;
-    int                                   m_score = 0;
+    int                                   m_score     = 0;
+    int                                   m_dotsEaten = 0; // counts dots/pellets eaten for ghost release
 
     std::optional<Pacman>                 m_pacman;  // constructed after map load
     std::vector<Ghost>                    m_ghosts;  // constructed after map load
