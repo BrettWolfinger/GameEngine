@@ -316,6 +316,41 @@ GID, making it correct for multi-tileset maps and resilient to GID renumbering w
 Tiled file is edited. The game-level `MapLoader` files were removed from both Pac-Man
 and Mario, replaced with the two-line engine calls.
 
+### Self-registering `Field<T>` config system
+
+The `ConfigInit.h/.cpp` pattern from Asteroids required manual wiring for every
+new config type: write a `fromToml()` deserializer, add a `loadXxxConfigs()`
+call, add a `watchAllConfigs()` entry, and add an ImGui section in
+`renderConfigEditor()`. It was easy to forget one step, and the editor file
+grew with each new entity type.
+
+The root problem was that the struct and its I/O were disconnected. Fixing it
+meant making the struct the single source of truth.
+
+`Field<T>` is a self-registering config field. Declare it as a member of a
+`ConfigGroup` subclass and it registers itself automatically at construction —
+no `fromToml()`, no `toToml()`, no `ConfigInit.cpp`. Supported types: `float`,
+`int`, `bool`, `std::string`. `if constexpr` in the header keeps I/O inline
+without adding a `.cpp` per type; `renderImGui` specialisations live in
+`ConfigGroup.cpp` to prevent `imgui.h` from leaking into game headers.
+
+`Application::registerConfig(path, group)` is the one call games make. It
+loads the TOML if present, auto-generates it from `Field<T>` defaults if not,
+registers the watcher, and adds the group to the F1 editor — all in one line.
+The TOML file is no longer hand-authored; the struct drives it.
+
+`ConfigRegistry` owns the entry collection, the load/auto-generate/watch logic,
+and the ImGui editor rendering. It lives in `src/engine/config/` alongside the
+other config modules. `Application` holds one (injecting its `ConfigWatcher`
+reference) and delegates `registerConfig()` to it — consistent with how
+`AudioManager`, `CollisionWorld`, and `ParticleSystem` are handled.
+
+`ConfigInit.h/.cpp` no longer exists. Pac-Man was the first game wired to the
+new system: `PacmanConfig.h` declares seven `Field<T>` members (speeds, timers,
+lives); `onInit()` registers it in one line; `pacman.toml` auto-generates on
+first run. Entity speed params are threaded through `Pacman::update()` and
+`Ghost::update()` so hot-reloaded values take effect each frame without caching.
+
 ### Object layers
 
 `Engine::Tilemap` was extended with full object layer support. `MapObject` and
