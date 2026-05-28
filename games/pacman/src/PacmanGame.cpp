@@ -17,7 +17,8 @@ PacmanGame::PacmanGame()
 {}
 
 void PacmanGame::onInit() {
-    registerConfig("games/pacman/assets/configs/pacman.toml", &m_config);
+    registerConfig("games/pacman/assets/configs/pacman.toml",     &m_config);
+    registerConfig("games/pacman/assets/configs/pacman_hud.toml", &m_hudConfig);
     m_lives = m_config.startLives;
     loadHighScore();
     m_map = Engine::Tilemap::loadMap("games/pacman/assets/maps/PacManMap.tmx");
@@ -343,28 +344,26 @@ void PacmanGame::renderDevHUD() {
 }
 
 void PacmanGame::renderHUD() {
-    constexpr float kFontScale = 2.5f;
-    constexpr float kMargin    = 5.f;
-
     // Score — top-left
     Engine::PixelFont::drawString(m_renderer, std::to_string(m_score),
-                                  kMargin, kMargin, kFontScale,
+                                  m_hudConfig.margin, m_hudConfig.margin,
+                                  m_hudConfig.fontScale,
                                   {1.f, 1.f, 1.f, 1.f}, kLayerHUD);
 
     // High score — top-center (label row + value row, 1px gap)
     const std::string hiLabel = "HI";
     const std::string hiValue = std::to_string(m_highScore);
-    const float labelW   = Engine::PixelFont::stringWidth(hiLabel, kFontScale);
-    const float valueW   = Engine::PixelFont::stringWidth(hiValue, kFontScale);
+    const float labelW   = Engine::PixelFont::stringWidth(hiLabel, m_hudConfig.fontScale);
+    const float valueW   = Engine::PixelFont::stringWidth(hiValue, m_hudConfig.fontScale);
     const float hiBlockW = std::max(labelW, valueW);
     const float hiX      = (WIN_W - hiBlockW) * 0.5f;
     Engine::PixelFont::drawString(m_renderer, hiLabel,
-                                  hiX + (hiBlockW - labelW) * 0.5f, kMargin,
-                                  kFontScale, {1.f, 0.8f, 0.f, 1.f}, kLayerHUD);
+                                  hiX + (hiBlockW - labelW) * 0.5f, m_hudConfig.margin,
+                                  m_hudConfig.fontScale, {1.f, 0.8f, 0.f, 1.f}, kLayerHUD);
     Engine::PixelFont::drawString(m_renderer, hiValue,
                                   hiX + (hiBlockW - valueW) * 0.5f,
-                                  kMargin + 7.f * kFontScale + 1.f,
-                                  kFontScale, {1.f, 1.f, 1.f, 1.f}, kLayerHUD);
+                                  m_hudConfig.margin + 7.f * m_hudConfig.fontScale + 1.f,
+                                  m_hudConfig.fontScale, {1.f, 1.f, 1.f, 1.f}, kLayerHUD);
 
     renderLives();
     renderOverlay();
@@ -399,17 +398,13 @@ void PacmanGame::renderOverlay() {
 
 void PacmanGame::renderLives() {
     // Draw one Pac-Man icon per spare life (lives - 1; current life not shown as an icon).
-    constexpr float kIconSize = static_cast<float>(TILE * SCALE) + 8.f; // 40 px
-    constexpr float kMargin   = 5.f;
-    constexpr float kY        = kMargin;
-
     const int spares = std::max(0, m_lives - 1);
     const auto uv = m_pacSheet->getFrameUVs(1); // frame 1: half-open right-facing Pac-Man
 
     for (int i = 0; i < spares; ++i) {
         // Pack icons right-to-left from the right edge
-        const float x = WIN_W - kMargin - (i + 1) * (kIconSize + 4.f) + 4.f;
-        m_renderer.drawTexturedRect(x, kY, kIconSize, kIconSize,
+        const float x = WIN_W - m_hudConfig.margin - (i + 1) * (m_hudConfig.iconSize + 4.f) + 4.f;
+        m_renderer.drawTexturedRect(x, m_hudConfig.margin, m_hudConfig.iconSize, m_hudConfig.iconSize,
                                     m_pacSheet->texture(),
                                     uv.u0, uv.v0, uv.u1, uv.v1,
                                     0.f, {1.f, 1.f, 1.f, 1.f}, kLayerHUD);
