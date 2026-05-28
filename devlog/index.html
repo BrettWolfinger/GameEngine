@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://brettwolfinger.github.io/GameEngine/devlog/">
       
       
-        <link rel="prev" href="../roadmap/engine-facade/">
+        <link rel="prev" href="../patterns/screen-system/">
       
       
       
@@ -423,6 +423,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../engine/event-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Event System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../engine/audio/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audio System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../engine/input/" class="md-nav__link">
         
   
@@ -630,121 +686,6 @@
     
   
     Screen System
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
-        
-          
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Roadmap
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Roadmap
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../roadmap/engine-facade/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Engine Facade
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../roadmap/runtime-config-system.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Runtime Config System
   
 
     
@@ -1171,6 +1112,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#eventlistener-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Event/listener system
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wav-audio-and-polyphonic-playback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wav audio and polyphonic playback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#object-layers" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1587,6 +1550,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#eventlistener-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Event/listener system
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wav-audio-and-polyphonic-playback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wav audio and polyphonic playback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#object-layers" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1892,6 +1877,15 @@ new system: <code>PacmanConfig.h</code> declares seven <code>Field&lt;T&gt;</cod
 lives); <code>onInit()</code> registers it in one line; <code>pacman.toml</code> auto-generates on
 first run. Entity speed params are threaded through <code>Pacman::update()</code> and
 <code>Ghost::update()</code> so hot-reloaded values take effect each frame without caching.</p>
+<h3 id="eventlistener-system">Event/listener system</h3>
+<p>As Pac-Man grew, <code>PacmanGame</code> was increasingly acting as a message router — scoring, ghost release, frightened mode, death, and level-clear were all triggered inline inside <code>tryEatDot()</code> and <code>checkGhostCollision()</code>. Each new feature added another direct call and tightened coupling between concerns with no business knowing about each other.</p>
+<p>The solution was a typed publish/subscribe bus: <code>EventDispatcher</code> backed by a static <code>Engine::Events</code> facade (consistent with <code>Engine::Audio</code>, <code>Engine::Collision</code>, etc.). Any system emits with <code>Engine::Events::emit(MyEvent{...})</code>; any other system subscribes with <code>Engine::Events::on&lt;MyEvent&gt;(callback)</code>. Neither needs a reference to the other.</p>
+<p>Subscriptions are managed with RAII <code>ListenerHandle</code> tokens — the subscription cancels automatically when the handle is destroyed. Dispatch is immediate and synchronous (matching the collision callback model), with a mark-then-sweep pass for re-entrancy safety. Type erasure via <code>std::type_index</code> and <code>void*</code> callbacks keeps the internal <code>EventDispatcher</code> non-template; the public <code>on&lt;T&gt;</code> / <code>emit&lt;T&gt;</code> templates in <code>Events.h</code> are thin wrappers that erase the type at the call site.</p>
+<p>The first real demonstration of cross-system value was <code>PacmanAudio</code> — a standalone class that subscribes to game events and plays sounds without <code>PacmanGame</code> having any audio knowledge.</p>
+<h3 id="wav-audio-and-polyphonic-playback">Wav audio and polyphonic playback</h3>
+<p>Pac-Man has iconic sampled audio that procedural tones cannot replicate. The existing <code>AudioManager</code> only generated synthesized waveforms from a fixed voice pool. Two additions were needed: file loading and PCM playback.</p>
+<p><code>loadSound(path)</code> decodes .wav files to float32 PCM buffers at startup using <code>ma_decode_file</code> (miniaudio, already in the project), resampling to the device sample rate automatically. <code>playSound(handle)</code> picks a free voice from the existing pool and activates it as a new <code>VoiceType::PCM</code> — the audio callback already switched on voice type, so adding a PCM branch was additive. <code>isPlaying(handle)</code> lets callers gate repeated plays (e.g. preventing chomp sounds from stacking) by checking whether any voice is still playing a given buffer.</p>
+<p>A latent memory safety bug was also fixed: <code>m_soundBuffers</code> was a <code>std::vector&lt;SoundBuffer&gt;</code>. Reallocation on push_back would invalidate the <code>pcmData</code> pointers stored in playing voices. Changing to <code>std::deque</code> gives stable element addresses on push_back without any other behavioral change.</p>
 <h3 id="object-layers">Object layers</h3>
 <p><code>Engine::Tilemap</code> was extended with full object layer support. <code>MapObject</code> and
 <code>ObjectLayer</code> structs were added to <code>Tilemap.h</code>, and <code>loadMap()</code> now parses all

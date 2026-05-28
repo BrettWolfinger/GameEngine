@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://brettwolfinger.github.io/GameEngine/roadmap/engine-facade/">
+        <link rel="canonical" href="https://brettwolfinger.github.io/GameEngine/engine/audio/">
       
       
-        <link rel="prev" href="../../patterns/screen-system/">
+        <link rel="prev" href="../event-system/">
       
       
-        <link rel="next" href="../../devlog/">
+        <link rel="next" href="../input/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Engine Facade - Engine</title>
+        <title>Audio System - Engine</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#engine-facade-roadmap" class="md-skip">
+        <a href="#audio-system" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Engine Facade
+              Audio System
             
           </span>
         </div>
@@ -258,8 +258,10 @@
       
   
   
+    
   
   
+  
     
     
     
@@ -270,11 +272,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
           <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
@@ -295,7 +297,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -313,7 +315,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../engine/engine-facade/" class="md-nav__link">
+      <a href="../engine-facade/" class="md-nav__link">
         
   
   
@@ -341,7 +343,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../engine/application-game-loop/" class="md-nav__link">
+      <a href="../application-game-loop/" class="md-nav__link">
         
   
   
@@ -369,7 +371,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../engine/runtime-config/" class="md-nav__link">
+      <a href="../runtime-config/" class="md-nav__link">
         
   
   
@@ -397,7 +399,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../engine/collision-system/" class="md-nav__link">
+      <a href="../collision-system/" class="md-nav__link">
         
   
   
@@ -425,7 +427,204 @@
   
   
     <li class="md-nav__item">
-      <a href="../../engine/input/" class="md-nav__link">
+      <a href="../event-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Event System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audio System
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audio System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#voice-pool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Voice Pool
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#synthesized-audio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Synthesized Audio
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-based-audio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File-Based Audio
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="File-Based Audio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#loading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loading
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#playback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Playback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#querying" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Querying
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wiring-audio-to-game-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wiring Audio to Game Events
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../input/" class="md-nav__link">
         
   
   
@@ -453,7 +652,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../engine/renderer2d/" class="md-nav__link">
+      <a href="../renderer2d/" class="md-nav__link">
         
   
   
@@ -481,7 +680,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../engine/sprite-rendering-v2/" class="md-nav__link">
+      <a href="../sprite-rendering-v2/" class="md-nav__link">
         
   
   
@@ -509,7 +708,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../engine/tilemap/" class="md-nav__link">
+      <a href="../tilemap/" class="md-nav__link">
         
   
   
@@ -537,7 +736,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../engine/adding-a-new-game/" class="md-nav__link">
+      <a href="../adding-a-new-game/" class="md-nav__link">
         
   
   
@@ -656,133 +855,6 @@
       
   
   
-    
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
-        
-          
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Roadmap
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Roadmap
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Engine Facade
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../runtime-config-system.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Runtime Config System
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
   
   
     <li class="md-nav__item">
@@ -853,6 +925,108 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#voice-pool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Voice Pool
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#synthesized-audio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Synthesized Audio
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-based-audio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File-Based Audio
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="File-Based Audio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#loading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loading
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#playback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Playback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#querying" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Querying
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wiring-audio-to-game-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wiring Audio to Game Events
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -871,12 +1045,78 @@
   
 
 
-<h1 id="engine-facade-roadmap">Engine Facade — Roadmap</h1>
-<p>Implementation complete. See <a href="../../engine/engine-facade/"><code>docs/engine/engine-facade.md</code></a>
-for the architecture reference.</p>
-<p>Remaining work:
-- Issue #68 — Doxygen CI config and GitHub Pages pipeline
-- Issue #64 — Pull particle <code>update</code>/<code>render</code> into the engine loop</p>
+<h1 id="audio-system">Audio System</h1>
+<h2 id="overview">Overview</h2>
+<p>The audio system provides two modes of playback: synthesized waveforms (sine tones and noise bursts) generated in real time, and pre-loaded PCM buffers decoded from .wav files. Both share the same fixed voice pool and mix together in the audio callback.</p>
+<p>All audio is accessible through the <code>Engine::Audio</code> facade. Do not include <code>AudioManager.h</code> directly from game code.</p>
+<hr />
+<h2 id="voice-pool">Voice Pool</h2>
+<p>The engine maintains a pool of 8 voices. Two slots (0–1) are reserved for sustained looping voices. The remaining six are fire-and-forget voices shared across all playback types.</p>
+<p>When all fire-and-forget voices are busy, the engine steals the one with the fewest frames remaining rather than silently dropping the new sound.</p>
+<hr />
+<h2 id="synthesized-audio">Synthesized Audio</h2>
+<p>Synthesized voices are useful for simple beep-style effects and do not require any file loading.</p>
+<pre><code class="language-cpp">// One-shot sine tone: frequency (Hz), duration (sec), amplitude (0.0–1.0)
+Engine::Audio::playTone(440.f, 0.15f);
+Engine::Audio::playTone(880.f, 0.05f, 0.6f);
+
+// White noise burst with optional amplitude decay
+Engine::Audio::playNoise(0.3f, 0.4f);
+Engine::Audio::playNoise(0.4f, 0.4f, std::pow(0.001f, 1.f / (44100.f * 0.3f)));
+
+// Sustained looping tone on a dedicated slot (0 or 1)
+Engine::Audio::playLoopingTone(0, 220.f, 0.3f);
+Engine::Audio::stopLoopingVoice(0);
+
+// Sustained looping noise
+Engine::Audio::playLoopingNoise(1, 0.2f);
+Engine::Audio::stopLoopingVoice(1);
+</code></pre>
+<p>Looping slots are shared across all game objects. Assign slot indices a game-specific meaning (e.g. slot 0 = engine hum, slot 1 = shield drone) and document them in <code>GameConstants.h</code>.</p>
+<hr />
+<h2 id="file-based-audio">File-Based Audio</h2>
+<p>.wav files are decoded upfront at load time. Each loaded file produces a <code>SoundHandle</code> — a lightweight token used for playback and queries.</p>
+<h3 id="loading">Loading</h3>
+<p>Load sounds during initialization, not during gameplay:</p>
+<pre><code class="language-cpp">class PacmanAudio {
+    Engine::Audio::SoundHandle m_chomp;
+    Engine::Audio::SoundHandle m_death;
+};
+
+PacmanAudio::PacmanAudio() {
+    m_chomp = Engine::Audio::loadSound(&quot;games/pacman/assets/audio/pacman_chomp.wav&quot;);
+    m_death = Engine::Audio::loadSound(&quot;games/pacman/assets/audio/pacman_death.wav&quot;);
+}
+</code></pre>
+<p><code>loadSound</code> returns an invalid handle (<code>handle.valid() == false</code>) if the file is missing or cannot be decoded. Audio calls with invalid handles are safe no-ops.</p>
+<p>Sounds are decoded to float32 PCM at the device sample rate (44100 Hz) via miniaudio's built-in resampler. All standard .wav formats and sample rates are supported.</p>
+<h3 id="playback">Playback</h3>
+<pre><code class="language-cpp">Engine::Audio::playSound(m_chomp);
+</code></pre>
+<p>Fire-and-forget. Picks a free voice from the pool and starts playback. Returns immediately; the audio thread drives the buffer from that point on.</p>
+<h3 id="querying">Querying</h3>
+<pre><code class="language-cpp">if (!Engine::Audio::isPlaying(m_chomp))
+    Engine::Audio::playSound(m_chomp);
+</code></pre>
+<p><code>isPlaying</code> returns true if any voice is currently playing that buffer. Use it to prevent the same sound from stacking — useful for rapid events like dot eating where the previous chomp may not have finished.</p>
+<hr />
+<h2 id="wiring-audio-to-game-events">Wiring Audio to Game Events</h2>
+<p>The intended pattern is a dedicated audio class that subscribes to game events, keeping audio logic entirely separate from game logic:</p>
+<pre><code class="language-cpp">PacmanAudio::PacmanAudio() {
+    m_chomp    = Engine::Audio::loadSound(&quot;games/pacman/assets/audio/pacman_chomp.wav&quot;);
+    m_eatGhost = Engine::Audio::loadSound(&quot;games/pacman/assets/audio/pacman_eatghost.wav&quot;);
+
+    m_dotHandle = Engine::Events::on&lt;DotEaten&gt;([this](const DotEaten&amp;) {
+        if (!Engine::Audio::isPlaying(m_chomp))
+            Engine::Audio::playSound(m_chomp);
+    });
+
+    m_ghostHandle = Engine::Events::on&lt;GhostEaten&gt;([this](const GhostEaten&amp;) {
+        Engine::Audio::playSound(m_eatGhost);
+    });
+}
+</code></pre>
+<p>The game emits events; the audio class reacts. Neither references the other. See <a href="../event-system/">Event System</a> for the full subscription model.</p>
 
 
 

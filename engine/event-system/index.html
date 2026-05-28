@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://brettwolfinger.github.io/GameEngine/engine/renderer2d/">
+        <link rel="canonical" href="https://brettwolfinger.github.io/GameEngine/engine/event-system/">
       
       
-        <link rel="prev" href="../input/">
+        <link rel="prev" href="../collision-system/">
       
       
-        <link rel="next" href="../sprite-rendering-v2/">
+        <link rel="next" href="../audio/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Renderer2D - Engine</title>
+        <title>Event System - Engine</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#renderer2d" class="md-skip">
+        <a href="#event-system" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Renderer2D
+              Event System
             
           </span>
         </div>
@@ -424,10 +424,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../event-system/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Event System
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -443,6 +470,125 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#event-structs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Event Structs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subscribing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subscribing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#emitting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Emitting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#listenerhandle-lifetime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ListenerHandle Lifetime
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dispatch-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dispatch Behavior
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wiring-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wiring Pattern
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-events-to-a-game" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding Events to a Game
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#internal-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Internal Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -508,37 +654,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Renderer2D
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../renderer2d/" class="md-nav__link">
         
   
   
@@ -554,125 +673,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Overview
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#coordinate-system" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Coordinate System
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#render-layers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Render Layers
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#beginscene" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        beginScene
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#endscene" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        endScene
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#drawrect-colored-rectangle" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        drawRect — Colored Rectangle
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#drawtexturedrect-sprite-rectangle" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        drawTexturedRect — Sprite Rectangle
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#how-both-pipelines-work" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How Both Pipelines Work
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#typical-onrender-pattern" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Typical onRender Pattern
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -948,10 +948,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#coordinate-system" class="md-nav__link">
+  <a href="#event-structs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Coordinate System
+        Event Structs
       
     </span>
   </a>
@@ -959,10 +959,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#render-layers" class="md-nav__link">
+  <a href="#subscribing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Render Layers
+        Subscribing
       
     </span>
   </a>
@@ -970,10 +970,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#beginscene" class="md-nav__link">
+  <a href="#emitting" class="md-nav__link">
     <span class="md-ellipsis">
       
-        beginScene
+        Emitting
       
     </span>
   </a>
@@ -981,10 +981,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#endscene" class="md-nav__link">
+  <a href="#listenerhandle-lifetime" class="md-nav__link">
     <span class="md-ellipsis">
       
-        endScene
+        ListenerHandle Lifetime
       
     </span>
   </a>
@@ -992,10 +992,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#drawrect-colored-rectangle" class="md-nav__link">
+  <a href="#dispatch-behavior" class="md-nav__link">
     <span class="md-ellipsis">
       
-        drawRect — Colored Rectangle
+        Dispatch Behavior
       
     </span>
   </a>
@@ -1003,10 +1003,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#drawtexturedrect-sprite-rectangle" class="md-nav__link">
+  <a href="#wiring-pattern" class="md-nav__link">
     <span class="md-ellipsis">
       
-        drawTexturedRect — Sprite Rectangle
+        Wiring Pattern
       
     </span>
   </a>
@@ -1014,10 +1014,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#how-both-pipelines-work" class="md-nav__link">
+  <a href="#adding-events-to-a-game" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How Both Pipelines Work
+        Adding Events to a Game
       
     </span>
   </a>
@@ -1025,10 +1025,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#typical-onrender-pattern" class="md-nav__link">
+  <a href="#internal-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Typical onRender Pattern
+        Internal Architecture
       
     </span>
   </a>
@@ -1055,111 +1055,106 @@
   
 
 
-<h1 id="renderer2d">Renderer2D</h1>
+<h1 id="event-system">Event System</h1>
 <h2 id="overview">Overview</h2>
-<p><code>Engine::Renderer2D</code> draws axis-aligned rectangles in screen space — either a solid color or a textured sprite sub-region. It manages two independent OpenGL pipelines that share the same unit-quad geometry. All positioning and sizing is done via model matrix uniforms; the vertex data on the GPU never changes.</p>
+<p>The event system is a typed publish/subscribe bus that decouples systems from each other. Any system can emit an event; any other system can subscribe to it. Neither needs a reference to the other, and neither needs to know the other exists.</p>
+<p>The canonical example is audio: <code>PacmanGame</code> emits <code>GhostEaten</code> when a ghost is caught. <code>PacmanAudio</code> subscribes and plays a sound. <code>PacmanGame</code> has no audio calls — it just emits events and the audio system reacts independently.</p>
 <hr />
-<h2 id="coordinate-system">Coordinate System</h2>
-<p>The renderer uses a <strong>Y-down screen-space</strong> coordinate system:</p>
-<ul>
-<li><code>(0, 0)</code> is the <strong>top-left</strong> of the window</li>
-<li>X increases to the right</li>
-<li>Y increases <strong>downward</strong></li>
-<li><code>(width, height)</code> is the bottom-right</li>
-</ul>
-<p>This matches how most 2D games and image formats think about coordinates. <code>beginScene</code> sets up a matching orthographic projection:</p>
-<pre><code class="language-cpp">m_proj = glm::ortho(0.f, (float)width, (float)height, 0.f, -1.f, 1.f);
-//                  left  right         bottom          top
+<h2 id="event-structs">Event Structs</h2>
+<p>Events are plain data structs. No base class, no registration macro, no boilerplate:</p>
+<pre><code class="language-cpp">// PacmanEvents.h
+struct DotEaten         { int col; int row; int points; };
+struct GhostEaten       { GhostType type; int multiplier; int points; };
+struct PacmanCaught     {};
+struct LevelCleared     {};
 </code></pre>
-<p>All draw call positions are in these screen-space pixel units.</p>
+<p>Any struct can be an event. Define them wherever makes sense — typically a <code>GameEvents.h</code> alongside the game that owns them.</p>
 <hr />
-<h2 id="render-layers">Render Layers</h2>
-<p>Every draw call is tagged with a <strong>layer</strong> integer (default <code>0</code>). Draws accumulate into per-layer buckets and are flushed in ascending layer order when <code>endScene()</code> is called — higher layers always render on top of lower layers, regardless of call order within <code>onRender</code>.</p>
-<pre><code class="language-cpp">inline constexpr int kLayerBackground = 0;
-inline constexpr int kLayerWorld      = 1;
-inline constexpr int kLayerEffects    = 2;
-inline constexpr int kLayerHUD        = 3;
+<h2 id="subscribing">Subscribing</h2>
+<p><code>Engine::Events::on&lt;T&gt;()</code> registers a listener and returns a <code>ListenerHandle</code>. Store the handle as a member — the subscription stays active as long as the handle is alive, and auto-cancels when the handle is destroyed.</p>
+<pre><code class="language-cpp">class PacmanAudio {
+    Engine::ListenerHandle m_ghostHandle;
+    Engine::ListenerHandle m_deathHandle;
+};
 
-// In onRender():
-renderer.drawTexturedRect(..., kLayerBackground); // maze bg drawn first
-renderer.drawTexturedRect(..., kLayerWorld);       // pacman and ghosts on top
-renderer.drawRect(...,         kLayerHUD);         // score always above everything
-</code></pre>
-<p>Define layer constants in <code>GameConstants.h</code>. The renderer supports up to <strong>16 layers</strong> (0–15). Layer 15 (<code>kParticleLayer</code>) is reserved for the engine's particle system — do not use it in game code.</p>
-<p><strong>Two flush passes per frame</strong> — Application calls <code>endScene()</code> automatically:
-1. After <code>onRender()</code> + particle rendering — flushes the world.
-2. After <code>onOverlayRender()</code> — flushes the overlay. Overlay draws always appear above world draws and particles regardless of which layer numbers are used.</p>
-<hr />
-<h2 id="beginscene">beginScene</h2>
-<p>Call once per frame before any draw calls:</p>
-<pre><code class="language-cpp">m_renderer.beginScene(W, H);
-</code></pre>
-<p>Clears the screen to black, rebuilds the projection matrix for the given dimensions, and clears all layer buckets. Call only once at the start of <code>onRender</code> — not between ticks.</p>
-<hr />
-<h2 id="endscene">endScene</h2>
-<p>Flushes all layer buckets in ascending order (0 → 15), then clears them. Called automatically by Application — do not call it yourself.</p>
-<hr />
-<h2 id="drawrect-colored-rectangle">drawRect — Colored Rectangle</h2>
-<pre><code class="language-cpp">renderer.drawRect(float x, float y, float w, float h,
-                  const glm::vec4&amp; color, int layer = 0);
-</code></pre>
-<p>Queues a solid-colored rectangle into the given layer. <code>(x, y)</code> is the <strong>top-left corner</strong>. <code>color</code> is RGBA in 0–1 range.</p>
-<pre><code class="language-cpp">// White 32×32 square at (100, 200) on the HUD layer
-renderer.drawRect(100.f, 200.f, 32.f, 32.f, { 1.f, 1.f, 1.f, 1.f }, kLayerHUD);
-</code></pre>
-<hr />
-<h2 id="drawtexturedrect-sprite-rectangle">drawTexturedRect — Sprite Rectangle</h2>
-<pre><code class="language-cpp">renderer.drawTexturedRect(float x, float y, float w, float h,
-                          const Texture&amp; tex,
-                          float u0 = 0.f, float v0 = 0.f,
-                          float u1 = 1.f, float v1 = 1.f,
-                          float angle = 0.f,
-                          const glm::vec4&amp; tint = {1,1,1,1},
-                          int layer = 0);
-</code></pre>
-<p>Queues a textured rectangle into the given layer. <code>(x, y)</code> is the <strong>top-left corner</strong> before rotation. <code>u0/v0/u1/v1</code> select a UV sub-region of the texture (see <code>docs/engine/sprite-rendering.md</code>). <code>angle</code> rotates the sprite around its center in radians. <code>tint</code> multiplies the sampled color.</p>
-<pre><code class="language-cpp">// Sprite frame at (50, 50), 64×64 pixels, rotated 45°, on the world layer
-renderer.drawTexturedRect(50.f, 50.f, 64.f, 64.f,
-                          sheet.texture(),
-                          uv.u0, uv.v0, uv.u1, uv.v1,
-                          glm::radians(45.f),
-                          {1,1,1,1},
-                          kLayerWorld);
-</code></pre>
-<p><strong>Rotation</strong> is applied around the sprite's center. The model matrix translates to center, rotates, translates back, then scales — so <code>(x, y)</code> stays the intended top-left of the unrotated bounding box.</p>
-<p><strong>Alpha discard:</strong> the fragment shader discards pixels with alpha &lt; 0.1, which gives clean edges on sprite sheets with transparent backgrounds without requiring blending setup.</p>
-<hr />
-<h2 id="how-both-pipelines-work">How Both Pipelines Work</h2>
-<p>Both <code>drawRect</code> and <code>drawTexturedRect</code> use the same unit quad stored once in GPU memory:</p>
-<pre><code>(0,0) ──── (1,0)
-  │           │
-(0,1) ──── (1,1)
-</code></pre>
-<p>Per draw call, a model matrix scales and translates it to the desired position and size:</p>
-<pre><code class="language-cpp">glm::mat4 model = glm::translate(glm::mat4(1.f), glm::vec3(x, y, 0.f));
-model = glm::scale(model, glm::vec3(w, h, 1.f));
-</code></pre>
-<p>The <code>u_mvp = proj * model</code> uniform is all that moves the quad. No per-draw VBO uploads.</p>
-<p>For the textured pipeline, a second uniform <code>u_uvRegion = vec4(u0, v0, u1, v1)</code> remaps the base 0–1 UVs into the requested sub-region in the fragment shader. See <code>docs/engine/sprite-rendering.md</code> for the UV remapping math.</p>
-<hr />
-<h2 id="typical-onrender-pattern">Typical onRender Pattern</h2>
-<pre><code class="language-cpp">void MyGame::onRender() {
-    m_renderer.beginScene(W, H);   // clear screen + set projection + clear layer buckets
+PacmanAudio::PacmanAudio() {
+    m_ghostHandle = Engine::Events::on&lt;GhostEaten&gt;([this](const GhostEaten&amp; e) {
+        Engine::Audio::playSound(m_eatGhost);
+    });
 
-    // Queue draws into layers — order of calls within a layer doesn't matter
-    // for cross-layer ordering, only for same-layer ordering.
-    m_renderer.drawTexturedRect(..., kLayerBackground);
-    for (const auto&amp; e : m_enemies)
-        e-&gt;render(m_renderer, kLayerWorld);
-    m_player.render(m_renderer, kLayerWorld);
-
-    // Application calls endScene() and swapBuffers() — do not call them here.
+    m_deathHandle = Engine::Events::on&lt;DeathStarted&gt;([this](const DeathStarted&amp;) {
+        Engine::Audio::playSound(m_death);
+    });
 }
 </code></pre>
-<p><code>endScene()</code> and <code>swapBuffers()</code> are both called by <code>Application::run()</code> — don't call them yourself.</p>
-<p><strong><code>getRenderer()</code> is required</strong> for the flush to fire. Override it in every game that uses <code>Renderer2D</code>:</p>
-<pre><code class="language-cpp">Engine::Renderer2D* getRenderer() override { return &amp;m_renderer; }
+<p>When <code>PacmanAudio</code> is destroyed, its handles go out of scope and both subscriptions are automatically removed. No manual cleanup needed.</p>
+<hr />
+<h2 id="emitting">Emitting</h2>
+<p><code>Engine::Events::emit()</code> fires an event immediately. All registered listeners for that type are called synchronously before <code>emit</code> returns.</p>
+<pre><code class="language-cpp">void PacmanGame::checkGhostCollision() {
+    // ...
+    if (ghost.mode() == GhostMode::Frightened) {
+        ghost.startEyes();
+        Engine::Events::emit(GhostEaten{ ghost.type(), m_ghostsEatenThisPellet, points });
+    }
+}
 </code></pre>
+<hr />
+<h2 id="listenerhandle-lifetime">ListenerHandle Lifetime</h2>
+<p><code>ListenerHandle</code> is non-copyable and movable. A default-constructed handle is a no-op sentinel.</p>
+<pre><code class="language-cpp">Engine::ListenerHandle m_handle;          // no-op, not subscribed
+
+m_handle = Engine::Events::on&lt;DotEaten&gt;( // now subscribed
+    [this](const DotEaten&amp; e) { ... });
+
+m_handle = Engine::Events::on&lt;GhostEaten&gt;( // previous subscription auto-cancelled
+    [this](const GhostEaten&amp; e) { ... });
+
+m_handle.reset();                         // explicit early cancel
+</code></pre>
+<p>A common mistake is failing to store the handle:</p>
+<pre><code class="language-cpp">Engine::Events::on&lt;DotEaten&gt;([this](const DotEaten&amp; e) { ... }); // BUG: immediately unsubscribes
+</code></pre>
+<p>The return value must be stored to keep the subscription alive.</p>
+<hr />
+<h2 id="dispatch-behavior">Dispatch Behavior</h2>
+<ul>
+<li><strong>Immediate</strong> — listeners fire synchronously inside <code>emit()</code>, in subscription order.</li>
+<li><strong>Re-entrant safe</strong> — a listener that calls <code>emit()</code> or <code>reset()</code> during dispatch is handled correctly. Entries unsubscribed during dispatch are marked dead and swept after the outermost <code>emit</code> returns; no iterator invalidation occurs.</li>
+<li><strong>No frame delay</strong> — if you emit in <code>onUpdate</code>, listeners respond in the same tick.</li>
+</ul>
+<hr />
+<h2 id="wiring-pattern">Wiring Pattern</h2>
+<p>The recommended pattern is to wire all subscriptions in one place — typically a constructor or <code>onInit()</code>:</p>
+<pre><code class="language-cpp">void PacmanGame::onInit() {
+    // ... asset loading, entity construction ...
+
+    m_audio.emplace();   // PacmanAudio subscribes internally
+
+    m_dotHandle = Engine::Events::on&lt;DotEaten&gt;([this](const DotEaten&amp; e) {
+        m_score += e.points;
+        checkGhostRelease();
+    });
+
+    m_levelHandle = Engine::Events::on&lt;LevelCleared&gt;([this](const LevelCleared&amp;) {
+        startLevelClear();
+    });
+}
+</code></pre>
+<p>This gives you a single place to read the full event → reaction map for a system, rather than hunting through multiple functions to understand all the consequences of an action.</p>
+<hr />
+<h2 id="adding-events-to-a-game">Adding Events to a Game</h2>
+<ol>
+<li>Define event structs in a <code>GameEvents.h</code> file alongside the game</li>
+<li>In the emitting system, call <code>Engine::Events::emit(MyEvent{ ... })</code> at the point the event occurs</li>
+<li>In the reacting system, call <code>Engine::Events::on&lt;MyEvent&gt;(callback)</code> and store the returned handle as a member</li>
+<li>Include <code>&lt;engine/Engine.h&gt;</code> for access to <code>Engine::Events</code> and <code>Engine::ListenerHandle</code></li>
+</ol>
+<hr />
+<h2 id="internal-architecture">Internal Architecture</h2>
+<p>The event bus is a static facade (<code>Engine::Events</code>) backed by an <code>EventDispatcher</code> owned by <code>Application::Impl</code> and registered with <code>Services</code>. This follows the same pattern as <code>Engine::Audio</code>, <code>Engine::Collision</code>, etc.</p>
+<p>Internally, <code>EventDispatcher</code> stores listeners in an <code>unordered_map</code> keyed by <code>std::type_index</code>. The public templates in <code>Events.h</code> erase the event type into a <code>void*</code> callback and <code>std::type_index</code> key at the call site — the only point where <code>EventT</code> is known. All downstream dispatch is non-template and routes through two internal functions (<code>subscribeErased</code>, <code>emitErased</code>).</p>
+<p>This means game code never needs to register event types upfront. Any struct is a valid event type.</p>
 
 
 

@@ -10,29 +10,27 @@
       
       
       
-        <link rel="canonical" href="https://brettwolfinger.github.io/GameEngine/">
+        <link rel="canonical" href="https://brettwolfinger.github.io/GameEngine/roadmap/completed/event-system/">
       
       
-      
-        <link rel="next" href="engine/engine-facade/">
       
       
         
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Engine</title>
+        <title>Event System — Roadmap - Engine</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -51,7 +49,7 @@
       
     
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -74,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#engine" class="md-skip">
+        <a href="#event-system-roadmap" class="md-skip">
           Skip to content
         </a>
       
@@ -90,7 +88,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="Engine" class="md-header__button md-logo" aria-label="Engine" data-md-component="logo">
+    <a href="../../.." title="Engine" class="md-header__button md-logo" aria-label="Engine" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -110,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              Event System — Roadmap
             
           </span>
         </div>
@@ -202,7 +200,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="Engine" class="md-nav__button md-logo" aria-label="Engine" data-md-component="logo">
+    <a href="../../.." title="Engine" class="md-nav__button md-logo" aria-label="Engine" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -229,37 +227,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Home
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -275,37 +246,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#where-to-start" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Where to start
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -369,7 +309,7 @@
   
   
     <li class="md-nav__item">
-      <a href="engine/engine-facade/" class="md-nav__link">
+      <a href="../../../engine/engine-facade/" class="md-nav__link">
         
   
   
@@ -397,7 +337,7 @@
   
   
     <li class="md-nav__item">
-      <a href="engine/application-game-loop/" class="md-nav__link">
+      <a href="../../../engine/application-game-loop/" class="md-nav__link">
         
   
   
@@ -425,7 +365,7 @@
   
   
     <li class="md-nav__item">
-      <a href="engine/runtime-config/" class="md-nav__link">
+      <a href="../../../engine/runtime-config/" class="md-nav__link">
         
   
   
@@ -453,7 +393,7 @@
   
   
     <li class="md-nav__item">
-      <a href="engine/collision-system/" class="md-nav__link">
+      <a href="../../../engine/collision-system/" class="md-nav__link">
         
   
   
@@ -481,7 +421,7 @@
   
   
     <li class="md-nav__item">
-      <a href="engine/event-system/" class="md-nav__link">
+      <a href="../../../engine/event-system/" class="md-nav__link">
         
   
   
@@ -509,7 +449,7 @@
   
   
     <li class="md-nav__item">
-      <a href="engine/audio/" class="md-nav__link">
+      <a href="../../../engine/audio/" class="md-nav__link">
         
   
   
@@ -537,7 +477,7 @@
   
   
     <li class="md-nav__item">
-      <a href="engine/input/" class="md-nav__link">
+      <a href="../../../engine/input/" class="md-nav__link">
         
   
   
@@ -565,7 +505,7 @@
   
   
     <li class="md-nav__item">
-      <a href="engine/renderer2d/" class="md-nav__link">
+      <a href="../../../engine/renderer2d/" class="md-nav__link">
         
   
   
@@ -593,7 +533,7 @@
   
   
     <li class="md-nav__item">
-      <a href="engine/sprite-rendering-v2/" class="md-nav__link">
+      <a href="../../../engine/sprite-rendering-v2/" class="md-nav__link">
         
   
   
@@ -621,7 +561,7 @@
   
   
     <li class="md-nav__item">
-      <a href="engine/tilemap/" class="md-nav__link">
+      <a href="../../../engine/tilemap/" class="md-nav__link">
         
   
   
@@ -649,7 +589,7 @@
   
   
     <li class="md-nav__item">
-      <a href="engine/adding-a-new-game/" class="md-nav__link">
+      <a href="../../../engine/adding-a-new-game/" class="md-nav__link">
         
   
   
@@ -736,7 +676,7 @@
   
   
     <li class="md-nav__item">
-      <a href="patterns/screen-system/" class="md-nav__link">
+      <a href="../../../patterns/screen-system/" class="md-nav__link">
         
   
   
@@ -771,7 +711,7 @@
   
   
     <li class="md-nav__item">
-      <a href="devlog/" class="md-nav__link">
+      <a href="../../../devlog/" class="md-nav__link">
         
   
   
@@ -838,25 +778,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#where-to-start" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Where to start
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -875,67 +796,9 @@
   
 
 
-<h1 id="engine">Engine</h1>
-<p>A C++ 2D game engine built on OpenGL 4.1, GLFW, GLM, and CMake. Designed around a
-stable facade API so games program against <code>Engine::Audio::</code>, <code>Engine::Particles::</code>,
-and <code>Engine::Collision::</code> rather than reaching into subsystem internals.</p>
-<p>Games shipped on the engine: <strong>Pong</strong>, <strong>Breakout</strong>, <strong>Frogger</strong>, <strong>Asteroids</strong>, <strong>Pac-Man</strong>, <strong>Super Mario Bros</strong>.</p>
-<hr />
-<h2 id="where-to-start">Where to start</h2>
-<table>
-<thead>
-<tr>
-<th>If you want to…</th>
-<th>Read</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Understand how the engine is structured</td>
-<td><a href="engine/engine-facade/">Engine Facade</a></td>
-</tr>
-<tr>
-<td>Add a new game</td>
-<td><a href="engine/adding-a-new-game/">Adding a New Game</a></td>
-</tr>
-<tr>
-<td>Learn the main loop and lifecycle hooks</td>
-<td><a href="engine/application-game-loop/">Application &amp; Game Loop</a></td>
-</tr>
-<tr>
-<td>Set up colliders and callbacks</td>
-<td><a href="engine/collision-system/">Collision System</a></td>
-</tr>
-<tr>
-<td>Publish and subscribe to game events</td>
-<td><a href="engine/event-system/">Event System</a></td>
-</tr>
-<tr>
-<td>Draw sprites</td>
-<td><a href="engine/renderer2d/">Renderer2D</a></td>
-</tr>
-<tr>
-<td>Load and render Tiled maps</td>
-<td><a href="engine/tilemap/">Tilemap System</a></td>
-</tr>
-<tr>
-<td>Handle keyboard input</td>
-<td><a href="engine/input/">Input</a></td>
-</tr>
-<tr>
-<td>Play synthesized tones or .wav files</td>
-<td><a href="engine/audio/">Audio System</a></td>
-</tr>
-<tr>
-<td>See the full history of the project</td>
-<td><a href="devlog/">Devlog</a></td>
-</tr>
-<tr>
-<td>Browse the generated API reference</td>
-<td><a href="https://brettwolfinger.github.io/GameEngine/api/" rel="noopener noreferrer" target="_blank">API Reference</a></td>
-</tr>
-</tbody>
-</table>
+<h1 id="event-system-roadmap">Event System — Roadmap</h1>
+<p>Implementation complete. See <a href="../../../engine/event-system/"><code>docs/engine/event-system.md</code></a>
+for the architecture reference.</p>
 
 
 
@@ -991,12 +854,12 @@ and <code>Engine::Collision::</code> rather than reaching into subsystem interna
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.sections", "navigation.top", "search.suggest", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "navigation.top", "search.suggest", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
-        <script src="js/extra.js"></script>
+        <script src="../../../js/extra.js"></script>
       
     
   </body>
