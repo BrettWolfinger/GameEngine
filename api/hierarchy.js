@@ -8,11 +8,13 @@ var hierarchy =
     [ "Engine::ConfigLoader", "classEngine_1_1ConfigLoader.html", null ],
     [ "Engine::ConfigRegistry", "classEngine_1_1ConfigRegistry.html", null ],
     [ "Engine::ConfigWatcher", "classEngine_1_1ConfigWatcher.html", null ],
+    [ "Engine::EventDispatcher", "classEngine_1_1EventDispatcher.html", null ],
     [ "Engine::FieldBase", "classEngine_1_1FieldBase.html", [
       [ "Engine::Field< T >", "classEngine_1_1Field.html", null ]
     ] ],
     [ "Engine::Tilemap::FlippedUV", "structEngine_1_1Tilemap_1_1FlippedUV.html", null ],
     [ "Engine::Input", "classEngine_1_1Input.html", null ],
+    [ "Engine::ListenerHandle", "classEngine_1_1ListenerHandle.html", null ],
     [ "Engine::Tilemap::Map", "structEngine_1_1Tilemap_1_1Map.html", null ],
     [ "Engine::Tilemap::MapObject", "structEngine_1_1Tilemap_1_1MapObject.html", null ],
     [ "Engine::Menu", "classEngine_1_1Menu.html", null ],

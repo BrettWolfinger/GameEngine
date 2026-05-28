@@ -10,5 +10,7 @@ var searchData=
   ['spritesheet_7',['SpriteSheet',['../classEngine_1_1SpriteSheet.html',1,'Engine']]],
   ['startsize_8',['startSize',['../structEngine_1_1ParticleEmitParams.html#aac0e442ec56672815688d8bb88654b28',1,'Engine::ParticleEmitParams']]],
   ['stoploopingvoice_9',['stopLoopingVoice',['../Audio_8h.html#a52c1639e140f089a2f99f3d221ba93ea',1,'Engine::Audio']]],
-  ['syncfn_10',['syncfn',['../Collision_8h.html#af8019355ed0c8dc4323dae84558ed15d',1,'Engine::Collision::SyncFn'],['../Collider_8h.html#abec13c9725f35e27d6c2b51f74a719df',1,'Engine::SyncFn']]]
+  ['subscribe_10',['subscribe',['../classEngine_1_1EventDispatcher.html#aeec104326e1990c0b6509925ea50e9d3',1,'Engine::EventDispatcher']]],
+  ['subscribeerased_11',['subscribeErased',['../classEngine_1_1EventDispatcher.html#a2af750f6090e5d59877ca5c7e1a1c31c',1,'Engine::EventDispatcher']]],
+  ['syncfn_12',['syncfn',['../Collision_8h.html#af8019355ed0c8dc4323dae84558ed15d',1,'Engine::Collision::SyncFn'],['../Collider_8h.html#abec13c9725f35e27d6c2b51f74a719df',1,'Engine::SyncFn']]]
 ];
