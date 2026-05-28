@@ -118,6 +118,9 @@ void PacmanGame::onInit() {
     m_levelClearedHandle = Engine::Events::on<LevelCleared>([this](const LevelCleared&) {
         startLevelClear();
     });
+
+    m_audio.emplace();
+    Engine::Events::emit(GameStarted{});
 }
 
 void PacmanGame::buildDotCache() {
@@ -269,6 +272,7 @@ void PacmanGame::restartGame() {
     if (m_pacman) m_pacman->respawn();
     for (auto& ghost : m_ghosts) ghost.respawn();
     checkGhostRelease();
+    Engine::Events::emit(GameStarted{});
 }
 
 void PacmanGame::updateHighScore() {
