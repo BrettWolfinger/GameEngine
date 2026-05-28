@@ -6,7 +6,9 @@
 #include <engine/renderer/SpriteSheet.h>
 #include <engine/tilemap/Tilemap.h>
 #include <engine/tilemap/TilemapRenderer.h>
+#include <engine/Engine.h>
 #include "GameTypes.h"
+#include "PacmanEvents.h"
 #include "Pacman.h"
 #include "Ghost.h"
 #include "PacmanConfig.h"
@@ -92,6 +94,13 @@ private:
 
     // Scoring
     int       m_highScore        = 0;
+
+    // Event listener handles — auto-unsubscribe on destruction.
+    Engine::ListenerHandle m_dotEatenHandle;
+    Engine::ListenerHandle m_pelletEatenHandle;
+    Engine::ListenerHandle m_ghostEatenHandle;
+    Engine::ListenerHandle m_pacmanCaughtHandle;
+    Engine::ListenerHandle m_levelClearedHandle;
 
     PacmanConfig    m_config;
     PacmanHudConfig m_hudConfig;
