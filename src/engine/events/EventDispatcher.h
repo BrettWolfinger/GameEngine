@@ -20,38 +20,8 @@ class EventDispatcher {
 public:
     using ListenerId = uint64_t;
 
-    /// Subscribe a callback for events of type EventT.
-    /// Returns the new listener's id; the caller is responsible for
-    /// wrapping it in a ListenerHandle.
-    template<typename EventT>
-    ListenerId subscribe(std::function<void(const EventT&)> fn) {
-        auto id = m_nextId++;
-        m_listeners[std::type_index(typeid(EventT))].push_back({
-            id,
-            [fn = std::move(fn)](const void* e) { fn(*static_cast<const EventT*>(e)); }
-        });
-        return id;
-    }
-
-    /// Emit an event, invoking all registered listeners synchronously.
-    /// Re-entrant calls are safe: listeners removed during dispatch are
-    /// lazily swept after the outermost emit returns.
-    template<typename EventT>
-    void emit(const EventT& event) {
-        auto it = m_listeners.find(std::type_index(typeid(EventT)));
-        if (it == m_listeners.end()) return;
-        ++m_dispatchDepth;
-        for (auto& entry : it->second) {
-            if (entry.id != 0)
-                entry.callback(static_cast<const void*>(&event));
-        }
-        if (--m_dispatchDepth == 0)
-            sweepDead(it->second);
-    }
-
     /// Subscribe using a pre-type-erased callback and return a ready-to-store
-    /// ListenerHandle. Used by the Events facade so that the facade .cpp does
-    /// not need to instantiate the subscribe<T> template.
+    /// ListenerHandle. Used by the Events facade.
     ListenerHandle subscribeErased(std::type_index type, std::function<void(const void*)> fn);
 
     /// Emit using a pre-type-erased event pointer. Used by the Events facade.
