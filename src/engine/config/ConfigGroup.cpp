@@ -20,6 +20,7 @@ FieldBase::FieldBase(ConfigGroup* parent, const char* name)
 void ConfigGroup::readFromToml(const toml::table& t) {
     for (auto* field : m_fields)
         field->readFromToml(t);
+    clearDirty();
 }
 
 void ConfigGroup::writeToToml(toml::table& t) const {
@@ -30,7 +31,8 @@ void ConfigGroup::writeToToml(toml::table& t) const {
 #ifdef ENABLE_TOOLS
 
 bool ConfigGroup::renderImGui(const std::string& label) {
-    const bool open = ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
+    const std::string headerLabel = isDirty() ? label + " *" : label;
+    const bool open = ImGui::CollapsingHeader(headerLabel.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
     if (open) {
         for (auto* field : m_fields)
             field->renderImGui();
@@ -42,25 +44,34 @@ bool ConfigGroup::renderImGui(const std::string& label) {
 
 template<>
 void Field<float>::renderImGui() {
-    ImGui::DragFloat(m_name, &m_value, 0.1f);
+    const std::string lbl = m_dirty ? std::string(m_name) + " *" : m_name;
+    if (ImGui::DragFloat(lbl.c_str(), &m_value, 0.1f))
+        m_dirty = true;
 }
 
 template<>
 void Field<int>::renderImGui() {
-    ImGui::DragInt(m_name, &m_value);
+    const std::string lbl = m_dirty ? std::string(m_name) + " *" : m_name;
+    if (ImGui::DragInt(lbl.c_str(), &m_value))
+        m_dirty = true;
 }
 
 template<>
 void Field<bool>::renderImGui() {
-    ImGui::Checkbox(m_name, &m_value);
+    const std::string lbl = m_dirty ? std::string(m_name) + " *" : m_name;
+    if (ImGui::Checkbox(lbl.c_str(), &m_value))
+        m_dirty = true;
 }
 
 template<>
 void Field<std::string>::renderImGui() {
     char buf[256] = {};
     std::strncpy(buf, m_value.c_str(), sizeof(buf) - 1);
-    if (ImGui::InputText(m_name, buf, sizeof(buf)))
+    const std::string lbl = m_dirty ? std::string(m_name) + " *" : m_name;
+    if (ImGui::InputText(lbl.c_str(), buf, sizeof(buf))) {
         m_value = buf;
+        m_dirty = true;
+    }
 }
 
 #endif // ENABLE_TOOLS

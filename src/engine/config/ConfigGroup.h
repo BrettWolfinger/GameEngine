@@ -29,6 +29,9 @@ public:
     virtual void readFromToml(const toml::table& t) = 0;
     virtual void writeToToml(toml::table& t) const  = 0;
 
+    bool isDirty()    const { return m_dirty; }
+    void clearDirty()       { m_dirty = false; }
+
 #ifdef ENABLE_TOOLS
     /// Render an ImGui widget for this field. No-op for unsupported types.
     virtual void renderImGui() = 0;
@@ -39,6 +42,7 @@ protected:
     /// ConfigGroup is fully visible.
     FieldBase(ConfigGroup* parent, const char* name);
     const char* m_name;
+    bool        m_dirty = false;
 };
 
 // ─────────────────────────────── Field<T> ────────────────────────────────────
@@ -96,6 +100,12 @@ public:
 
     /// Serialise all registered fields into a TOML table.
     void writeToToml(toml::table& t) const;
+
+    bool isDirty() const {
+        for (const auto* f : m_fields) if (f->isDirty()) return true;
+        return false;
+    }
+    void clearDirty() { for (auto* f : m_fields) f->clearDirty(); }
 
 #ifdef ENABLE_TOOLS
     /// Render a collapsing ImGui section for all registered fields.

@@ -48,6 +48,7 @@ void ConfigRegistry::saveEntry(const Entry& entry) {
     entry.group->writeToToml(table);
     std::ofstream out(entry.path);
     if (out) out << table;
+    entry.group->clearDirty();
 }
 
 #ifdef ENABLE_TOOLS
