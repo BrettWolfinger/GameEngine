@@ -8,7 +8,9 @@
 #include <engine/renderer/SpriteSheet.h>
 #include <engine/tilemap/Tilemap.h>
 #include <engine/tilemap/TilemapRenderer.h>
+#include <engine/tilemap/TilemapCollider.h>
 #include <memory>
+#include <optional>
 
 class MarioGame : public Engine::Application {
 public:
@@ -31,7 +33,8 @@ private:
     std::shared_ptr<Engine::Texture>     m_marioTex;
     std::shared_ptr<Engine::SpriteSheet> m_marioSheet;
     Engine::Tilemap::Map                 m_map;
-    MarioConfig                          m_config;
-    float                                m_cameraX = 0.f;
-    std::unique_ptr<Player>              m_player;
+    MarioConfig                              m_config;
+    std::optional<Engine::Tilemap::Collider>   m_collider;
+    float                                    m_cameraX = 0.f;
+    std::unique_ptr<Player>                  m_player;
 };

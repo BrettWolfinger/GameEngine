@@ -28,6 +28,7 @@ add_library(engine STATIC
     core/Services.cpp
     tilemap/Tilemap.cpp
     tilemap/TilemapRenderer.cpp
+    tilemap/TilemapCollider.cpp
 )
 
 # Expose src/ so consumers use #include <engine/...>

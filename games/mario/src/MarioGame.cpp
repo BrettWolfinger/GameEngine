@@ -26,6 +26,12 @@ void MarioGame::onInit() {
     const float startX = 3.f * TILE * SCALE;
     const float startY = static_cast<float>((SCREEN_ROWS - 2) * TILE * SCALE - MARIO_FRAME_H * SCALE);
     registerConfig("games/mario/assets/configs/mario.toml", &m_config);
+
+    const auto* terrain = m_map.findLayer("Terrain");
+    if (terrain)
+        m_collider.emplace(*terrain, TILE * SCALE, TILE * SCALE,
+                           [](uint32_t gid) { return gid != 0; });
+
     m_player = std::make_unique<Player>(m_marioSheet, startX, startY);
 }
 
@@ -33,7 +39,8 @@ void MarioGame::onUpdate(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q))
         quit();
 
-    m_player->update(dt, m_config);
+    if (m_collider)
+        m_player->update(dt, m_config, *m_collider);
 
     const float playerCenterX = m_player->x() + MARIO_FRAME_W * 0.5f * SCALE;
     const float mapWidth      = static_cast<float>(m_map.cols * TILE * SCALE);

@@ -15,3 +15,9 @@ static constexpr int WIN_H = SCREEN_ROWS * TILE * SCALE; // 720
 // Mario sprite frame dimensions (native pixels)
 static constexpr int MARIO_FRAME_W = 32;
 static constexpr int MARIO_FRAME_H = 16;
+
+// Hitbox — inset from the sprite frame to exclude transparent padding
+static constexpr int MARIO_HITBOX_OFFSET_X = 10; // transparent px on each horizontal side
+static constexpr int MARIO_HITBOX_OFFSET_Y = 0;
+static constexpr int MARIO_HITBOX_W = MARIO_FRAME_W - MARIO_HITBOX_OFFSET_X * 2; // 12px
+static constexpr int MARIO_HITBOX_H = MARIO_FRAME_H - MARIO_HITBOX_OFFSET_Y * 2;
