@@ -1,4 +1,5 @@
 #pragma once
+#include "MarioConfig.h"
 #include <engine/renderer/Renderer2D.h>
 #include <engine/renderer/SpriteAnimator.h>
 #include <memory>
@@ -8,7 +9,7 @@ class Player {
 public:
     Player(std::shared_ptr<Engine::SpriteSheet> sheet, float startX, float startY);
 
-    void update(float dt);
+    void update(float dt, const MarioConfig& config);
     void render(Engine::Renderer2D& renderer, float cameraX, int layer) const;
 
     float x() const { return m_x; }
@@ -17,8 +18,8 @@ public:
 private:
     enum class State { Idle, Walking, Skidding, Jumping, Crouching };
 
-    void handleInput();
-    void applyPhysics(float dt);
+    void handleInput(const MarioConfig& cfg);
+    void applyPhysics(float dt, const MarioConfig& cfg);
     void updateAnimation();
 
     float  m_x, m_y;

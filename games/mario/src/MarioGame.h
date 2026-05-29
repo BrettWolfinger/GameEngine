@@ -1,4 +1,5 @@
 #pragma once
+#include "MarioConfig.h"
 #include "Player.h"
 #include <engine/core/Application.h>
 #include <engine/core/Input.h>
@@ -30,6 +31,7 @@ private:
     std::shared_ptr<Engine::Texture>     m_marioTex;
     std::shared_ptr<Engine::SpriteSheet> m_marioSheet;
     Engine::Tilemap::Map                 m_map;
+    MarioConfig                          m_config;
     float                                m_cameraX = 0.f;
     std::unique_ptr<Player>              m_player;
 };

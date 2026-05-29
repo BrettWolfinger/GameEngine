@@ -4,14 +4,6 @@
 #include <GLFW/glfw3.h>
 #include <algorithm>
 
-static constexpr float kGravity    = 1800.f;  // px/s²
-static constexpr float kJumpVel    = -750.f;  // px/s upward
-static constexpr float kJumpCutVel = -300.f;  // upward velocity cap on early release
-static constexpr float kWalkSpeed  = 140.f;   // px/s max walk
-static constexpr float kRunSpeed   = 230.f;   // px/s max run (shift)
-static constexpr float kAccel      = 600.f;   // px/s² ground acceleration
-static constexpr float kDecel      = 500.f;   // px/s² deceleration when no input
-static constexpr float kSkidDecel  = 900.f;   // px/s² deceleration when pressing opposite direction
 
 // Placeholder floor — row (SCREEN_ROWS - 2) in the tilemap; replaced by terrain collision later
 static constexpr float kFloorTop  = static_cast<float>((SCREEN_ROWS - 2) * TILE * SCALE);
@@ -29,14 +21,14 @@ Player::Player(std::shared_ptr<Engine::SpriteSheet> sheet, float startX, float s
     m_currentClip = "idle";
 }
 
-void Player::update(float dt) {
-    handleInput();
-    applyPhysics(dt);
+void Player::update(float dt, const MarioConfig& cfg) {
+    handleInput(cfg);
+    applyPhysics(dt, cfg);
     updateAnimation();
     m_animator.update(dt);
 }
 
-void Player::handleInput() {
+void Player::handleInput(const MarioConfig& cfg) {
     const bool right       = Engine::Input::isKeyDown(GLFW_KEY_RIGHT);
     const bool left        = Engine::Input::isKeyDown(GLFW_KEY_LEFT);
     const bool jumpPressed = Engine::Input::isKeyPressed(GLFW_KEY_SPACE);
@@ -55,43 +47,43 @@ void Player::handleInput() {
                  ((m_inputDir > 0 && m_vx < 0.f) || (m_inputDir < 0 && m_vx > 0.f));
 
     if (m_skidding) {
-        m_facingRight = m_vx > 0.f; // face the direction of travel, not the new input
+        m_facingRight = m_vx > 0.f;
     } else if (!m_crouching && m_inputDir != 0) {
         m_facingRight = m_inputDir > 0;
     }
 
     if (jumpPressed && m_onGround) {
-        m_vy       = kJumpVel;
+        m_vy       = cfg.jumpVel;
         m_onGround = false;
         m_jumpHeld = true;
     }
     if (m_jumpHeld && !jumpHeld) {
         m_jumpHeld = false;
-        if (m_vy < kJumpCutVel)
-            m_vy = kJumpCutVel;
+        if (m_vy < cfg.jumpCutVel)
+            m_vy = cfg.jumpCutVel;
     }
 }
 
-void Player::applyPhysics(float dt) {
-    const float maxSpeed = m_runHeld ? kRunSpeed : kWalkSpeed;
+void Player::applyPhysics(float dt, const MarioConfig& cfg) {
+    const float maxSpeed = m_runHeld ? cfg.runSpeed : cfg.walkSpeed;
 
     if (m_inputDir != 0) {
         if (m_skidding) {
-            const float drag = kSkidDecel * dt;
+            const float drag = cfg.skidDecel * dt;
             m_vx = m_vx > 0.f ? std::max(0.f, m_vx - drag)
                                : std::min(0.f, m_vx + drag);
         } else {
-            m_vx += static_cast<float>(m_inputDir) * kAccel * dt;
+            m_vx += static_cast<float>(m_inputDir) * cfg.accel * dt;
             m_vx = std::clamp(m_vx, -maxSpeed, maxSpeed);
         }
     } else {
-        const float drag = kDecel * dt;
+        const float drag = cfg.decel * dt;
         if (m_vx > 0.f)      m_vx = std::max(0.f, m_vx - drag);
         else if (m_vx < 0.f) m_vx = std::min(0.f, m_vx + drag);
     }
 
     if (!m_onGround)
-        m_vy += kGravity * dt;
+        m_vy += cfg.gravity * dt;
 
     m_x += m_vx * dt;
     m_y += m_vy * dt;
