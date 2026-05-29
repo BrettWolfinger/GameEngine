@@ -5,9 +5,18 @@
 
 namespace Engine {
 
+/// Tag for the frame-pixel SpriteSheet constructor.
+struct FrameSize { int w, h; };
+
 class SpriteSheet {
 public:
+    /// Low-level constructor — prefer SpriteSheet(texture, FrameSize) when frame pixel
+    /// dimensions are known, which is almost always.
     SpriteSheet(std::shared_ptr<Texture> texture, int cols, int rows);
+
+    /// Construct by frame pixel dimensions — cols/rows derived from texture size at load time.
+    /// Throws if texture dimensions are not exact multiples of frameW/frameH.
+    SpriteSheet(std::shared_ptr<Texture> texture, FrameSize frame);
 
     // Returns UV coordinates for the given zero-based frame index (row-major order).
     UVRect getFrameUVs(int frameIndex) const;

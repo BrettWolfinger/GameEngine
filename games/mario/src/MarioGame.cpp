@@ -3,14 +3,14 @@
 #include <GLFW/glfw3.h>
 #include <algorithm> // std::clamp
 
-// Render layers
 static constexpr int kLayerBackground = 0;
-static constexpr int kLayerDeco       = 1;
 static constexpr int kLayerTerrain    = 2;
+static constexpr int kLayerPlayer     = 3;
+
 
 // Tileset sheet: 20 cols × 20 rows
-static constexpr int kSheetCols = 20;
-static constexpr int kSheetRows = 20;
+static constexpr int kTileSheetCols = 20;
+static constexpr int kTileSheetRows = 20;
 
 MarioGame::MarioGame()
     : Engine::Application("Super Mario Bros", WIN_W, WIN_H)
@@ -21,29 +21,32 @@ void MarioGame::onInit() {
 
     const auto* ts = m_map.tilesetForGid(1);
     m_tilesetTex   = std::make_shared<Engine::Texture>(ts->imagePath);
-    m_tilesetSheet = std::make_shared<Engine::SpriteSheet>(m_tilesetTex, kSheetCols, kSheetRows);
+    m_tilesetSheet = std::make_shared<Engine::SpriteSheet>(m_tilesetTex, kTileSheetCols, kTileSheetRows);
 
-    m_marioX = 3.f * TILE * SCALE;
+    m_marioTex   = std::make_shared<Engine::Texture>("games/mario/assets/sprites/smb-mario.png");
+    m_marioSheet = std::make_shared<Engine::SpriteSheet>(m_marioTex, Engine::FrameSize{ MARIO_FRAME_W, MARIO_FRAME_H });
+
+    const float startX = 3.f * TILE * SCALE;
+    const float startY = static_cast<float>((SCREEN_ROWS - 2) * TILE * SCALE - MARIO_FRAME_H * SCALE);
+    m_player = std::make_unique<Player>(m_marioSheet, startX, startY);
 }
 
 void MarioGame::onUpdate(float dt) {
     if (Engine::Input::isKeyPressed(GLFW_KEY_Q))
         quit();
 
-    static constexpr float kSpeed = 200.f;
+    m_player->update(dt);
 
-    if (Engine::Input::isKeyDown(GLFW_KEY_RIGHT)) m_marioX += kSpeed * dt;
-    if (Engine::Input::isKeyDown(GLFW_KEY_LEFT))  m_marioX -= kSpeed * dt;
-
-    float mapWidth = static_cast<float>(m_map.cols * TILE * SCALE);
-    m_marioX  = std::clamp(m_marioX, 0.f, mapWidth);
-    m_cameraX = std::clamp(m_marioX - WIN_W * 0.5f, 0.f, mapWidth - WIN_W);
+    const float playerCenterX = m_player->x() + MARIO_FRAME_W * 0.5f * SCALE;
+    const float mapWidth      = static_cast<float>(m_map.cols * TILE * SCALE);
+    m_cameraX = std::clamp(playerCenterX - WIN_W * 0.5f, 0.f, mapWidth - WIN_W);
 }
 
 void MarioGame::onRender() {
     m_renderer.beginScene(WIN_W, WIN_H);
     renderBackground();
     renderTerrain();
+    renderPlayer();
 }
 
 void MarioGame::renderBackground() {
@@ -61,4 +64,8 @@ void MarioGame::renderTerrain() {
                                  static_cast<float>(TILE * SCALE), kLayerTerrain,
                                  m_cameraX, 0.f,
                                  static_cast<float>(WIN_W), static_cast<float>(WIN_H));
+}
+
+void MarioGame::renderPlayer() {
+    m_player->render(m_renderer, m_cameraX, kLayerPlayer);
 }

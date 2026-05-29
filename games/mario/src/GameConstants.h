@@ -11,3 +11,7 @@ static constexpr int SCREEN_ROWS = 15;
 
 static constexpr int WIN_W = SCREEN_COLS * TILE * SCALE; // 768
 static constexpr int WIN_H = SCREEN_ROWS * TILE * SCALE; // 720
+
+// Mario sprite frame dimensions (native pixels)
+static constexpr int MARIO_FRAME_W = 32;
+static constexpr int MARIO_FRAME_H = 16;
