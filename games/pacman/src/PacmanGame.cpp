@@ -323,12 +323,12 @@ void PacmanGame::checkGhostRelease() {
 }
 
 void PacmanGame::loadHighScore() {
-    std::ifstream f("games/pacman/highscore.dat");
+    std::ifstream f("saves/pacman.sav");
     if (f) f >> m_highScore;
 }
 
 void PacmanGame::saveHighScore() {
-    std::ofstream f("games/pacman/highscore.dat");
+    std::ofstream f("saves/pacman.sav");
     if (f) f << m_highScore;
 }
 
