@@ -5,8 +5,6 @@
 #include <algorithm>
 
 
-// Placeholder floor — row (SCREEN_ROWS - 2) in the tilemap; replaced by terrain collision later
-static constexpr float kFloorTop  = static_cast<float>((SCREEN_ROWS - 2) * TILE * SCALE);
 
 Player::Player(std::shared_ptr<Engine::SpriteSheet> sheet, float startX, float startY)
     : m_x(startX), m_y(startY), m_animator(sheet)
@@ -21,9 +19,9 @@ Player::Player(std::shared_ptr<Engine::SpriteSheet> sheet, float startX, float s
     m_currentClip = "idle";
 }
 
-void Player::update(float dt, const MarioConfig& cfg) {
+void Player::update(float dt, const MarioConfig& cfg, const Engine::Tilemap::Collider& collider) {
     handleInput(cfg);
-    applyPhysics(dt, cfg);
+    applyPhysics(dt, cfg, collider);
     updateAnimation();
     m_animator.update(dt);
 }
@@ -64,7 +62,7 @@ void Player::handleInput(const MarioConfig& cfg) {
     }
 }
 
-void Player::applyPhysics(float dt, const MarioConfig& cfg) {
+void Player::applyPhysics(float dt, const MarioConfig& cfg, const Engine::Tilemap::Collider& collider) {
     const float maxSpeed = m_runHeld ? cfg.runSpeed : cfg.walkSpeed;
 
     if (m_inputDir != 0) {
@@ -85,15 +83,36 @@ void Player::applyPhysics(float dt, const MarioConfig& cfg) {
     if (!m_onGround)
         m_vy += cfg.gravity * dt;
 
-    m_x += m_vx * dt;
-    m_y += m_vy * dt;
+    resolveCollision(dt, collider);
+}
 
-    if (m_x < 0.f) { m_x = 0.f; if (m_vx < 0.f) m_vx = 0.f; }
+void Player::resolveCollision(float dt, const Engine::Tilemap::Collider& collider) {
+    const float hx = m_x + static_cast<float>(MARIO_HITBOX_OFFSET_X * SCALE);
+    const float hy = m_y + static_cast<float>(MARIO_HITBOX_OFFSET_Y * SCALE);
+    const float hw = static_cast<float>(MARIO_HITBOX_W * SCALE);
+    const float hh = static_cast<float>(MARIO_HITBOX_H * SCALE);
 
-    if (m_y + MARIO_FRAME_H * SCALE >= kFloorTop) {
-        m_y        = kFloorTop - MARIO_FRAME_H * SCALE;
-        m_vy       = 0.f;
-        m_onGround = true;
+    const auto hit = collider.sweep(hx, hy, hw, hh, m_vx * dt, m_vy * dt);
+
+    m_x += hit.dx;
+    m_y += hit.dy;
+
+    // Left-edge clamp: keep hitbox left >= 0
+    if (m_x + MARIO_HITBOX_OFFSET_X * SCALE < 0.f) {
+        m_x = -static_cast<float>(MARIO_HITBOX_OFFSET_X * SCALE);
+        if (m_vx < 0.f) m_vx = 0.f;
+    }
+
+    if (hit.hitX) m_vx = 0.f;
+    if (hit.hitY) {
+        m_onGround = m_vy > 0.f;
+        m_vy = 0.f;
+    } else {
+        // Probe 1px below hitbox feet — detects standing on ground when vy is zero
+        const float resolvedHx = hx + hit.dx;
+        const float resolvedHy = hy + hit.dy;
+        m_onGround = collider.isSolidAt(resolvedHx + 1.f,      resolvedHy + hh + 1.f) ||
+                     collider.isSolidAt(resolvedHx + hw - 1.f, resolvedHy + hh + 1.f);
     }
 }
 

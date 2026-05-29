@@ -20,3 +20,4 @@
 #include <engine/renderer/UVRect.h>
 #include <engine/tilemap/Tilemap.h>
 #include <engine/tilemap/TilemapRenderer.h>
+#include <engine/tilemap/TilemapCollider.h>

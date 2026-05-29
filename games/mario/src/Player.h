@@ -2,6 +2,7 @@
 #include "MarioConfig.h"
 #include <engine/renderer/Renderer2D.h>
 #include <engine/renderer/SpriteAnimator.h>
+#include <engine/tilemap/TilemapCollider.h>
 #include <memory>
 #include <string>
 
@@ -9,7 +10,7 @@ class Player {
 public:
     Player(std::shared_ptr<Engine::SpriteSheet> sheet, float startX, float startY);
 
-    void update(float dt, const MarioConfig& config);
+    void update(float dt, const MarioConfig& cfg, const Engine::Tilemap::Collider& collider);
     void render(Engine::Renderer2D& renderer, float cameraX, int layer) const;
 
     float x() const { return m_x; }
@@ -19,7 +20,8 @@ private:
     enum class State { Idle, Walking, Skidding, Jumping, Crouching };
 
     void handleInput(const MarioConfig& cfg);
-    void applyPhysics(float dt, const MarioConfig& cfg);
+    void applyPhysics(float dt, const MarioConfig& cfg, const Engine::Tilemap::Collider& collider);
+    void resolveCollision(float dt, const Engine::Tilemap::Collider& collider);
     void updateAnimation();
 
     float  m_x, m_y;
