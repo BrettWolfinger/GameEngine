@@ -19,7 +19,31 @@ Player::Player(std::shared_ptr<Engine::SpriteSheet> sheet, float startX, float s
     m_currentClip = "idle";
 }
 
+float Player::hitboxX() const { return m_x + static_cast<float>(MARIO_HITBOX_OFFSET_X * SCALE); }
+float Player::hitboxY() const { return m_y + static_cast<float>(MARIO_HITBOX_OFFSET_Y * SCALE); }
+float Player::hitboxW() const { return static_cast<float>(MARIO_HITBOX_W * SCALE); }
+float Player::hitboxH() const { return static_cast<float>(MARIO_HITBOX_H * SCALE); }
+
+void Player::onStompGoomba() {
+    m_vy       = STOMP_BOUNCE_VEL;
+    m_onGround = false;
+}
+
+void Player::onHitByEnemy() {
+    m_dead = true;
+}
+
+void Player::respawn(float startX, float startY) {
+    m_x        = startX;
+    m_y        = startY;
+    m_vx       = 0.f;
+    m_vy       = 0.f;
+    m_onGround = false;
+    m_dead     = false;
+}
+
 void Player::update(float dt, const MarioConfig& cfg, const Engine::Tilemap::Collider& collider) {
+    if (m_dead) return;
     handleInput(cfg);
     applyPhysics(dt, cfg, collider);
     updateAnimation();
