@@ -118,6 +118,12 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>readFromToml<
 <tr class="memitem:a4066106d321360e89cb98a4795e18f99" id="r_a4066106d321360e89cb98a4795e18f99"><td class="memItemLeft" align="right" valign="top"><a id="a4066106d321360e89cb98a4795e18f99" name="a4066106d321360e89cb98a4795e18f99"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>writeToToml</b> (toml::table &amp;t) const =0</td></tr>
 <tr class="separator:a4066106d321360e89cb98a4795e18f99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a210c8f53d5a4d926b1856091da9318d6" id="r_a210c8f53d5a4d926b1856091da9318d6"><td class="memItemLeft" align="right" valign="top"><a id="a210c8f53d5a4d926b1856091da9318d6" name="a210c8f53d5a4d926b1856091da9318d6"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isDirty</b> () const</td></tr>
+<tr class="separator:a210c8f53d5a4d926b1856091da9318d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a90a059a0c5eab3e6b3e81f53702010" id="r_a8a90a059a0c5eab3e6b3e81f53702010"><td class="memItemLeft" align="right" valign="top"><a id="a8a90a059a0c5eab3e6b3e81f53702010" name="a8a90a059a0c5eab3e6b3e81f53702010"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>clearDirty</b> ()</td></tr>
+<tr class="separator:a8a90a059a0c5eab3e6b3e81f53702010"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -129,6 +135,9 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a8eb742a39b54feb6c3c30e35983428bf" id="r_a8eb742a39b54feb6c3c30e35983428bf"><td class="memItemLeft" align="right" valign="top"><a id="a8eb742a39b54feb6c3c30e35983428bf" name="a8eb742a39b54feb6c3c30e35983428bf"></a>
 const char *&#160;</td><td class="memItemRight" valign="bottom"><b>m_name</b></td></tr>
 <tr class="separator:a8eb742a39b54feb6c3c30e35983428bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02dfb7d7151348c7803a63e8232bf1b7" id="r_a02dfb7d7151348c7803a63e8232bf1b7"><td class="memItemLeft" align="right" valign="top"><a id="a02dfb7d7151348c7803a63e8232bf1b7" name="a02dfb7d7151348c7803a63e8232bf1b7"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>m_dirty</b> = false</td></tr>
+<tr class="separator:a02dfb7d7151348c7803a63e8232bf1b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Type-erased base for all Field&lt;T&gt; instances. Constructed by Field&lt;T&gt;; self-registers with the parent <a class="el" href="classEngine_1_1ConfigGroup.html">ConfigGroup</a>. </p>

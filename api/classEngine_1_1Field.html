@@ -135,6 +135,12 @@ T *&#160;</td><td class="memItemRight" valign="bottom"><b>ptr</b> ()</td></tr>
 <tr class="memitem:ac9d31d33f03bdc6bbd2ddbfd680bc3d5 inherit pub_methods_classEngine_1_1FieldBase" id="r_ac9d31d33f03bdc6bbd2ddbfd680bc3d5"><td class="memItemLeft" align="right" valign="top">
 const char *&#160;</td><td class="memItemRight" valign="bottom"><b>name</b> () const</td></tr>
 <tr class="separator:ac9d31d33f03bdc6bbd2ddbfd680bc3d5 inherit pub_methods_classEngine_1_1FieldBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a210c8f53d5a4d926b1856091da9318d6 inherit pub_methods_classEngine_1_1FieldBase" id="r_a210c8f53d5a4d926b1856091da9318d6"><td class="memItemLeft" align="right" valign="top">
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isDirty</b> () const</td></tr>
+<tr class="separator:a210c8f53d5a4d926b1856091da9318d6 inherit pub_methods_classEngine_1_1FieldBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a90a059a0c5eab3e6b3e81f53702010 inherit pub_methods_classEngine_1_1FieldBase" id="r_a8a90a059a0c5eab3e6b3e81f53702010"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>clearDirty</b> ()</td></tr>
+<tr class="separator:a8a90a059a0c5eab3e6b3e81f53702010 inherit pub_methods_classEngine_1_1FieldBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -145,6 +151,9 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a8eb742a39b54feb6c3c30e35983428bf inherit pro_attribs_classEngine_1_1FieldBase" id="r_a8eb742a39b54feb6c3c30e35983428bf"><td class="memItemLeft" align="right" valign="top">
 const char *&#160;</td><td class="memItemRight" valign="bottom"><b>m_name</b></td></tr>
 <tr class="separator:a8eb742a39b54feb6c3c30e35983428bf inherit pro_attribs_classEngine_1_1FieldBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02dfb7d7151348c7803a63e8232bf1b7 inherit pro_attribs_classEngine_1_1FieldBase" id="r_a02dfb7d7151348c7803a63e8232bf1b7"><td class="memItemLeft" align="right" valign="top">
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>m_dirty</b> = false</td></tr>
+<tr class="separator:a02dfb7d7151348c7803a63e8232bf1b7 inherit pro_attribs_classEngine_1_1FieldBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename T&gt;<br />
@@ -154,8 +163,8 @@ class Engine::Field&lt; T &gt;</div><p>A self-registering, implicitly-convertibl
 <div class="line">    <a class="code hl_class" href="classEngine_1_1Field.html">Field&lt;float&gt;</a> speed { <span class="keyword">this</span>, <span class="stringliteral">&quot;speed&quot;</span>, 7.5f };</div>
 <div class="line">    <a class="code hl_class" href="classEngine_1_1Field.html">Field&lt;int&gt;</a>   lives { <span class="keyword">this</span>, <span class="stringliteral">&quot;lives&quot;</span>, 3    };</div>
 <div class="line">};</div>
-<div class="ttc" id="aclassEngine_1_1ConfigGroup_html"><div class="ttname"><a href="classEngine_1_1ConfigGroup.html">Engine::ConfigGroup</a></div><div class="ttdef"><b>Definition</b> ConfigGroup.h:87</div></div>
-<div class="ttc" id="aclassEngine_1_1Field_html"><div class="ttname"><a href="classEngine_1_1Field.html">Engine::Field</a></div><div class="ttdef"><b>Definition</b> ConfigGroup.h:58</div></div>
+<div class="ttc" id="aclassEngine_1_1ConfigGroup_html"><div class="ttname"><a href="classEngine_1_1ConfigGroup.html">Engine::ConfigGroup</a></div><div class="ttdef"><b>Definition</b> ConfigGroup.h:91</div></div>
+<div class="ttc" id="aclassEngine_1_1Field_html"><div class="ttname"><a href="classEngine_1_1Field.html">Engine::Field</a></div><div class="ttdef"><b>Definition</b> ConfigGroup.h:62</div></div>
 </div><!-- fragment --> </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="aa7670e65f263eb253cea826ce146b5e6" name="aa7670e65f263eb253cea826ce146b5e6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa7670e65f263eb253cea826ce146b5e6">&#9670;&#160;</a></span>readFromToml()</h2>
