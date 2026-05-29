@@ -1,0 +1,8 @@
+accel = 600.0
+decel = 500.0
+gravity = 1800.0
+jump_cut_vel = -300.0
+jump_vel = -750.0
+run_speed = 230.0
+skid_decel = 900.0
+walk_speed = 140.0
