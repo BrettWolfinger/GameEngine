@@ -23,6 +23,7 @@ var annotated_dup =
       [ "EventDispatcher", "classEngine_1_1EventDispatcher.html", "classEngine_1_1EventDispatcher" ],
       [ "Field", "classEngine_1_1Field.html", "classEngine_1_1Field" ],
       [ "FieldBase", "classEngine_1_1FieldBase.html", "classEngine_1_1FieldBase" ],
+      [ "FrameSize", "structEngine_1_1FrameSize.html", null ],
       [ "Input", "classEngine_1_1Input.html", null ],
       [ "ListenerHandle", "classEngine_1_1ListenerHandle.html", "classEngine_1_1ListenerHandle" ],
       [ "Menu", "classEngine_1_1Menu.html", null ],
@@ -33,7 +34,7 @@ var annotated_dup =
       [ "Services", "classEngine_1_1Services.html", null ],
       [ "Shader", "classEngine_1_1Shader.html", null ],
       [ "SpriteAnimator", "classEngine_1_1SpriteAnimator.html", "classEngine_1_1SpriteAnimator" ],
-      [ "SpriteSheet", "classEngine_1_1SpriteSheet.html", null ],
+      [ "SpriteSheet", "classEngine_1_1SpriteSheet.html", "classEngine_1_1SpriteSheet" ],
       [ "Texture", "classEngine_1_1Texture.html", null ],
       [ "UVRect", "structEngine_1_1UVRect.html", null ],
       [ "Window", "classEngine_1_1Window.html", null ]

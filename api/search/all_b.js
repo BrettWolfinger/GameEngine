@@ -8,7 +8,7 @@ var searchData=
   ['speed_5',['speed',['../structEngine_1_1ParticleEmitParams.html#aa794d17773d1f1ae359bd271ec44e7d0',1,'Engine::ParticleEmitParams']]],
   ['speedvariance_6',['speedVariance',['../structEngine_1_1ParticleEmitParams.html#a67443b39d692473ce5fb6cb9625b9cee',1,'Engine::ParticleEmitParams']]],
   ['spriteanimator_7',['SpriteAnimator',['../classEngine_1_1SpriteAnimator.html',1,'Engine']]],
-  ['spritesheet_8',['SpriteSheet',['../classEngine_1_1SpriteSheet.html',1,'Engine']]],
+  ['spritesheet_8',['spritesheet',['../classEngine_1_1SpriteSheet.html',1,'Engine::SpriteSheet'],['../classEngine_1_1SpriteSheet.html#a05646774d04146b4820794c9e95f1e04',1,'Engine::SpriteSheet::SpriteSheet(std::shared_ptr&lt; Texture &gt; texture, int cols, int rows)'],['../classEngine_1_1SpriteSheet.html#a0023015bbefb308830fdc9a3ab8b6b48',1,'Engine::SpriteSheet::SpriteSheet(std::shared_ptr&lt; Texture &gt; texture, FrameSize frame)']]],
   ['startsize_9',['startSize',['../structEngine_1_1ParticleEmitParams.html#aac0e442ec56672815688d8bb88654b28',1,'Engine::ParticleEmitParams']]],
   ['stoploopingvoice_10',['stopLoopingVoice',['../Audio_8h.html#a52c1639e140f089a2f99f3d221ba93ea',1,'Engine::Audio']]],
   ['subscribeerased_11',['subscribeErased',['../classEngine_1_1EventDispatcher.html#a2af750f6090e5d59877ca5c7e1a1c31c',1,'Engine::EventDispatcher']]],

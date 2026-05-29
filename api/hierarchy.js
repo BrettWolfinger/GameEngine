@@ -13,6 +13,7 @@ var hierarchy =
       [ "Engine::Field< T >", "classEngine_1_1Field.html", null ]
     ] ],
     [ "Engine::Tilemap::FlippedUV", "structEngine_1_1Tilemap_1_1FlippedUV.html", null ],
+    [ "Engine::FrameSize", "structEngine_1_1FrameSize.html", null ],
     [ "Engine::Input", "classEngine_1_1Input.html", null ],
     [ "Engine::ListenerHandle", "classEngine_1_1ListenerHandle.html", null ],
     [ "Engine::Tilemap::Map", "structEngine_1_1Tilemap_1_1Map.html", null ],

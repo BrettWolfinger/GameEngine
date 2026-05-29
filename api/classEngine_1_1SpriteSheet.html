@@ -100,9 +100,10 @@ $(document).ready(function(){initNavTree('classEngine_1_1SpriteSheet.html',''); 
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a05646774d04146b4820794c9e95f1e04" id="r_a05646774d04146b4820794c9e95f1e04"><td class="memItemLeft" align="right" valign="top"><a id="a05646774d04146b4820794c9e95f1e04" name="a05646774d04146b4820794c9e95f1e04"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>SpriteSheet</b> (std::shared_ptr&lt; <a class="el" href="classEngine_1_1Texture.html">Texture</a> &gt; texture, int cols, int rows)</td></tr>
+<tr class="memitem:a05646774d04146b4820794c9e95f1e04" id="r_a05646774d04146b4820794c9e95f1e04"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEngine_1_1SpriteSheet.html#a05646774d04146b4820794c9e95f1e04">SpriteSheet</a> (std::shared_ptr&lt; <a class="el" href="classEngine_1_1Texture.html">Texture</a> &gt; texture, int cols, int rows)</td></tr>
 <tr class="separator:a05646774d04146b4820794c9e95f1e04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0023015bbefb308830fdc9a3ab8b6b48" id="r_a0023015bbefb308830fdc9a3ab8b6b48"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEngine_1_1SpriteSheet.html#a0023015bbefb308830fdc9a3ab8b6b48">SpriteSheet</a> (std::shared_ptr&lt; <a class="el" href="classEngine_1_1Texture.html">Texture</a> &gt; texture, <a class="el" href="structEngine_1_1FrameSize.html">FrameSize</a> frame)</td></tr>
+<tr class="separator:a0023015bbefb308830fdc9a3ab8b6b48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7b07daad4bf8e31aeecb5375d9d20c4" id="r_ae7b07daad4bf8e31aeecb5375d9d20c4"><td class="memItemLeft" align="right" valign="top"><a id="ae7b07daad4bf8e31aeecb5375d9d20c4" name="ae7b07daad4bf8e31aeecb5375d9d20c4"></a>
 <a class="el" href="structEngine_1_1UVRect.html">UVRect</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getFrameUVs</b> (int frameIndex) const</td></tr>
 <tr class="separator:ae7b07daad4bf8e31aeecb5375d9d20c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -116,6 +117,71 @@ const <a class="el" href="classEngine_1_1Texture.html">Texture</a> &amp;&#160;</
 int&#160;</td><td class="memItemRight" valign="bottom"><b>frameCount</b> () const</td></tr>
 <tr class="separator:a9e35ec91585a522b7fda8acd6eb52eec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a05646774d04146b4820794c9e95f1e04" name="a05646774d04146b4820794c9e95f1e04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05646774d04146b4820794c9e95f1e04">&#9670;&#160;</a></span>SpriteSheet() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Engine::SpriteSheet::SpriteSheet </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classEngine_1_1Texture.html">Texture</a> &gt;&#160;</td>
+          <td class="paramname"><em>texture</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cols</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rows</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Low-level constructor — prefer SpriteSheet(texture, FrameSize) when frame pixel dimensions are known, which is almost always. </p>
+
+</div>
+</div>
+<a id="a0023015bbefb308830fdc9a3ab8b6b48" name="a0023015bbefb308830fdc9a3ab8b6b48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0023015bbefb308830fdc9a3ab8b6b48">&#9670;&#160;</a></span>SpriteSheet() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Engine::SpriteSheet::SpriteSheet </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classEngine_1_1Texture.html">Texture</a> &gt;&#160;</td>
+          <td class="paramname"><em>texture</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structEngine_1_1FrameSize.html">FrameSize</a>&#160;</td>
+          <td class="paramname"><em>frame</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Construct by frame pixel dimensions — cols/rows derived from texture size at load time. Throws if texture dimensions are not exact multiples of frameW/frameH. </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>src/engine/renderer/<a class="el" href="SpriteSheet_8h_source.html">SpriteSheet.h</a></li>
 </ul>
