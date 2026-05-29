@@ -1,6 +1,8 @@
 #pragma once
+#include "Contactable.h"
 #include "GameConstants.h"
 #include "GoombaConfig.h"
+#include <engine/facade/Collision.h>
 #include <engine/renderer/Renderer2D.h>
 #include <engine/renderer/SpriteAnimator.h>
 #include <engine/renderer/SpriteSheet.h>
@@ -10,6 +12,10 @@
 class Goomba {
 public:
     Goomba(std::shared_ptr<Engine::SpriteSheet> sheet, float x, float y);
+    ~Goomba();
+
+    void registerColliders(IContactable* contactable, ContactEffect stompEffect);
+    void deregisterColliders();
 
     void update(float dt, float gravity, const GoombaConfig& cfg, const Engine::Tilemap::Collider& collider);
     void render(Engine::Renderer2D& renderer, float cameraX, int layer) const;
@@ -26,9 +32,12 @@ private:
     void resolveCollision(float dt, const GoombaConfig& cfg, const Engine::Tilemap::Collider& collider);
 
     float m_x, m_y;
-    int   m_dir  = -1;  // -1 = left, 1 = right
+    int   m_dir  = -1;
     float m_vy   = 0.f;
     bool  m_dead = false;
+
+    Engine::Collision::ColliderHandle m_headHandle = Engine::Collision::NULL_COLLIDER;
+    Engine::Collision::ColliderHandle m_bodyHandle = Engine::Collision::NULL_COLLIDER;
 
     Engine::SpriteAnimator m_animator;
 };

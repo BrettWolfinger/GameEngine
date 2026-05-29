@@ -24,13 +24,47 @@ float Player::hitboxY() const { return m_y + static_cast<float>(MARIO_HITBOX_OFF
 float Player::hitboxW() const { return static_cast<float>(MARIO_HITBOX_W * SCALE); }
 float Player::hitboxH() const { return static_cast<float>(MARIO_HITBOX_H * SCALE); }
 
-void Player::onStompGoomba(const MarioConfig& cfg) {
-    m_vy       = cfg.stompBounceVel;
-    m_onGround = false;
+Player::~Player() { deregisterColliders(); }
+
+void Player::registerColliders() {
+    m_bodyHandle = Engine::Collision::add(
+        Engine::Collision::ColliderDesc::makeAABB(
+            kLayerPlayer, kLayerEnemyBody,
+            hitboxX(), hitboxY(), hitboxW(), hitboxH()),
+        [this] { Engine::Collision::updateAABB(m_bodyHandle,
+                     hitboxX(), hitboxY(), hitboxW(), hitboxH()); },
+        nullptr);
+
+    const float sh = static_cast<float>(3 * SCALE);
+    m_stompHandle = Engine::Collision::add(
+        Engine::Collision::ColliderDesc::makeAABB(
+            kLayerPlayerStomp, kLayerEnemyHead,
+            hitboxX(), hitboxY() + hitboxH() - sh, hitboxW(), sh),
+        [this] {
+            const float sh = static_cast<float>(3 * SCALE);
+            Engine::Collision::updateAABB(m_stompHandle,
+                hitboxX(), hitboxY() + hitboxH() - sh, hitboxW(), sh);
+        },
+        nullptr);
 }
 
-void Player::onHitByEnemy() {
-    m_dead = true;
+void Player::applyContactEffect(const ContactEffect& effect) {
+    if (m_dead) return;
+    switch (effect.type) {
+        case ContactEffect::Type::Kill:
+            m_dead = true;
+            break;
+        case ContactEffect::Type::Bounce:
+            m_vy       = effect.value;
+            m_onGround = false;
+            break;
+    }
+}
+
+void Player::deregisterColliders() {
+    Engine::Collision::remove(m_bodyHandle);
+    Engine::Collision::remove(m_stompHandle);
+    m_bodyHandle = m_stompHandle = Engine::Collision::NULL_COLLIDER;
 }
 
 void Player::respawn(float startX, float startY) {

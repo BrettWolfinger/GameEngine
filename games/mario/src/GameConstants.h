@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 
 // NES tile size (16×16 source pixels)
 static constexpr int TILE  = 16;
@@ -25,3 +26,10 @@ static constexpr int MARIO_HITBOX_H = MARIO_FRAME_H - MARIO_HITBOX_OFFSET_Y * 2;
 // Goomba sprite frame dimensions (native pixels, no transparent padding)
 static constexpr int GOOMBA_FRAME_W = 16;
 static constexpr int GOOMBA_FRAME_H = 16;
+static constexpr int GOOMBA_HEAD_H  =  5; // native px of stomp zone at top of sprite
+
+// Collision layer bits
+inline constexpr uint32_t kLayerPlayer      = 1 << 0;
+inline constexpr uint32_t kLayerPlayerStomp = 1 << 1; // thin sensor at Mario's feet
+inline constexpr uint32_t kLayerEnemyBody   = 1 << 2;
+inline constexpr uint32_t kLayerEnemyHead   = 1 << 3; // stompable zone at top of enemy

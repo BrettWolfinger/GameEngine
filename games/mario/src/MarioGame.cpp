@@ -3,10 +3,10 @@
 #include <GLFW/glfw3.h>
 #include <algorithm> // std::clamp
 
-static constexpr int kLayerBackground = 0;
-static constexpr int kLayerTerrain    = 2;
-static constexpr int kLayerEnemy      = 3;
-static constexpr int kLayerPlayer     = 4;
+static constexpr int kRenderBackground = 0;
+static constexpr int kRenderTerrain    = 2;
+static constexpr int kRenderEnemy      = 3;
+static constexpr int kRenderPlayer     = 4;
 
 
 
@@ -39,10 +39,15 @@ void MarioGame::onInit() {
 
     m_player = std::make_unique<Player>(m_marioSheet, m_startX, m_startY);
 
-    // Spawn a couple of Goombas at fixed tile positions
+    // Spawn Goombas at fixed tile positions then register colliders once addresses are stable
     const float goombaY = static_cast<float>((SCREEN_ROWS - 2) * TILE * SCALE - GOOMBA_FRAME_H * SCALE);
+    m_goombas.reserve(2);
     m_goombas.emplace_back(m_enemiesSheet, 22.f * TILE * SCALE, goombaY);
     m_goombas.emplace_back(m_enemiesSheet, 23.f * TILE * SCALE, goombaY);
+
+    m_player->registerColliders();
+    for (auto& g : m_goombas)
+        g.registerColliders(m_player.get(), { ContactEffect::Type::Bounce, m_config.stompBounceVel });
 }
 
 void MarioGame::onUpdate(float dt) {
@@ -53,7 +58,6 @@ void MarioGame::onUpdate(float dt) {
         m_player->update(dt, m_config, *m_collider);
         for (auto& g : m_goombas)
             g.update(dt, m_config.gravity, m_goombaConfig, *m_collider);
-        checkEnemyCollisions();
     }
 
     if (m_player->isDead())
@@ -75,7 +79,7 @@ void MarioGame::onRender() {
 void MarioGame::renderBackground() {
     const Engine::Tilemap::Color4& c = m_map.backgroundColor;
     m_renderer.drawRect(0.f, 0.f, static_cast<float>(WIN_W), static_cast<float>(WIN_H),
-                        { c.r, c.g, c.b, c.a }, kLayerBackground);
+                        { c.r, c.g, c.b, c.a }, kRenderBackground);
 }
 
 void MarioGame::renderTerrain() {
@@ -84,37 +88,17 @@ void MarioGame::renderTerrain() {
     if (!layer || !ts) return;
 
     Engine::Tilemap::renderLayer(m_renderer, *layer, *m_tilesetSheet, *ts,
-                                 static_cast<float>(TILE * SCALE), kLayerTerrain,
+                                 static_cast<float>(TILE * SCALE), kRenderTerrain,
                                  m_cameraX, 0.f,
                                  static_cast<float>(WIN_W), static_cast<float>(WIN_H));
 }
 
 void MarioGame::renderPlayer() {
-    m_player->render(m_renderer, m_cameraX, kLayerPlayer);
+    m_player->render(m_renderer, m_cameraX, kRenderPlayer);
 }
 
 void MarioGame::renderEnemies() {
     for (const auto& g : m_goombas)
-        g.render(m_renderer, m_cameraX, kLayerEnemy);
+        g.render(m_renderer, m_cameraX, kRenderEnemy);
 }
 
-void MarioGame::checkEnemyCollisions() {
-    const float mx = m_player->hitboxX();
-    const float my = m_player->hitboxY();
-    const float mw = m_player->hitboxW();
-    const float mh = m_player->hitboxH();
-
-    for (auto& g : m_goombas) {
-        if (g.isDead()) continue;
-
-        // AABB overlap
-        if (mx + mw <= g.hitboxX() || mx >= g.hitboxX() + g.hitboxW()) continue;
-        if (my + mh <= g.hitboxY() || my >= g.hitboxY() + g.hitboxH()) continue;
-
-        // Stomp: Mario falling and his hitbox bottom is above the Goomba's center
-        if (m_player->vy() > 0.f && my + mh < g.hitboxY() + g.hitboxH() * 0.5f)
-            g.stomp(), m_player->onStompGoomba(m_config);
-        else
-            m_player->onHitByEnemy();
-    }
-}

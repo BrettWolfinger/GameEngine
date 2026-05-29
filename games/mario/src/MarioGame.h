@@ -30,7 +30,6 @@ private:
     void renderTerrain();
     void renderPlayer();
     void renderEnemies();
-    void checkEnemyCollisions();
 
     Engine::Renderer2D                   m_renderer;
     std::shared_ptr<Engine::Texture>     m_tilesetTex;
