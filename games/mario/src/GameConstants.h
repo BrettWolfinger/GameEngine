@@ -21,3 +21,7 @@ static constexpr int MARIO_HITBOX_OFFSET_X = 10; // transparent px on each horiz
 static constexpr int MARIO_HITBOX_OFFSET_Y = 0;
 static constexpr int MARIO_HITBOX_W = MARIO_FRAME_W - MARIO_HITBOX_OFFSET_X * 2; // 12px
 static constexpr int MARIO_HITBOX_H = MARIO_FRAME_H - MARIO_HITBOX_OFFSET_Y * 2;
+
+// Goomba sprite frame dimensions (native pixels, no transparent padding)
+static constexpr int GOOMBA_FRAME_W = 16;
+static constexpr int GOOMBA_FRAME_H = 16;

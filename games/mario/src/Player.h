@@ -15,6 +15,17 @@ public:
 
     float x() const { return m_x; }
     float y() const { return m_y; }
+    float vy() const { return m_vy; }
+
+    float hitboxX() const;
+    float hitboxY() const;
+    float hitboxW() const;
+    float hitboxH() const;
+
+    bool isDead() const { return m_dead; }
+    void onStompGoomba(const MarioConfig& cfg);
+    void onHitByEnemy();
+    void respawn(float startX, float startY);
 
 private:
     enum class State { Idle, Walking, Skidding, Jumping, Crouching };
@@ -35,6 +46,7 @@ private:
     bool   m_jumpHeld    = false;
     int    m_inputDir    = 0;   // -1 left, 0 none, 1 right
     State  m_state       = State::Idle;
+    bool   m_dead        = false;
 
     Engine::SpriteAnimator m_animator;
     std::string            m_currentClip;

@@ -2,6 +2,7 @@ add_executable(mario
     src/main.cpp
     src/MarioGame.cpp
     src/Player.cpp
+    src/Goomba.cpp
 )
 
 target_include_directories(mario PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
