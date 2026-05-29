@@ -1,14 +1,21 @@
 #pragma once
+#include "Contactable.h"
+#include "GameConstants.h"
 #include "MarioConfig.h"
+#include <engine/facade/Collision.h>
 #include <engine/renderer/Renderer2D.h>
 #include <engine/renderer/SpriteAnimator.h>
 #include <engine/tilemap/TilemapCollider.h>
 #include <memory>
 #include <string>
 
-class Player {
+class Player : public IContactable {
 public:
     Player(std::shared_ptr<Engine::SpriteSheet> sheet, float startX, float startY);
+    ~Player();
+
+    void registerColliders();
+    void deregisterColliders();
 
     void update(float dt, const MarioConfig& cfg, const Engine::Tilemap::Collider& collider);
     void render(Engine::Renderer2D& renderer, float cameraX, int layer) const;
@@ -22,9 +29,9 @@ public:
     float hitboxW() const;
     float hitboxH() const;
 
+    void applyContactEffect(const ContactEffect& effect) override;
+
     bool isDead() const { return m_dead; }
-    void onStompGoomba(const MarioConfig& cfg);
-    void onHitByEnemy();
     void respawn(float startX, float startY);
 
 private:
@@ -36,17 +43,20 @@ private:
     void updateAnimation();
 
     float  m_x, m_y;
-    float  m_vx       = 0.f;
-    float  m_vy       = 0.f;
+    float  m_vx          = 0.f;
+    float  m_vy          = 0.f;
     bool   m_onGround    = true;
     bool   m_facingRight = true;
     bool   m_crouching   = false;
     bool   m_skidding    = false;
     bool   m_runHeld     = false;
     bool   m_jumpHeld    = false;
-    int    m_inputDir    = 0;   // -1 left, 0 none, 1 right
+    int    m_inputDir    = 0;
     State  m_state       = State::Idle;
     bool   m_dead        = false;
+
+    Engine::Collision::ColliderHandle m_bodyHandle  = Engine::Collision::NULL_COLLIDER;
+    Engine::Collision::ColliderHandle m_stompHandle = Engine::Collision::NULL_COLLIDER;
 
     Engine::SpriteAnimator m_animator;
     std::string            m_currentClip;

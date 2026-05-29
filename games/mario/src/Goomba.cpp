@@ -39,3 +39,43 @@ void Goomba::render(Engine::Renderer2D& renderer, float cameraX, int layer) cons
 void Goomba::stomp() {
     m_dead = true;
 }
+
+Goomba::~Goomba() { deregisterColliders(); }
+
+void Goomba::registerColliders(IContactable* contactable, ContactEffect stompEffect) {
+    const float headH = static_cast<float>(GOOMBA_HEAD_H * SCALE);
+    const float bodyH = hitboxH() - headH;
+
+    m_headHandle = Engine::Collision::add(
+        Engine::Collision::ColliderDesc::makeAABB(
+            kLayerEnemyHead, kLayerPlayerStomp,
+            hitboxX(), hitboxY(), hitboxW(), headH),
+        [this, headH] {
+            Engine::Collision::updateAABB(m_headHandle,
+                hitboxX(), hitboxY(), hitboxW(), headH);
+        },
+        [this, contactable, stompEffect](Engine::Collision::ColliderHandle, Engine::Collision::ColliderHandle) {
+            if (!m_dead) {
+                stomp();
+                contactable->applyContactEffect(stompEffect);
+            }
+        });
+
+    m_bodyHandle = Engine::Collision::add(
+        Engine::Collision::ColliderDesc::makeAABB(
+            kLayerEnemyBody, kLayerPlayer,
+            hitboxX(), hitboxY() + headH, hitboxW(), bodyH),
+        [this, headH, bodyH] {
+            Engine::Collision::updateAABB(m_bodyHandle,
+                hitboxX(), hitboxY() + headH, hitboxW(), bodyH);
+        },
+        [this, contactable](Engine::Collision::ColliderHandle, Engine::Collision::ColliderHandle) {
+            if (!m_dead) contactable->applyContactEffect({ ContactEffect::Type::Kill });
+        });
+}
+
+void Goomba::deregisterColliders() {
+    Engine::Collision::remove(m_headHandle);
+    Engine::Collision::remove(m_bodyHandle);
+    m_headHandle = m_bodyHandle = Engine::Collision::NULL_COLLIDER;
+}
