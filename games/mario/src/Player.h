@@ -24,10 +24,13 @@ private:
     float  m_x, m_y;
     float  m_vx       = 0.f;
     float  m_vy       = 0.f;
-    bool   m_onGround = true;
+    bool   m_onGround    = true;
     bool   m_facingRight = true;
     bool   m_crouching   = false;
     bool   m_skidding    = false;
+    bool   m_runHeld     = false;
+    bool   m_jumpHeld    = false;
+    int    m_inputDir    = 0;   // -1 left, 0 none, 1 right
     State  m_state       = State::Idle;
 
     Engine::SpriteAnimator m_animator;
