@@ -17,11 +17,20 @@ cmake --build build --target pacman
 
 ## Controls
 
-_Controls TBD._
+| Key | Action |
+|---|---|
+| Arrow keys | Move Pac-Man |
+| Q | Quit |
+| R | Restart (game over screen) |
 
 ## Gameplay Notes
 
-_TBD._
+- Eat all dots to clear the stage and advance to the next level
+- Power pellets (large dots in the four corners) turn ghosts blue — chase them down for bonus points
+- Eating multiple ghosts on a single pellet doubles the score each time: 200 → 400 → 800 → 1600
+- Each dot is worth 10 points; each power pellet is worth 50 points
+- Earn an extra life at 10,000 points
+- You start with 3 lives; losing all lives ends the game
 
 ## Credits
 
