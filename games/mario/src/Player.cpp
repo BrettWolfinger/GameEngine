@@ -24,8 +24,8 @@ float Player::hitboxY() const { return m_y + static_cast<float>(MARIO_HITBOX_OFF
 float Player::hitboxW() const { return static_cast<float>(MARIO_HITBOX_W * SCALE); }
 float Player::hitboxH() const { return static_cast<float>(MARIO_HITBOX_H * SCALE); }
 
-void Player::onStompGoomba() {
-    m_vy       = STOMP_BOUNCE_VEL;
+void Player::onStompGoomba(const MarioConfig& cfg) {
+    m_vy       = cfg.stompBounceVel;
     m_onGround = false;
 }
 

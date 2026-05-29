@@ -29,7 +29,8 @@ void MarioGame::onInit() {
 
     m_startX = 3.f * TILE * SCALE;
     m_startY = static_cast<float>((SCREEN_ROWS - 2) * TILE * SCALE - MARIO_FRAME_H * SCALE);
-    registerConfig("games/mario/assets/configs/mario.toml", &m_config);
+    registerConfig("games/mario/assets/configs/mario.toml",  &m_config);
+    registerConfig("games/mario/assets/configs/goomba.toml", &m_goombaConfig);
 
     const auto* terrain = m_map.findLayer("Terrain");
     if (terrain)
@@ -51,7 +52,7 @@ void MarioGame::onUpdate(float dt) {
     if (m_collider) {
         m_player->update(dt, m_config, *m_collider);
         for (auto& g : m_goombas)
-            g.update(dt, *m_collider);
+            g.update(dt, m_config.gravity, m_goombaConfig, *m_collider);
         checkEnemyCollisions();
     }
 
@@ -112,7 +113,7 @@ void MarioGame::checkEnemyCollisions() {
 
         // Stomp: Mario falling and his hitbox bottom is above the Goomba's center
         if (m_player->vy() > 0.f && my + mh < g.hitboxY() + g.hitboxH() * 0.5f)
-            g.stomp(), m_player->onStompGoomba();
+            g.stomp(), m_player->onStompGoomba(m_config);
         else
             m_player->onHitByEnemy();
     }

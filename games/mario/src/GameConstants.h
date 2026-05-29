@@ -23,9 +23,5 @@ static constexpr int MARIO_HITBOX_W = MARIO_FRAME_W - MARIO_HITBOX_OFFSET_X * 2;
 static constexpr int MARIO_HITBOX_H = MARIO_FRAME_H - MARIO_HITBOX_OFFSET_Y * 2;
 
 // Goomba sprite frame dimensions (native pixels, no transparent padding)
-static constexpr int   GOOMBA_FRAME_W    = 16;
-static constexpr int   GOOMBA_FRAME_H    = 16;
-static constexpr float GOOMBA_WALK_SPEED = 60.f;   // world px/sec
-
-// Mario response to stomping an enemy
-static constexpr float STOMP_BOUNCE_VEL  = -400.f; // world px/sec upward
+static constexpr int GOOMBA_FRAME_W = 16;
+static constexpr int GOOMBA_FRAME_H = 16;

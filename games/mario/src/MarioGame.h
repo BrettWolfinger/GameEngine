@@ -1,5 +1,6 @@
 #pragma once
 #include "MarioConfig.h"
+#include "GoombaConfig.h"
 #include "Player.h"
 #include "Goomba.h"
 #include <engine/core/Application.h>
@@ -40,6 +41,7 @@ private:
     std::shared_ptr<Engine::SpriteSheet> m_enemiesSheet;
     Engine::Tilemap::Map                 m_map;
     MarioConfig                              m_config;
+    GoombaConfig                             m_goombaConfig;
     std::optional<Engine::Tilemap::Collider>   m_collider;
     float                                    m_cameraX  = 0.f;
     float                                    m_startX   = 0.f;

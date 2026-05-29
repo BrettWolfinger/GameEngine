@@ -23,7 +23,7 @@ public:
     float hitboxH() const;
 
     bool isDead() const { return m_dead; }
-    void onStompGoomba();
+    void onStompGoomba(const MarioConfig& cfg);
     void onHitByEnemy();
     void respawn(float startX, float startY);
 
