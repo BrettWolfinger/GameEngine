@@ -8,9 +8,6 @@ static constexpr int kLayerTerrain    = 2;
 static constexpr int kLayerPlayer     = 3;
 
 
-// Tileset sheet: 20 cols × 20 rows
-static constexpr int kTileSheetCols = 20;
-static constexpr int kTileSheetRows = 20;
 
 MarioGame::MarioGame()
     : Engine::Application("Super Mario Bros", WIN_W, WIN_H)
@@ -21,7 +18,7 @@ void MarioGame::onInit() {
 
     const auto* ts = m_map.tilesetForGid(1);
     m_tilesetTex   = std::make_shared<Engine::Texture>(ts->imagePath);
-    m_tilesetSheet = std::make_shared<Engine::SpriteSheet>(m_tilesetTex, kTileSheetCols, kTileSheetRows);
+    m_tilesetSheet = std::make_shared<Engine::SpriteSheet>(m_tilesetTex, Engine::FrameSize{ TILE, TILE });
 
     m_marioTex   = std::make_shared<Engine::Texture>("games/mario/assets/sprites/smb-mario.png");
     m_marioSheet = std::make_shared<Engine::SpriteSheet>(m_marioTex, Engine::FrameSize{ MARIO_FRAME_W, MARIO_FRAME_H });
