@@ -5,6 +5,7 @@ var annotated_dup =
         [ "SoundHandle", "structEngine_1_1Audio_1_1SoundHandle.html", null ]
       ] ],
       [ "Tilemap", null, [
+        [ "Collider", "classEngine_1_1Tilemap_1_1Collider.html", "classEngine_1_1Tilemap_1_1Collider" ],
         [ "Color4", "structEngine_1_1Tilemap_1_1Color4.html", null ],
         [ "FlippedUV", "structEngine_1_1Tilemap_1_1FlippedUV.html", null ],
         [ "Map", "structEngine_1_1Tilemap_1_1Map.html", "structEngine_1_1Tilemap_1_1Map" ],

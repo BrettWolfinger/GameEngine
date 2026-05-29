@@ -12,5 +12,7 @@ var searchData=
   ['startsize_9',['startSize',['../structEngine_1_1ParticleEmitParams.html#aac0e442ec56672815688d8bb88654b28',1,'Engine::ParticleEmitParams']]],
   ['stoploopingvoice_10',['stopLoopingVoice',['../Audio_8h.html#a52c1639e140f089a2f99f3d221ba93ea',1,'Engine::Audio']]],
   ['subscribeerased_11',['subscribeErased',['../classEngine_1_1EventDispatcher.html#a2af750f6090e5d59877ca5c7e1a1c31c',1,'Engine::EventDispatcher']]],
-  ['syncfn_12',['syncfn',['../Collision_8h.html#af8019355ed0c8dc4323dae84558ed15d',1,'Engine::Collision::SyncFn'],['../Collider_8h.html#abec13c9725f35e27d6c2b51f74a719df',1,'Engine::SyncFn']]]
+  ['sweep_12',['sweep',['../classEngine_1_1Tilemap_1_1Collider.html#acb1bd2f94eb5973f239a9483c044dd3a',1,'Engine::Tilemap::Collider']]],
+  ['sweepresult_13',['SweepResult',['../structEngine_1_1Tilemap_1_1Collider_1_1SweepResult.html',1,'Engine::Tilemap::Collider']]],
+  ['syncfn_14',['syncfn',['../Collision_8h.html#af8019355ed0c8dc4323dae84558ed15d',1,'Engine::Collision::SyncFn'],['../Collider_8h.html#abec13c9725f35e27d6c2b51f74a719df',1,'Engine::SyncFn']]]
 ];

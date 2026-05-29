@@ -2,6 +2,7 @@ var hierarchy =
 [
     [ "Engine::AnimClip", "structEngine_1_1AnimClip.html", null ],
     [ "Engine::Application", "classEngine_1_1Application.html", null ],
+    [ "Engine::Tilemap::Collider", "classEngine_1_1Tilemap_1_1Collider.html", null ],
     [ "Engine::ColliderDesc", "structEngine_1_1ColliderDesc.html", null ],
     [ "Engine::Tilemap::Color4", "structEngine_1_1Tilemap_1_1Color4.html", null ],
     [ "Engine::ConfigGroup", "classEngine_1_1ConfigGroup.html", null ],
@@ -29,6 +30,7 @@ var hierarchy =
     [ "Engine::Audio::SoundHandle", "structEngine_1_1Audio_1_1SoundHandle.html", null ],
     [ "Engine::SpriteAnimator", "classEngine_1_1SpriteAnimator.html", null ],
     [ "Engine::SpriteSheet", "classEngine_1_1SpriteSheet.html", null ],
+    [ "Engine::Tilemap::Collider::SweepResult", "structEngine_1_1Tilemap_1_1Collider_1_1SweepResult.html", null ],
     [ "Engine::Texture", "classEngine_1_1Texture.html", null ],
     [ "Engine::Tilemap::TileLayer", "structEngine_1_1Tilemap_1_1TileLayer.html", null ],
     [ "Engine::Tilemap::TilesetRef", "structEngine_1_1Tilemap_1_1TilesetRef.html", null ],
